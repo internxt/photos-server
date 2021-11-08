@@ -1,0 +1,11 @@
+{
+  "name": "photos-server",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/internxt/photos-server.git",
+  "author": "Internxt",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  }
+}
