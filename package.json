@@ -10,6 +10,8 @@
     "lint": "eslint ./src"
   },
   "dependencies": {
+    "dotenv": "^10.0.0",
+    "fastify": "^3.23.1",
     "mongodb": "^4.1.4"
   },
   "devDependencies": {
