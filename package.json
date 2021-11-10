@@ -9,6 +9,9 @@
     "build": "tsc",
     "lint": "eslint ./src"
   },
+  "dependencies": {
+    "mongodb": "^4.1.4"
+  },
   "devDependencies": {
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
