@@ -1,39 +1,24 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-import { Device, DeviceId } from '../../models/Device';
-import { obtainDevice, obtainUserDevices, removeDevice, saveDevice } from './usecase';
-import { NotFoundError } from '../errors/NotFoundError';
+import { DeviceId } from '../../models/Device';
+import { obtainDevice, removeDevice, saveDevice } from './usecase';
+import { CreateDeviceType } from './schemas';
+import { NotFoundError } from '../errors/http/NotFound';
 
 export async function getDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {  
   const device = await obtainDevice(req.params.id);
 
   if (!device) {
-    throw new NotFoundError('Device');
+    throw new NotFoundError({ resource: 'Device' });
   }
 
   rep.send(device);
 }
 
-export async function getDeviceByUserId(req: FastifyRequest<{ Params: { userId: string } }>, rep: FastifyReply) {
-  const devices = await obtainUserDevices(req.params.userId);
+export async function postDevice(req: FastifyRequest<{ Body: CreateDeviceType }>, rep: FastifyReply) {
+  const createdDeviceId = await saveDevice(req.body);
 
-  if (!devices || devices.length === 0) {
-    throw new NotFoundError('Devices');
-  }
-  
-  rep.send(devices);
-}
-
-type PostDeviceBody = { 
-  Body: { 
-    device: Device,
-  } 
-};
-
-export async function postDevice(req: FastifyRequest<PostDeviceBody>, rep: FastifyReply) {
-  const createdDevice = await saveDevice(req.body.device);
-
-  rep.code(201).send(createdDevice);
+  rep.code(201).send({ id: createdDeviceId });
 }
 
 export async function deleteDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
