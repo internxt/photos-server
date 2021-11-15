@@ -9,6 +9,7 @@
     "dev": "nodemon src/index.ts",
     "test": "yarn jest --detectOpenHandles",
     "build": "tsc",
+    "coverage": "jest --coverage", 
     "lint": "eslint ./src"
   },
   "dependencies": {
