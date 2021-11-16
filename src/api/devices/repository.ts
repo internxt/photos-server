@@ -1,4 +1,4 @@
-import { Collection, Document, Filter, ObjectId } from 'mongodb';
+import { Collection, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { DeviceDocument } from '../../database/mongo/models/Device';
@@ -8,36 +8,40 @@ function toObjectId(id: string) {
   return new ObjectId(id);
 }
 export class DevicesRepository implements Repository<Device> {
-  private collection: Collection;
+  private collection: Collection<DeviceDocument>;
 
-  constructor(collection: Collection) {
+  constructor(collection: Collection<DeviceDocument>) {
     this.collection = collection;
   }
 
   getById(id: string): Promise<Device | null> {
     return this.collection.findOne<DeviceDocument>({ _id: toObjectId(id) })
-      .then((doc) => {
+      .then((doc): Device | null => {
         if (!doc || !doc._id) {
-          return doc;
+          return null;
         }
 
         const id = doc._id.toString();
-
-        delete doc._id;
 
         return { ...doc, id };
       });
   }
 
-  get(where: Record<string, unknown>) {
+  get(where: Filter<DeviceDocument>): Promise<Device[]> {
     return this.collection
-      .find<Device>(where)
+      .find<DeviceDocument>(where)
       .toArray()
-      .then((results) => results as Device[]);
+      .then((results) => {
+        return results.map((result): Device => {
+          const id = result._id.toString();
+
+          return { ...result, id };
+        });
+      });
   }
 
   create(device: Omit<Device, 'id'>): Promise<DeviceId> {
-    const document: Omit<DeviceDocument, 'id'> = {
+    const document: Omit<DeviceDocument, '_id'> = {
       ...device,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -56,7 +60,7 @@ export class DevicesRepository implements Repository<Device> {
     await this.collection.deleteOne({ _id: toObjectId(id) });
   }
 
-  async delete(where: Filter<Document>) {
+  async delete(where: Filter<DeviceDocument>) {
     await this.collection.deleteMany(where);
   }
 }
