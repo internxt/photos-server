@@ -9,32 +9,36 @@ function toObjectId(id: string) {
 }
 
 export class PhotosRepository implements Repository<Photo> {
-  private collection: Collection;
+  private collection: Collection<PhotoDocument>;
 
-  constructor(collection: Collection) {
+  constructor(collection: Collection<PhotoDocument>) {
     this.collection = collection;
   }
 
-  getById(id: PhotoId) {
+  getById(id: PhotoId): Promise<Photo | null> {
     return this.collection.findOne<PhotoDocument>({ _id: toObjectId(id) })
-      .then((doc) => {
+      .then((doc): Photo | null => {
         if (!doc || !doc._id) {
-          return doc;
+          return null;
         }
 
         const id = doc._id.toString();
-
-        delete doc._id;
 
         return { ...doc, id };
       });
   }
 
-  get(where: Record<string, unknown>) {
+  get(where: Filter<PhotoDocument>) {
     return this.collection
-      .find<Photo>(where)
+      .find<PhotoDocument>(where)
       .toArray()
-      .then((results) => results as Photo[]);
+      .then((results) => {
+        return results.map((result): Photo => {
+          const id = result._id.toString();
+
+          return { ...result, id };
+        });
+      });
   }
 
   getCountByDate(userUuid: string, from: Date, to: Date, limit: number, offset: number): Promise<number> {
@@ -46,7 +50,7 @@ export class PhotosRepository implements Repository<Photo> {
   }
 
   create(photo: Omit<Photo, 'id'>): Promise<PhotoId> {
-    const document: Omit<PhotoDocument, 'id'> = {
+    const document: Omit<PhotoDocument, '_id'> = {
       ...photo,
       createdAt: new Date(),
       updatedAt: new Date()
