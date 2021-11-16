@@ -11,10 +11,8 @@ export interface Photo {
   size: number,
   width: number,
   heigth: number,
-  fileId: string,
-  previewId: number,
-  createdAt: Date,
-  updatedAt: Date,
+  fileId: FileId,
+  previewId: FileId,
   deviceId: DeviceId,
   userUuid: string
 }
