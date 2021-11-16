@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "nodemon index.ts",
     "db:init": "ts-node ./src/database/mongo/scripts/init.ts",
-    "test": "yarn jest --detectOpenHandles",
+    "test": "yarn db:init && yarn jest --detectOpenHandles",
     "build": "tsc",
     "coverage": "jest --coverage",
     "lint": "eslint ./src"
