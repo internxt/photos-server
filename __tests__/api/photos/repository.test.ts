@@ -5,7 +5,7 @@ import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
 import { PhotoDocument } from '../../../src/database/mongo/models/Photo';
 
-const photos: Required<Omit<PhotoDocument, 'id'>>[] = require('../../../src/database/mongo/fixtures/photos');
+const photos: Required<PhotoDocument>[] = require('../../../src/database/mongo/fixtures/photos');
 
 config();
 
