@@ -1,17 +1,21 @@
-import { ObjectId } from 'mongodb';
+import { Collection, Document, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { DeviceDocument } from '../../database/mongo/models/Device';
-import { collections } from '../../database/MongoDB';
 import { Device, DeviceId } from '../../models/Device';
 
 function toObjectId(id: string) {
   return new ObjectId(id);
 }
+export class DevicesRepository implements Repository<Device> {
+  private collection: Collection;
 
-const devicesRepository: Repository<Device> = {
+  constructor(collection: Collection) {
+    this.collection = collection;
+  }
+
   getById(id: string) {
-    return collections.devices!.findOne<DeviceDocument>({ _id: toObjectId(id) })
+    return this.collection.findOne<DeviceDocument>({ _id: toObjectId(id) })
       .then((doc) => {
         if (!doc || !doc._id) {
           return doc;
@@ -19,36 +23,40 @@ const devicesRepository: Repository<Device> = {
 
         const id = doc._id.toString();
 
-        return { id, name: doc.name, mac: doc.mac };
+        delete doc._id;
+
+        return { ...doc, id };
       });
-  },
+  }
+
   get(where: Record<string, unknown>) {
-    return collections.devices!
+    return this.collection
       .find<Device>(where)
       .toArray()
       .then((results) => results as Device[]);
-  },
+  }
+
   create(device: Omit<Device, 'id'>): Promise<DeviceId> {
     const document: Omit<DeviceDocument, 'id'> = {
-      mac: device.mac,
-      name: device.name,
+      ...device,
       createdAt: new Date(),
       updatedAt: new Date()
     };
   
-    return collections.devices!
+    return this.collection
       .insertOne(document)
       .then(({ insertedId }) => insertedId.toString());
-  },
+  }
+
   update() {
     return Promise.reject('Not implemented yet');
-  },
-  async deleteById(id) {
-    await collections.devices!.deleteOne({ _id: toObjectId(id) });
-  },
-  async delete(where) {
-    await collections.devices!.deleteMany(where);
   }
-};
 
-export default devicesRepository;
+  async deleteById(id: DeviceId) {
+    await this.collection.deleteOne({ _id: toObjectId(id) });
+  }
+
+  async delete(where: Filter<Document>) {
+    await this.collection.deleteMany(where);
+  }
+}
