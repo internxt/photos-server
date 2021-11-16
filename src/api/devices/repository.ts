@@ -14,7 +14,7 @@ export class DevicesRepository implements Repository<Device> {
     this.collection = collection;
   }
 
-  getById(id: string) {
+  getById(id: string): Promise<Device | null> {
     return this.collection.findOne<DeviceDocument>({ _id: toObjectId(id) })
       .then((doc) => {
         if (!doc || !doc._id) {
