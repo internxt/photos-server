@@ -41,7 +41,7 @@ const userTwoDevices = [
   }
 ];
 
-const devices: Required<Omit<DeviceDocument, 'id'>>[] = [
+const devices: Required<DeviceDocument>[] = [
   ...userOneDevices,
   ...userTwoDevices
 ];
