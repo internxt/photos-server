@@ -1,6 +1,7 @@
 export type DeviceId = string;
 export interface Device {
-  id: string
+  id: DeviceId
   mac: string,
   name: string
+  userUuid: string
 }
