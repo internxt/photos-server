@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyLoggerInstance, FastifyRegisterOptions } from '
 import { IncomingMessage, Server, ServerResponse } from 'http';
 
 export interface Router {
-  handler: any,
+  handler: unknown,
   prefix: string
 }
 
