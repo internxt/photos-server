@@ -1,75 +1,80 @@
 import { ObjectId } from 'mongodb';
-import { randomBytes } from 'crypto';
 
 import { PhotoDocument } from '../models/Photo';
-import { DeviceId } from '../../../models/Device';
-
 import { users } from '../users';
 import { DeviceDocument } from '../models/Device';
 
-const devices: Required<Omit<DeviceDocument, 'id'>>[] = require('./devices');
+const devices: Required<DeviceDocument>[] = require('./devices');
 
-function generatePhoto(
-  deviceId: string,
-  fileId: string,
-  heigth: number,
-  width: number,
-  name: string,
-  previewId: string,
-  size: number,
-  type: string,
-  userUuid: string
-): Omit<PhotoDocument, 'id'> {
-  return {
-    _id: new ObjectId(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deviceId,
-    fileId,
-    heigth,
-    width,
-    name,
-    previewId,
-    size,
-    type,
-    userUuid
-  };
-}
+const [
+  userOneDeviceOne, 
+  _, 
+  userTwoDeviceOne,
+  userTwoDeviceTwo
+] = devices;
 
-function generatePhotos(devicesQty: number) {
-  return {
-    forUser: (uuid: string) => {
-      return {
-        onDevice: (deviceId: DeviceId) => {
-          return new Array(devicesQty).fill(0).map(() => {
-            return generatePhoto(
-              deviceId,
-              randomBytes(6).toString('hex') + uuid,
-              10,
-              10,
-              randomBytes(6).toString('hex') + uuid,
-              randomBytes(6).toString('hex') + uuid,
-              10,
-              'jpg',
-              uuid
-            );
-          });
-        }
-      };
-    }
-  };
-}
-
-const userOneDevices = devices.slice(0, devices.reduce(
-  (a: number, d) => {
-    return d.userUuid === users.one ? a + 1 : a;
-  }, 0)
-);
-const userTwoDevices = devices.slice(userOneDevices.length);
-
-const photos: Omit<PhotoDocument, 'id'>[] = [
-  ...generatePhotos(2).forUser(users.one).onDevice(userOneDevices[0]._id.toString()),
-  ...generatePhotos(4).forUser(users.two).onDevice(userTwoDevices[0]._id.toString())
+const userOnePhotos: Required<PhotoDocument>[] = [
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    deviceId: userOneDeviceOne._id.toString(),
+    fileId: 'photoOneFileId',
+    heigth: 10,
+    name: 'photoOne',
+    previewId: 'photoOnePreviewId',
+    size: 10,
+    type: 'jpg',
+    userUuid: users.one,
+    width: 10
+  },
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    deviceId: userOneDeviceOne._id.toString(),
+    fileId: 'photoTwoFileId',
+    heigth: 10,
+    name: 'photoTwo',
+    previewId: 'photoTwoPreviewId',
+    size: 10,
+    type: 'jpg',
+    userUuid: users.one,
+    width: 10
+  }
 ];
+
+const userTwoPhotos: Required<PhotoDocument>[] = [
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaac'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    deviceId: userTwoDeviceOne._id.toString(),
+    fileId: 'photoThirdFileId',
+    heigth: 10,
+    name: 'photoThird',
+    previewId: 'photoThirdPreviewId',
+    size: 10,
+    type: 'jpg',
+    userUuid: users.one,
+    width: 10
+  },
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    deviceId: userTwoDeviceTwo._id.toString(),
+    fileId: 'photoFourthFileId',
+    heigth: 10,
+    name: 'photoFourth',
+    previewId: 'photoFourthPreviewId',
+    size: 10,
+    type: 'jpg',
+    userUuid: users.one,
+    width: 10
+  }
+];
+
+const photos: Required<PhotoDocument>[] = [ ...userOnePhotos, ...userTwoPhotos ];
 
 module.exports = photos;
