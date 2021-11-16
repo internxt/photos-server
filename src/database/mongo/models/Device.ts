@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from 'mongodb';
 import { Device } from '../../../models/Device';
 
 export interface DeviceDocument extends Device {
