@@ -6,10 +6,10 @@
   "author": "Internxt",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon index.ts",
     "test": "yarn jest --detectOpenHandles",
     "build": "tsc",
-    "coverage": "jest --coverage", 
+    "coverage": "jest --coverage",
     "lint": "eslint ./src"
   },
   "dependencies": {

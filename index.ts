@@ -1,3 +1,6 @@
 import startServer from './src';
 
-startServer({ logger: { enabled: true }});
+startServer({ 
+  port: process.env.SERVER_PORT && parseInt(process.env.SERVER_PORT) || 8000, 
+  logger: { enabled: true }
+});

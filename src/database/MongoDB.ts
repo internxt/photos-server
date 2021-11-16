@@ -32,21 +32,18 @@ export class MongoDB implements Database {
 
     this.db = this.client.db(process.env.DB_NAME);
 
-    await this.initializeCollections();
-
     return this;
   }
 
-  initializeCollections() {
+  getCollections() {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
 
-    const photosCollection: Collection = this.db.collection('photos');
-    const devicesCollection: Collection = this.db.collection('devices');
-
-    collections.devices = devicesCollection;
-    collections.photos = photosCollection;
+    return {
+      photos: this.db.collection('photos'),
+      devices: this.db.collection('devices')
+    };
   }
 
   disconnect(): Promise<void> {
