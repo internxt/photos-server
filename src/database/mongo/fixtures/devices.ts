@@ -1,38 +1,49 @@
-import { randomBytes } from 'crypto';
 import { ObjectId } from 'mongodb';
 
 import { DeviceDocument } from '../models/Device';
 import { users } from '../users';
 
-function generateDevice(name: string, mac: string, userUuid: string): Required<Omit<DeviceDocument, 'id'>> {
-  return {
-    _id: new ObjectId(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    name,
-    mac,
-    userUuid
-  };
-}
+const userOneDevices = [
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    mac: 'macOneUserOne' + users.one,
+    name: 'deviceNameOne' + users.one,
+    userUuid: users.one
+  },
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    mac: 'macTwoUserOne' + users.one,
+    name: 'deviceNameTwo' + users.one,
+    userUuid: users.one
+  }
+];
 
-function generateDevices(devicesQty: number) {
-  return {
-    forUser: (uuid: string) => {
-      return new Array(devicesQty).fill(0).map(() => {
-        return generateDevice(
-          randomBytes(6).toString('hex') + uuid, 
-          randomBytes(6).toString('hex') + uuid,
-          uuid
-        );
-      });
-    }
-  };
-}
-
+const userTwoDevices = [
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaac'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    mac: 'macOneUserTwo' + users.two,
+    name: 'deviceNameOne' + users.two,
+    userUuid: users.two
+  },
+  {
+    _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    mac: 'macTwoUserTwo' + users.two,
+    name: 'deviceNameTwo' + users.two,
+    userUuid: users.two
+  }
+];
 
 const devices: Required<Omit<DeviceDocument, 'id'>>[] = [
-  ...generateDevices(2).forUser(users.one),
-  ...generateDevices(4).forUser(users.two)
+  ...userOneDevices,
+  ...userTwoDevices
 ];
 
 module.exports = devices;
