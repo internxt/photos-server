@@ -1,43 +1,60 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 import { Device, DeviceId } from '../../models/Device';
-import { obtainDevice, obtainUserDevices, removeDevice, saveDevice } from './usecase';
-import { NotFoundError } from '../errors/NotFoundError';
+import { DevicesUsecase } from './usecase';
+import { CreateDeviceType } from './schemas';
+import { NotFoundError } from '../errors/http/NotFound';
+import { AuthorizedUser } from '../../middleware/auth/jwt';
 
-export async function getDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {  
-  const device = await obtainDevice(req.params.id);
+export class DevicesController {
+  private usecase: DevicesUsecase;
 
-  if (!device) {
-    throw new NotFoundError('Device');
+  constructor(usecase: DevicesUsecase) {
+    this.usecase = usecase;
   }
 
-  rep.send(device);
-}
-
-export async function getDeviceByUserId(req: FastifyRequest<{ Params: { userId: string } }>, rep: FastifyReply) {
-  const devices = await obtainUserDevices(req.params.userId);
-
-  if (!devices || devices.length === 0) {
-    throw new NotFoundError('Devices');
-  }
+  async getDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {  
+    const user = req.user as AuthorizedUser;
+    const device = await this.usecase.obtainDevice(req.params.id);
   
-  rep.send(devices);
-}
+    if (!device) {
+      throw new NotFoundError({ resource: 'Device' });
+    }
+  
+    if (device.userUuid !== user.payload.uuid) {
+      return rep.status(403).send({ message: 'Forbidden' });
+    }
+  
+    rep.send(device);
+  }
 
-type PostDeviceBody = { 
-  Body: { 
-    device: Device,
-  } 
-};
+  async postDevice(req: FastifyRequest<{ Body: CreateDeviceType }>, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+    const device: Omit<Device, 'id'> = req.body;
+  
+    if (device.userUuid !== user.payload.uuid) {
+      return rep.code(403).send({ message: 'Forbidden' });
+    }
+    
+    const createdDeviceId = await this.usecase.saveDevice(device);
+  
+    rep.code(201).send({ id: createdDeviceId });
+  }
 
-export async function postDevice(req: FastifyRequest<PostDeviceBody>, rep: FastifyReply) {
-  const createdDevice = await saveDevice(req.body.device);
+  async deleteDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+    const device = await this.usecase.obtainDevice(req.params.id);
 
-  rep.code(201).send(createdDevice);
-}
+    if (!device) {
+      throw new NotFoundError({ resource: 'Device' });
+    }
 
-export async function deleteDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
-  await removeDevice(req.params.id);
+    if (device.userUuid !== user.payload.uuid) {
+      return rep.status(403).send({ message: 'Forbidden' });
+    }
 
-  rep.send({ message: 'Deleted' });
+    await this.usecase.removeDevice(req.params.id);
+  
+    rep.send({ message: 'Deleted' });
+  }
 }

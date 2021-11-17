@@ -1,31 +1,28 @@
 
-import { Collection, Db, MongoClient, ObjectId } from 'mongodb';
-
-import { Device } from '../models/Device';
-import { Photo } from '../models/Photo';
+import { Collection, Db, MongoClient } from 'mongodb';
 
 import { Database } from './Database';
+import { DeviceDocument } from './mongo/models/Device';
+import { PhotoDocument } from './mongo/models/Photo';
 
 export const collections: {
   photos?: Collection,
   devices?: Collection
 } = {};
 
-export interface PhotoDocument extends Photo {
-  _id?: ObjectId
-}
-
-export interface DeviceDocument extends Device {
-  _id?: ObjectId
-}
-
 export class MongoDB implements Database {
   private uri: string;
   private db: Db | null;
+  private client: MongoClient;
 
   constructor(uri: string) {
     this.uri = uri;
     this.db = null;
+    this.client = new MongoClient(this.uri);
+  }
+
+  static buildURI(host: string, port: number, dbName: string) {
+    return `mongodb://${host}:${port}/${dbName}`;
   }
 
   get URI() {
@@ -33,30 +30,25 @@ export class MongoDB implements Database {
   }
 
   async connect(): Promise<MongoDB> {
-    const client = new MongoClient(this.uri);
+    await this.client.connect();
 
-    await client.connect();
-
-    this.db = client.db(process.env.DB_NAME);
-
-    this.initializeCollections();
+    this.db = this.client.db(process.env.DB_NAME);
 
     return this;
   }
 
-  initializeCollections() {
+  getCollections() {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
 
-    const photosCollection: Collection = this.db.collection('photos');
-    const devicesCollection: Collection = this.db.collection('devices');
-
-    collections.devices = devicesCollection;
-    collections.photos = photosCollection;
+    return {
+      photos: this.db.collection<PhotoDocument>('photos'),
+      devices: this.db.collection<DeviceDocument>('devices')
+    };
   }
 
   disconnect(): Promise<void> {
-    return Promise.resolve();
+    return this.client.close();
   }
 }

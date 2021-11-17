@@ -1,0 +1,27 @@
+name: run-tests
+on:
+  pull_request:
+    branches:
+      - "master"
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+    env:
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Start MongoDB
+        run: docker run -p 27017:27017 -d mongo
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+      - name: Lint & Test
+        run: yarn && yarn run lint && yarn run test

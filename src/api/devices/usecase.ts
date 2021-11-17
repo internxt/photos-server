@@ -1,24 +1,22 @@
-import { Device, DeviceId } from "../../models/Device";
+import { Repository } from '../../core/Repository';
+import { Device, DeviceId } from '../../models/Device';
 
-import { create, getById, getByUserId, deleteById, deleteOne } from "./repository";
+export class DevicesUsecase {
+  private repository: Repository<Device>;
 
-export function obtainUserDevices(userId: string): Promise<Device[] | null> {
-  return getByUserId(userId);
-}
-
-export function obtainDevice(deviceId: DeviceId): Promise<Device | null> {
-  return getById(deviceId);
-}
-
-export function saveDevice(device: Device): Promise<unknown> {
-  return create(device);
-}
-
-type RemoveDeviceRef = DeviceId | Device;
-export function removeDevice(deleteRef: RemoveDeviceRef): Promise<any> {
-  if (typeof deleteRef === 'string') {
-    return deleteById(deleteRef);
+  constructor(repo: Repository<Device>) {
+    this.repository = repo;
   }
-  return deleteOne(deleteRef);
-}
 
+  obtainDevice(deviceId: DeviceId): Promise<Device | null> {
+    return this.repository.getById(deviceId);
+  }
+
+  saveDevice(device: Omit<Device, 'id'>): Promise<DeviceId> {
+    return this.repository.create(device);
+  }
+
+  removeDevice(deviceId: string): Promise<void> {
+    return this.repository.deleteById(deviceId);
+  }
+}
