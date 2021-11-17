@@ -15,6 +15,8 @@ import { FastifyRouter } from './api/router';
 import { DevicesController } from './api/devices/controller';
 import { DevicesUsecase } from './api/devices/usecase';
 import { DevicesRepository } from './api/devices/repository';
+import { PhotoDocument } from './database/mongo/models/Photo';
+import { DeviceDocument } from './database/mongo/models/Device';
 
 config();
 
@@ -32,7 +34,7 @@ export interface StopManager {
   dbInstance: Database
 }
 
-function getPhotosRouter(photosCollection: Collection): FastifyRouter {
+function getPhotosRouter(photosCollection: Collection<PhotoDocument>): FastifyRouter {
   const photosRepository = new PhotosRepository(photosCollection);
   const photosUsecase = new PhotosUsecase(photosRepository);
   const photosController = new PhotosController(photosUsecase);
@@ -40,7 +42,7 @@ function getPhotosRouter(photosCollection: Collection): FastifyRouter {
   return buildPhotosRouter(photosController);
 }
 
-function getDevicesRouter(devicesCollection: Collection): FastifyRouter {
+function getDevicesRouter(devicesCollection: Collection<DeviceDocument>): FastifyRouter {
   const devicesRepository = new DevicesRepository(devicesCollection);
   const devicesUsecase = new DevicesUsecase(devicesRepository);
   const devicesController = new DevicesController(devicesUsecase);
