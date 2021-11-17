@@ -5,7 +5,7 @@ import { CreateDeviceType, CreateDeviceSchema } from './schemas';
 export const buildRouter = (controller: DevicesController): FastifyRouter => {
   return {
     handler: (server, opts, done) => {
-      server.get('/:id', { preValidation: server.authenticate }, controller.getDeviceById);
+      server.get('/:id', { preValidation: server.authenticate }, controller.getDeviceById.bind(controller));
       server.post<{ Body: CreateDeviceType }>(
         '/', 
         { 
@@ -14,9 +14,9 @@ export const buildRouter = (controller: DevicesController): FastifyRouter => {
             body: CreateDeviceSchema 
           }
         }, 
-        controller.postDevice
+        controller.postDevice.bind(controller)
       );
-      server.delete('/:id', { preValidation: server.authenticate }, controller.deleteDeviceById);
+      server.delete('/:id', { preValidation: server.authenticate }, controller.deleteDeviceById.bind(controller));
   
       done();
     },

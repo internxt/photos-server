@@ -5,7 +5,7 @@ import { CreatePhotoType, CreatePhotoSchema } from './schemas';
 export const buildRouter = (controller: PhotosController): FastifyRouter => {
   return {
     handler: (server, opts, done) => {
-      server.get('/:id', { preValidation: server.authenticate }, controller.getPhotoById);
+      server.get('/:id', { preValidation: server.authenticate }, controller.getPhotoById.bind(controller));
       server.post<{ Body: CreatePhotoType }>(
         '/', 
         { 
@@ -14,9 +14,9 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
             body: CreatePhotoSchema 
           } 
         }, 
-        controller.postPhoto
+        controller.postPhoto.bind(controller)
       );
-      server.delete('/:id', { preValidation: server.authenticate }, controller.deletePhotoById);
+      server.delete('/:id', { preValidation: server.authenticate }, controller.deletePhotoById.bind(controller));
   
       done();
     },
