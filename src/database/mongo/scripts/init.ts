@@ -18,7 +18,6 @@ async function init() {
     const adminDb = new Db(mongoClient, 'admin').admin();
     const db = mongoClient.db(process.env.DB_NAME);
     const availableDatabases = await adminDb.listDatabases();
-    console.log(availableDatabases);
     const photosDbExists = availableDatabases.databases.find(d => d.name === 'photos');
 
     if (!photosDbExists) {
