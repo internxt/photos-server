@@ -1,60 +1,7 @@
 {
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "env": {
-        "es6": true,
-        "browser": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "@typescript-eslint/no-unused-vars": [
-            "warn", 
-            { 
-              "argsIgnorePattern": "^_",
-              "varsIgnorePattern": "^_",
-              "caughtErrorsIgnorePattern": "^_"
-            }
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ],
-        "comma-dangle": [
-            "error",
-            "never"
-        ],
-        "max-len": [
-            "error",
-            {
-                "code": 150,
-                "ignoreComments": true
-            }
-        ],
-        "no-undef": "off",
-        "@typescript-eslint/no-var-requires": "off",
-        "no-param-reassign": "off",
-        "arrow-body-style": "off",
-        "no-unused-expressions": "off",
-        "no-async-promise-executor": "error",
-        "no-console": [
-            "error"
-        ]
-    }
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": "@internxt/eslint-config-internxt"
 }

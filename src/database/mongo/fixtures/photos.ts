@@ -2,16 +2,10 @@ import { ObjectId } from 'mongodb';
 
 import { PhotoDocument } from '../models/Photo';
 import { users } from '../users';
-import { DeviceDocument } from '../models/Device';
 
-const devices: Required<DeviceDocument>[] = require('./devices');
-
-const [
-  userOneDeviceOne, 
-  _, 
-  userTwoDeviceOne,
-  userTwoDeviceTwo
-] = devices;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const devices = require('./devices');
+const [userOneDeviceOne, , userTwoDeviceOne, userTwoDeviceTwo] = devices;
 
 const userOnePhotos: Required<PhotoDocument>[] = [
   {
@@ -26,7 +20,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     size: 10,
     type: 'jpg',
     userUuid: users.one,
-    width: 10
+    width: 10,
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
@@ -40,8 +34,8 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     size: 10,
     type: 'jpg',
     userUuid: users.one,
-    width: 10
-  }
+    width: 10,
+  },
 ];
 
 const userTwoPhotos: Required<PhotoDocument>[] = [
@@ -57,7 +51,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     size: 10,
     type: 'jpg',
     userUuid: users.one,
-    width: 10
+    width: 10,
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
@@ -71,10 +65,10 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     size: 10,
     type: 'jpg',
     userUuid: users.one,
-    width: 10
-  }
+    width: 10,
+  },
 ];
 
-const photos: Required<PhotoDocument>[] = [ ...userOnePhotos, ...userTwoPhotos ];
+const photos: Required<PhotoDocument>[] = [...userOnePhotos, ...userTwoPhotos];
 
 module.exports = photos;

@@ -1,4 +1,3 @@
-
 import { Collection, Db, MongoClient } from 'mongodb';
 
 import { Database } from './Database';
@@ -6,8 +5,8 @@ import { DeviceDocument } from './mongo/models/Device';
 import { PhotoDocument } from './mongo/models/Photo';
 
 export const collections: {
-  photos?: Collection,
-  devices?: Collection
+  photos?: Collection;
+  devices?: Collection;
 } = {};
 
 export class MongoDB implements Database {
@@ -44,7 +43,7 @@ export class MongoDB implements Database {
 
     return {
       photos: this.db.collection<PhotoDocument>('photos'),
-      devices: this.db.collection<DeviceDocument>('devices')
+      devices: this.db.collection<DeviceDocument>('devices'),
     };
   }
 

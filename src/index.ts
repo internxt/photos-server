@@ -22,16 +22,16 @@ config();
 
 interface ServerConfig {
   logger: {
-    level?: string,
-    enabled: boolean
-  },
+    level?: string;
+    enabled: boolean;
+  };
   port?: number;
 }
 
 export interface StopManager {
-  stop: () => Promise<void>
-  serverInstance: FastifyInstance
-  dbInstance: Database
+  stop: () => Promise<void>;
+  serverInstance: FastifyInstance;
+  dbInstance: Database;
 }
 
 function getPhotosRouter(photosCollection: Collection<PhotoDocument>): FastifyRouter {
@@ -57,7 +57,7 @@ function generateStopHandler(fastify: FastifyInstance, db: Database): StopManage
       await fastify.close();
     },
     serverInstance: fastify,
-    dbInstance: db
+    dbInstance: db,
   };
 }
 
@@ -65,30 +65,30 @@ async function start(config: ServerConfig): Promise<StopManager> {
   let fastify: FastifyInstance;
 
   if (config.logger.level) {
-    fastify = Fastify({ logger: {
-      level: config.logger.level
-    }});
+    fastify = Fastify({
+      logger: {
+        level: config.logger.level,
+      },
+    });
   } else {
     fastify = Fastify({ logger: config.logger.enabled });
   }
 
   if (
-    !process.env.DATABASE_URI && (
-      !process.env.DATABASE_HOST || 
-      !process.env.DATABASE_PORT || 
-      !process.env.DATABASE_NAME
-    )
+    !process.env.DATABASE_URI &&
+    (!process.env.DATABASE_HOST || !process.env.DATABASE_PORT || !process.env.DATABASE_NAME)
   ) {
     fastify.log.error('Missing env vars');
     process.exit(1);
   }
-  
+
   const database = new MongoDB(
-    (process.env.DATABASE_URI ?? MongoDB.buildURI(
-      process.env.DATABASE_HOST as string, 
-      parseInt(process.env.DATABASE_PORT as string), 
-      process.env.DATABASE_NAME as string
-    ))
+    process.env.DATABASE_URI ??
+      MongoDB.buildURI(
+        process.env.DATABASE_HOST as string,
+        parseInt(process.env.DATABASE_PORT as string),
+        process.env.DATABASE_NAME as string,
+      ),
   );
 
   await database.connect();
