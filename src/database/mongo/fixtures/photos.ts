@@ -3,7 +3,8 @@ import { ObjectId } from 'mongodb';
 import { PhotoDocument } from '../models/Photo';
 import { users } from '../users';
 
-import devices from './devices';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const devices = require('./devices');
 const [userOneDeviceOne, , userTwoDeviceOne, userTwoDeviceTwo] = devices;
 
 const userOnePhotos: Required<PhotoDocument>[] = [

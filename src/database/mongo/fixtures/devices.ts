@@ -43,4 +43,4 @@ const userTwoDevices = [
 
 const devices: Required<DeviceDocument>[] = [...userOneDevices, ...userTwoDevices];
 
-export default devices;
+module.exports = devices;
