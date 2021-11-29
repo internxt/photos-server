@@ -7,15 +7,11 @@ import { ServerResponse, IncomingMessage, Server } from 'http';
  * Used only for providing autocomplete to the auth decorator
  */
 declare module 'fastify' {
-  export interface FastifyInstance<
-    HttpServer = Server,
-    HttpRequest = IncomingMessage,
-    HttpResponse = ServerResponse
-  > {
+  export interface FastifyInstance<HttpServer = Server, HttpRequest = IncomingMessage, HttpResponse = ServerResponse> {
     authenticate(): any;
     jwt: {
-      sign: (params: { payload: any }) => string
-    }
+      sign: (params: { payload: any }) => string;
+    };
     // someOtherDecorator() => void..
   }
 }

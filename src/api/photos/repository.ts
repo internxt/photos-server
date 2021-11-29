@@ -16,16 +16,15 @@ export class PhotosRepository implements Repository<Photo> {
   }
 
   getById(id: PhotoId): Promise<Photo | null> {
-    return this.collection.findOne<PhotoDocument>({ _id: toObjectId(id) })
-      .then((doc): Photo | null => {
-        if (!doc || !doc._id) {
-          return null;
-        }
+    return this.collection.findOne<PhotoDocument>({ _id: toObjectId(id) }).then((doc): Photo | null => {
+      if (!doc || !doc._id) {
+        return null;
+      }
 
-        const id = doc._id.toString();
+      const id = doc._id.toString();
 
-        return { ...doc, id };
-      });
+      return { ...doc, id };
+    });
   }
 
   get(where: Filter<PhotoDocument>) {
@@ -53,12 +52,10 @@ export class PhotosRepository implements Repository<Photo> {
     const document: Omit<PhotoDocument, '_id'> = {
       ...photo,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
-  
-    return this.collection
-      .insertOne(document)
-      .then(({ insertedId }) => insertedId.toString());
+
+    return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
   }
 
   update() {
@@ -78,7 +75,7 @@ export class PhotosRepository implements Repository<Photo> {
       .find<Photo>({
         userUuid,
         $gte: { createdAt: from },
-        $lte: { createdAt: to }
+        $lte: { createdAt: to },
       })
       .skip(offset)
       .limit(limit);

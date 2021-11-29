@@ -18,7 +18,7 @@ async function init() {
     const adminDb = new Db(mongoClient, 'admin').admin();
     const db = mongoClient.db(process.env.DB_NAME);
     const availableDatabases = await adminDb.listDatabases();
-    const photosDbExists = availableDatabases.databases.find(d => d.name === 'photos');
+    const photosDbExists = availableDatabases.databases.find((d) => d.name === 'photos');
 
     if (!photosDbExists) {
       console.log('Photos database does not exist. Initializing');
@@ -28,8 +28,8 @@ async function init() {
 
     const collections = await db.listCollections().toArray();
 
-    const photosCollectionExists = collections.find(c => c.name === 'photos');
-    const devicesCollectionExists = collections.find(c => c.name === 'devices');
+    const photosCollectionExists = collections.find((c) => c.name === 'photos');
+    const devicesCollectionExists = collections.find((c) => c.name === 'devices');
 
     if (!photosCollectionExists) {
       await db.createCollection('photos');
@@ -47,7 +47,6 @@ async function init() {
     await fixtures.unload();
     await fixtures.load();
     await fixtures.disconnect();
-
   } catch (err) {
     await mongoClient.close();
 
@@ -57,12 +56,15 @@ async function init() {
 
 let exitCode = 0;
 
-init().then(() => {
-  console.log('* Database initialized');
-}).catch((err) => {
-  exitCode = 1;
-  console.error('Error initializing database: %s', err.message);
-  console.log(err);
-}).finally(() => {
-  process.exit(exitCode);
-});
+init()
+  .then(() => {
+    console.log('* Database initialized');
+  })
+  .catch((err) => {
+    exitCode = 1;
+    console.error('Error initializing database: %s', err.message);
+    console.log(err);
+  })
+  .finally(() => {
+    process.exit(exitCode);
+  });

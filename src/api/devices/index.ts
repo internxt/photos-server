@@ -7,19 +7,19 @@ export const buildRouter = (controller: DevicesController): FastifyRouter => {
     handler: (server, opts, done) => {
       server.get('/:id', { preValidation: server.authenticate }, controller.getDeviceById.bind(controller));
       server.post<{ Body: CreateDeviceType }>(
-        '/', 
-        { 
-          preValidation: server.authenticate, 
+        '/',
+        {
+          preValidation: server.authenticate,
           schema: {
-            body: CreateDeviceSchema 
-          }
-        }, 
-        controller.postDevice.bind(controller)
+            body: CreateDeviceSchema,
+          },
+        },
+        controller.postDevice.bind(controller),
       );
       server.delete('/:id', { preValidation: server.authenticate }, controller.deleteDeviceById.bind(controller));
-  
+
       done();
     },
-    prefix: 'devices'
+    prefix: 'devices',
   };
 };
