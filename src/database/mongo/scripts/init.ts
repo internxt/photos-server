@@ -43,7 +43,7 @@ async function init() {
 
     const fixtures = new Fixtures({ dir: './src/database/mongo/fixtures' });
 
-    await fixtures.connect(uri);
+    await fixtures.connect(uri, {}, process.env.DATABASE_NAME);
     await fixtures.unload();
     await fixtures.load();
     await fixtures.disconnect();
