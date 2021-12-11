@@ -3,5 +3,5 @@ export interface Device {
   id: DeviceId;
   mac: string;
   name: string;
-  userUuid: string;
+  userId: string;
 }
