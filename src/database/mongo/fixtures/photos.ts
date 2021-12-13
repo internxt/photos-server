@@ -19,7 +19,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     previewId: 'photoOnePreviewId',
     size: 10,
     type: 'jpg',
-    userId: userOne._id.toString(),
+    userId: userOne._id,
     width: 10,
   },
   {
@@ -33,7 +33,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     previewId: 'photoTwoPreviewId',
     size: 10,
     type: 'jpg',
-    userId: userOne._id.toString(),
+    userId: userOne._id,
     width: 10,
   },
 ];
@@ -50,7 +50,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     previewId: 'photoThirdPreviewId',
     size: 10,
     type: 'jpg',
-    userId: userTwo._id.toString(),
+    userId: userTwo._id,
     width: 10,
   },
   {
@@ -64,7 +64,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     previewId: 'photoFourthPreviewId',
     size: 10,
     type: 'jpg',
-    userId: userTwo._id.toString(),
+    userId: userTwo._id,
     width: 10,
   },
 ];
