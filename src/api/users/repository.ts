@@ -8,6 +8,13 @@ function toObjectId(id: string) {
   return new ObjectId(id);
 }
 
+function mongoDocToModel(doc: UserDocument): User {
+  const id = doc._id.toString();
+
+  return { ...doc, id };
+}
+
+
 export class UsersRepository implements Repository<User> {
   private collection: Collection<UserDocument>;
 
@@ -27,11 +34,22 @@ export class UsersRepository implements Repository<User> {
     });
   }
 
+  getByUuid(uuid: string): Promise<User | null> {
+    return this.collection.findOne({ uuid })
+      .then((doc: UserDocument | null) => {
+        if (!doc || !doc._id) {
+          return null;
+        }
+
+        return mongoDocToModel(doc);
+      });
+  }
+
   get(where: Filter<UserDocument>) {
     return Promise.reject('Not implemented yet');
   }
 
-  create(user: User): Promise<UserId> {
+  create(user: Omit<User, 'id'>): Promise<UserId> {
     const document: Omit<UserDocument, '_id'> = {
       ...user,
       createdAt: new Date(),

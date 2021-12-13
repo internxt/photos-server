@@ -7,6 +7,14 @@ import { Device, DeviceId } from '../../models/Device';
 function toObjectId(id: string) {
   return new ObjectId(id);
 }
+
+function mongoDocToModel(doc: DeviceDocument): Device {
+  const id = doc._id.toString();
+  const userId = doc.userId.toString();
+
+  return { ...doc, id, userId };
+}
+
 export class DevicesRepository implements Repository<Device> {
   private collection: Collection<DeviceDocument>;
 
@@ -20,9 +28,7 @@ export class DevicesRepository implements Repository<Device> {
         return null;
       }
 
-      const id = doc._id.toString();
-
-      return { ...doc, id };
+      return mongoDocToModel(doc);
     });
   }
 
@@ -31,17 +37,14 @@ export class DevicesRepository implements Repository<Device> {
       .find<DeviceDocument>(where)
       .toArray()
       .then((results) => {
-        return results.map((result): Device => {
-          const id = result._id.toString();
-
-          return { ...result, id };
-        });
+        return results.map(mongoDocToModel);
       });
   }
 
   create(device: Omit<Device, 'id'>): Promise<DeviceId> {
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
+      userId: toObjectId(device.userId),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
