@@ -1,4 +1,5 @@
 import { DeviceId } from './Device';
+import { UserId } from './User';
 
 export type PhotoType = string;
 export type FileId = string;
@@ -14,5 +15,5 @@ export interface Photo {
   fileId: FileId;
   previewId: FileId;
   deviceId: DeviceId;
-  userId: string;
+  userId: UserId;
 }
