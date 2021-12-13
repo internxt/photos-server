@@ -51,7 +51,7 @@ describe('Users repository', () => {
 
   it('create()', async () => {
     const received = await repository.create({
-      id: 'aaaaaaaaaaaaaaaaaaaaaaac',
+      uuid: v4(),
       bucketId: ''
     });
 
