@@ -1,7 +1,6 @@
 import { Environment } from '@internxt/inxt-js';
-import { EnvironmentConfig } from '@internxt/inxt-js/build/api';
 
-import { Device, DeviceId } from '../../models/Device';
+import { Device } from '../../models/Device';
 import { User, UserId } from '../../models/User';
 import { DevicesRepository } from '../devices/repository';
 import { UsersRepository } from './repository';
