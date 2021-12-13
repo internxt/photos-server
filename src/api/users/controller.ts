@@ -1,4 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { Environment } from '@internxt/inxt-js';
 
 import { UsersUsecase } from './usecase';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
@@ -31,11 +32,20 @@ export class UsersController {
     rep.send(requestedUser);
   }
 
-  async postUser(req: FastifyRequest<{ Body: InitUserType }>, rep: FastifyReply) {
+  async postUser(req: FastifyRequest<{ Headers: {
+    'internxt-network-pass': string,
+    'internxt-network-user': string
+  }, Body: InitUserType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
     const deviceInfo: Omit<Device, 'id' | 'userId'> = req.body;
 
-    const createdUserId = await this.usecase.initUser(user.payload.uuid, deviceInfo);
+    const network = new Environment({
+      bridgeUrl: process.env.NETWORK_URL,
+      bridgePass: req.headers['internxt-network-pass'].toString(),
+      bridgeUser: req.headers['internxt-network-user'].toString()
+    });
+
+    const createdUserId = await this.usecase.initUser(user.payload.uuid, network, deviceInfo);
 
     rep.code(201).send({ id: createdUserId });
   }
