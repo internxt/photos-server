@@ -61,7 +61,7 @@ describe('Devices usecases', () => {
     const received = await repository.create({
       mac: alreadyExistentDevice.mac,
       name: alreadyExistentDevice.name,
-      userId: alreadyExistentDevice.userId
+      userId: alreadyExistentDevice.userId.toString()
     });
 
     expect(received).not.toBeNull();
