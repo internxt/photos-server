@@ -59,14 +59,14 @@ describe('Photos usecases', () => {
   it('create()', async () => {
     const alreadyExistentPhoto = { ...photos[0] };
     const received = await repository.create({
-      deviceId: alreadyExistentPhoto.deviceId,
+      deviceId: alreadyExistentPhoto.deviceId.toString(),
       fileId: alreadyExistentPhoto.fileId,
       heigth: alreadyExistentPhoto.heigth,
       name: alreadyExistentPhoto.name,
       previewId: alreadyExistentPhoto.previewId,
       size: alreadyExistentPhoto.size,
       type: alreadyExistentPhoto.type,
-      userId: alreadyExistentPhoto.userId,
+      userId: alreadyExistentPhoto.userId.toString(),
       width: alreadyExistentPhoto.width
     });
 
