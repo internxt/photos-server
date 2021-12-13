@@ -14,5 +14,5 @@ export interface Photo {
   fileId: FileId;
   previewId: FileId;
   deviceId: DeviceId;
-  userUuid: string;
+  userId: string;
 }

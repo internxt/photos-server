@@ -21,7 +21,7 @@ describe('Devices usecases', () => {
       id: deviceId,
       mac: '',
       name: '',
-      userUuid: ''
+      userId: ''
     };
 
     stub(repository, 'getById').returns(Promise.resolve(deviceDoc));
@@ -37,7 +37,7 @@ describe('Devices usecases', () => {
       id: expected,
       mac: '',
       name: '',
-      userUuid: ''
+      userId: ''
     };
 
     stub(repository, 'create').returns(Promise.resolve(expected));
@@ -53,7 +53,7 @@ describe('Devices usecases', () => {
       id: '',
       mac: '',
       name: '',
-      userUuid: ''
+      userId: ''
     };
 
     stub(repository, 'getById').returns(Promise.resolve(deviceDoc));

@@ -9,7 +9,7 @@ export const CreatePhotoSchema = Type.Object({
   fileId: Type.String(),
   previewId: Type.String(),
   deviceId: Type.String(),
-  userUuid: Type.String(),
+  userId: Type.String(),
 });
 
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;

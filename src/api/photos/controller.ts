@@ -21,7 +21,7 @@ export class PhotosController {
       throw new NotFoundError({ resource: 'Photo' });
     }
 
-    if (photo.userUuid !== user.payload.uuid) {
+    if (photo.userId !== user.payload.uuid) {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 
@@ -36,7 +36,7 @@ export class PhotosController {
       return rep.code(400).send({ message: 'Invalid params' });
     }
 
-    if (photo.userUuid !== user.payload.uuid) {
+    if (photo.userId !== user.payload.uuid) {
       return rep.code(403).send({ message: 'Forbidden' });
     }
 
@@ -54,7 +54,7 @@ export class PhotosController {
       throw new NotFoundError({ resource: 'Photo' });
     }
 
-    if (photo.userUuid !== user.payload.uuid) {
+    if (photo.userId !== user.payload.uuid) {
       return rep.send(403).send({ message: 'Forbidden' });
     }
 

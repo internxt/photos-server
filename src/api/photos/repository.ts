@@ -40,12 +40,12 @@ export class PhotosRepository implements Repository<Photo> {
       });
   }
 
-  getCountByDate(userUuid: string, from: Date, to: Date, limit: number, offset: number): Promise<number> {
-    return this.getByDateRangesRaw(userUuid, from, to, limit, offset).count();
+  getCountByDate(userId: string, from: Date, to: Date, limit: number, offset: number): Promise<number> {
+    return this.getByDateRangesRaw(userId, from, to, limit, offset).count();
   }
 
-  getByDateRanges(userUuid: string, from: Date, to: Date, limit: number, offset: number): Promise<Photo[]> {
-    return this.getByDateRangesRaw(userUuid, from, to, limit, offset).toArray();
+  getByDateRanges(userId: string, from: Date, to: Date, limit: number, offset: number): Promise<Photo[]> {
+    return this.getByDateRangesRaw(userId, from, to, limit, offset).toArray();
   }
 
   create(photo: Omit<Photo, 'id'>): Promise<PhotoId> {
@@ -70,10 +70,10 @@ export class PhotosRepository implements Repository<Photo> {
     await this.collection.deleteMany(where);
   }
 
-  private getByDateRangesRaw(userUuid: string, from: Date, to: Date, limit: number, offset: number): FindCursor<Photo> {
+  private getByDateRangesRaw(userId: string, from: Date, to: Date, limit: number, offset: number): FindCursor<Photo> {
     return this.collection
       .find<Photo>({
-        userUuid,
+        userId,
         $gte: { createdAt: from },
         $lte: { createdAt: to },
       })
