@@ -18,8 +18,12 @@ export class UsersUsecase {
     return this.usersRepository.getById(id);
   }
 
-  async isUserAlreadyInitialized(userId: UserId) {
-    const maybeUser: User | null = await this.obtainUserById(userId);
+  obtainUserByUuid(uuid: string) {
+    return this.usersRepository.get({ uuid });
+  }
+
+  async isUserAlreadyInitialized(uuid: string) {
+    const maybeUser: User | null = await this.obtainUserByUuid(uuid);
     
     return !!maybeUser;
   }
