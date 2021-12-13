@@ -1,10 +1,8 @@
 import { ObjectId } from 'mongodb';
 
 import { DeviceDocument } from '../models/Device';
-import { UserDocument } from '../models/User';
+import { users } from './users';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const users: UserDocument[] = require('./users');
 const [userOne, userTwo] = users;
 
 const userOneDevices: DeviceDocument[] = [
@@ -45,6 +43,4 @@ const userTwoDevices: DeviceDocument[] = [
   },
 ];
 
-const devices: Required<DeviceDocument>[] = [...userOneDevices, ...userTwoDevices];
-
-module.exports = devices;
+export const devices: Required<DeviceDocument>[] = [...userOneDevices, ...userTwoDevices];

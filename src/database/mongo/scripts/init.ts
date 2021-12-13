@@ -41,7 +41,7 @@ async function init() {
 
     await mongoClient.close();
 
-    const fixtures = new Fixtures({ dir: './src/database/mongo/fixtures' });
+    const fixtures = new Fixtures({ dir: './src/database/mongo/fixtures/exports' });
 
     await fixtures.connect(uri, {}, process.env.DATABASE_NAME);
     await fixtures.unload();
