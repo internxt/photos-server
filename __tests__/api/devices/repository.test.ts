@@ -2,10 +2,8 @@ import { ObjectId } from 'mongodb';
 import { config } from 'dotenv';
 
 import { DevicesRepository } from '../../../src/api/devices/repository';
-import { DeviceDocument } from '../../../src/database/mongo/models/Device';
 import { MongoDB } from '../../../src/database/MongoDB';
-
-const devices: Required<Omit<DeviceDocument, 'id'>>[] = require('../../../src/database/mongo/fixtures/devices');
+import { devices } from '../../../src/database/mongo/fixtures/devices';
 
 config();
 

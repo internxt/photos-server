@@ -3,10 +3,7 @@ import { config } from 'dotenv';
 
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
-import { PhotoDocument } from '../../../src/database/mongo/models/Photo';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const photos: Required<PhotoDocument>[] = require('../../../src/database/mongo/fixtures/photos');
+import { photos } from '../../../src/database/mongo/fixtures/photos';
 
 config();
 

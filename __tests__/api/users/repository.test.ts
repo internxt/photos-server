@@ -1,11 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { config } from 'dotenv';
+import { v4 } from 'uuid';
 
 import { UsersRepository } from '../../../src/api/users/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
-import { UserDocument } from '../../../src/database/mongo/models/User';
-
-const users: Required<UserDocument>[] = require('../../../src/database/mongo/fixtures/users');
+import { users } from '../../../src/database/mongo/fixtures/users';
 
 config();
 
