@@ -39,10 +39,10 @@ jobs:
         uses: steebchen/kubectl@v2.0.0
         with: # defaults to latest kubectl binary version
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          command: set image --record deployment/photos-server photos-server=${{ secrets.DOCKERHUB_USERNAME }}/photos-server:${{ github.sha }}
+          command: set image --record deployment/photos-server-dp photos-server=${{ secrets.DOCKERHUB_USERNAME }}/photos-server:${{ github.sha }}
       - name: Verify deployment
         uses: steebchen/kubectl@v2.0.0
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
           version: v1.20.2 # specify kubectl binary version explicitly
-          command: rollout status deployment/photos-server
+          command: rollout status deployment/photos-server-dp
