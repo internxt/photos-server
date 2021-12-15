@@ -4,8 +4,11 @@ on:
     branches:
       - 'master'
 jobs:
-  run-tests:
+  test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     environment:
       name: development
     env:
