@@ -21,7 +21,7 @@ export class DevicesController {
       throw new NotFoundError({ resource: 'Device' });
     }
 
-    if (device.userUuid !== user.payload.uuid) {
+    if (device.userId !== user.payload.uuid) {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 
@@ -32,7 +32,7 @@ export class DevicesController {
     const user = req.user as AuthorizedUser;
     const device: Omit<Device, 'id'> = req.body;
 
-    if (device.userUuid !== user.payload.uuid) {
+    if (device.userId !== user.payload.uuid) {
       return rep.code(403).send({ message: 'Forbidden' });
     }
 
@@ -49,7 +49,7 @@ export class DevicesController {
       throw new NotFoundError({ resource: 'Device' });
     }
 
-    if (device.userUuid !== user.payload.uuid) {
+    if (device.userId !== user.payload.uuid) {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 

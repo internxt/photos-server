@@ -2,10 +2,8 @@ import { ObjectId } from 'mongodb';
 import { config } from 'dotenv';
 
 import { DevicesRepository } from '../../../src/api/devices/repository';
-import { DeviceDocument } from '../../../src/database/mongo/models/Device';
 import { MongoDB } from '../../../src/database/MongoDB';
-
-const devices: Required<Omit<DeviceDocument, 'id'>>[] = require('../../../src/database/mongo/fixtures/devices');
+import { devices } from '../../../src/database/mongo/fixtures/devices';
 
 config();
 
@@ -36,7 +34,11 @@ afterAll((finish) => {
 describe('Devices usecases', () => {
   it('getById()', async () => {
     const alreadyExistentDevice = { ...devices[0] };
-    const expected = { ...alreadyExistentDevice, id: alreadyExistentDevice._id.toString() };
+    const expected = { 
+      ...alreadyExistentDevice, 
+      id: alreadyExistentDevice._id.toString(),
+      userId: alreadyExistentDevice.userId.toString()
+    };
     const device = await repository.getById(alreadyExistentDevice._id.toString());
 
     expect(device).not.toBeNull();
@@ -48,7 +50,11 @@ describe('Devices usecases', () => {
 
   it('get()', async () => {
     const alreadyExistentDevice = { ...devices[0] };
-    const expected = { ...alreadyExistentDevice, id: alreadyExistentDevice._id.toString() };
+    const expected = { 
+      ...alreadyExistentDevice, 
+      id: alreadyExistentDevice._id.toString(),
+      userId: alreadyExistentDevice.userId.toString()
+    };
     const [device] = await repository.get({ mac: alreadyExistentDevice.mac });
 
     expect(device).not.toBeNull();
@@ -63,7 +69,7 @@ describe('Devices usecases', () => {
     const received = await repository.create({
       mac: alreadyExistentDevice.mac,
       name: alreadyExistentDevice.name,
-      userUuid: alreadyExistentDevice.userUuid
+      userId: alreadyExistentDevice.userId.toString()
     });
 
     expect(received).not.toBeNull();

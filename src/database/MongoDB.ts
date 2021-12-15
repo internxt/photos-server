@@ -1,13 +1,9 @@
-import { Collection, Db, MongoClient } from 'mongodb';
+import { Db, MongoClient } from 'mongodb';
 
 import { Database } from './Database';
 import { DeviceDocument } from './mongo/models/Device';
 import { PhotoDocument } from './mongo/models/Photo';
-
-export const collections: {
-  photos?: Collection;
-  devices?: Collection;
-} = {};
+import { UserDocument } from './mongo/models/User';
 
 export class MongoDB implements Database {
   private uri: string;
@@ -31,7 +27,7 @@ export class MongoDB implements Database {
   async connect(): Promise<MongoDB> {
     await this.client.connect();
 
-    this.db = this.client.db(process.env.DB_NAME);
+    this.db = this.client.db(process.env.DATABASE_NAME);
 
     return this;
   }
@@ -44,6 +40,7 @@ export class MongoDB implements Database {
     return {
       photos: this.db.collection<PhotoDocument>('photos'),
       devices: this.db.collection<DeviceDocument>('devices'),
+      users: this.db.collection<UserDocument>('users')
     };
   }
 

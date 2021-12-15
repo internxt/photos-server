@@ -3,9 +3,7 @@ import { config } from 'dotenv';
 
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
-import { PhotoDocument } from '../../../src/database/mongo/models/Photo';
-
-const photos: Required<PhotoDocument>[] = require('../../../src/database/mongo/fixtures/photos');
+import { photos } from '../../../src/database/mongo/fixtures/photos';
 
 config();
 
@@ -36,7 +34,12 @@ afterAll((finish) => {
 describe('Photos usecases', () => {
   it('getById()', async () => {
     const alreadyExistentPhoto = { ...photos[0] };
-    const expected = { ...alreadyExistentPhoto, id: alreadyExistentPhoto._id.toString() };
+    const expected = { 
+      ...alreadyExistentPhoto, 
+      id: alreadyExistentPhoto._id.toString(),
+      deviceId: alreadyExistentPhoto.deviceId.toString(),
+      userId: alreadyExistentPhoto.userId.toString()
+    };
     const photo = await repository.getById(alreadyExistentPhoto._id.toString());
 
     expect(photo).not.toBeNull();
@@ -48,7 +51,12 @@ describe('Photos usecases', () => {
 
   it('get()', async () => {
     const alreadyExistentPhoto = { ...photos[0] };
-    const expected = { ...alreadyExistentPhoto, id: alreadyExistentPhoto._id.toString() };
+    const expected = { 
+      ...alreadyExistentPhoto, 
+      id: alreadyExistentPhoto._id.toString(),
+      deviceId: alreadyExistentPhoto.deviceId.toString(),
+      userId: alreadyExistentPhoto.userId.toString()
+    };
     const [photo] = await repository.get({ name: alreadyExistentPhoto.name });
 
     expect(photo).not.toBeNull();
@@ -61,14 +69,14 @@ describe('Photos usecases', () => {
   it('create()', async () => {
     const alreadyExistentPhoto = { ...photos[0] };
     const received = await repository.create({
-      deviceId: alreadyExistentPhoto.deviceId,
+      deviceId: alreadyExistentPhoto.deviceId.toString(),
       fileId: alreadyExistentPhoto.fileId,
       heigth: alreadyExistentPhoto.heigth,
       name: alreadyExistentPhoto.name,
       previewId: alreadyExistentPhoto.previewId,
       size: alreadyExistentPhoto.size,
       type: alreadyExistentPhoto.type,
-      userUuid: alreadyExistentPhoto.userUuid,
+      userId: alreadyExistentPhoto.userId.toString(),
       width: alreadyExistentPhoto.width
     });
 

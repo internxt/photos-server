@@ -4,8 +4,11 @@ on:
     branches:
       - 'master'
 jobs:
-  run-tests:
+  test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     environment:
       name: development
     env:
@@ -14,19 +17,18 @@ jobs:
       matrix:
         node-version: [16.x]
     steps:
+      - name: Start MongoDB
+        run: docker run -p 27017:27017 -d mongo
+
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://npm.pkg.github.com/
-      - name: Start MongoDB
-        run: docker run -p 27017:27017 -d mongo
-      - name: Check Out Repo
-        uses: actions/checkout@v2
-      - name: Yarn install
-        run: yarn
+
+      - run: yarn
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Lint & Test
-        run: yarn run lint && yarn run test
+          NODE_AUTH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - run: yarn run lint && yarn run test

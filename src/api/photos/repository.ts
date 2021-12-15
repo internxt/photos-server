@@ -8,6 +8,14 @@ function toObjectId(id: string) {
   return new ObjectId(id);
 }
 
+function mongoDocToModel(doc: PhotoDocument): Photo {
+  const id = doc._id.toString();
+  const userId = doc.userId.toString();
+  const deviceId = doc.deviceId.toString();
+
+  return { ...doc, id, deviceId, userId };
+}
+
 export class PhotosRepository implements Repository<Photo> {
   private collection: Collection<PhotoDocument>;
 
@@ -21,9 +29,7 @@ export class PhotosRepository implements Repository<Photo> {
         return null;
       }
 
-      const id = doc._id.toString();
-
-      return { ...doc, id };
+      return mongoDocToModel(doc);
     });
   }
 
@@ -32,25 +38,23 @@ export class PhotosRepository implements Repository<Photo> {
       .find<PhotoDocument>(where)
       .toArray()
       .then((results) => {
-        return results.map((result): Photo => {
-          const id = result._id.toString();
-
-          return { ...result, id };
-        });
+        return results.map(mongoDocToModel);
       });
   }
 
-  getCountByDate(userUuid: string, from: Date, to: Date, limit: number, offset: number): Promise<number> {
-    return this.getByDateRangesRaw(userUuid, from, to, limit, offset).count();
+  getCountByDate(userId: string, from: Date, to: Date, limit: number, offset: number): Promise<number> {
+    return this.getByDateRangesRaw(userId, from, to, limit, offset).count();
   }
 
-  getByDateRanges(userUuid: string, from: Date, to: Date, limit: number, offset: number): Promise<Photo[]> {
-    return this.getByDateRangesRaw(userUuid, from, to, limit, offset).toArray();
+  getByDateRanges(userId: string, from: Date, to: Date, limit: number, offset: number): Promise<Photo[]> {
+    return this.getByDateRangesRaw(userId, from, to, limit, offset).toArray();
   }
 
   create(photo: Omit<Photo, 'id'>): Promise<PhotoId> {
     const document: Omit<PhotoDocument, '_id'> = {
       ...photo,
+      userId: toObjectId(photo.userId),
+      deviceId: toObjectId(photo.deviceId),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -70,10 +74,10 @@ export class PhotosRepository implements Repository<Photo> {
     await this.collection.deleteMany(where);
   }
 
-  private getByDateRangesRaw(userUuid: string, from: Date, to: Date, limit: number, offset: number): FindCursor<Photo> {
+  private getByDateRangesRaw(userId: string, from: Date, to: Date, limit: number, offset: number): FindCursor<Photo> {
     return this.collection
       .find<Photo>({
-        userUuid,
+        userId: toObjectId(userId),
         $gte: { createdAt: from },
         $lte: { createdAt: to },
       })
