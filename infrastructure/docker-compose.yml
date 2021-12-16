@@ -5,20 +5,6 @@ networks:
     name: internxt
 
 services:
-  photos-server:
-    build:
-      context: ../
-      dockerfile: infrastructure/development.Dockerfile
-    container_name: photos-server
-    ports:
-      - 3000:8001
-    depends_on:
-      - photos-mongo
-    volumes:
-      - .:/usr/app
-    networks:
-      - internxt
-
   photos-mongo:
     image: mongo:latest
     container_name: photos-mongo
@@ -28,7 +14,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: photos
     volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
       - 27018:27017
     networks:

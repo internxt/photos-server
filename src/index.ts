@@ -103,7 +103,7 @@ async function start(config: ServerConfig): Promise<StopManager> {
   fastify.register(photosRouter.handler, { prefix: photosRouter.prefix });
   fastify.log.info('Connected to database');
 
-  await fastify.listen(config.port || 8000);
+  await fastify.listen(config.port || 8000, '0.0.0.0');
 
   return generateStopHandler(fastify, database);
 }
