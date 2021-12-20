@@ -1,10 +1,17 @@
-import { Db, MongoClient } from 'mongodb';
+import { Collection, Db, MongoClient } from 'mongodb';
 
 import { Database } from './Database';
 import { DeviceDocument } from './mongo/models/Device';
 import { PhotoDocument } from './mongo/models/Photo';
 import { UserDocument } from './mongo/models/User';
 import { ShareDocument } from './mongo/models/Share';
+
+export interface MongoDBCollections {
+  photos: Collection<PhotoDocument>,
+  devices: Collection<DeviceDocument>,
+  users: Collection<UserDocument>,
+  shares: Collection<ShareDocument>,
+};
 
 export class MongoDB implements Database {
   private uri: string;
@@ -33,7 +40,7 @@ export class MongoDB implements Database {
     return this;
   }
 
-  getCollections() {
+  getCollections(): MongoDBCollections {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
