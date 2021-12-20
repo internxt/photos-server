@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
+import { UsecaseError } from '../../core/Usecase';
 
-import { Photo, PhotoId } from '../../models/Photo';
+import { Photo, PhotoId, PhotoStatus } from '../../models/Photo';
+import { UsersRepository } from '../users/repository';
 import { PhotosRepository } from './repository';
 
 export class PhotoNotFoundError extends UsecaseError {
@@ -10,14 +12,32 @@ export class PhotoNotFoundError extends UsecaseError {
 }
 
 export class PhotosUsecase {
-  private repository: PhotosRepository;
+  private photosRepository: PhotosRepository;
+  private usersRepository: UsersRepository;
 
-  constructor(repository: PhotosRepository) {
-    this.repository = repository;
+  constructor(photosRepository: PhotosRepository, usersRepository: UsersRepository) {
+    this.photosRepository = photosRepository;
+    this.usersRepository = usersRepository;
+  }
+
+  async obtainPhotos(userUuid: string, from: Date, limit: number, skip: number, status: PhotoStatus) {
+    const user = await this.usersRepository.getByUuid(userUuid);
+
+    if (!user) {
+      throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
+    }
+    
+    return this.photosRepository.getByUserIdAndAfterDate(
+      user.id, 
+      from,
+      { status }, 
+      skip, 
+      limit
+    );
   }
 
   obtainPhotoById(id: PhotoId) {
-    return this.repository.getById(id);
+    return this.photosRepository.getById(id);
   }
 
   obtainPhotosByDay(userId: string, year: number, month: number, day: number, limit: number, offset: number) {
@@ -27,7 +47,7 @@ export class PhotosUsecase {
 
     const to = dayjs(from).add(1, 'day').subtract(1, 'second');
 
-    return this.repository.getByDateRanges(userId, from, to.toDate(), limit, offset);
+    return this.photosRepository.getByDateRanges(userId, from, to.toDate(), limit, offset);
   }
 
   obtainPhotosCountByDay(userId: string, year: number, month: number, day: number, limit: number, offset: number) {
@@ -37,7 +57,7 @@ export class PhotosUsecase {
 
     const to = dayjs(from).add(1, 'day').subtract(1, 'second');
 
-    return this.repository.getByDateRanges(userId, from, to.toDate(), limit, offset);
+    return this.photosRepository.getByDateRanges(userId, from, to.toDate(), limit, offset);
   }
 
   obtainPhotosCountByMonth(userId: string, year: number, month: number, limit: number, offset: number) {
@@ -47,7 +67,7 @@ export class PhotosUsecase {
 
     const to = dayjs(from).add(1, 'month').subtract(1, 'second');
 
-    return this.repository.getCountByDate(userId, from, to.toDate(), limit, offset);
+    return this.photosRepository.getCountByDate(userId, from, to.toDate(), limit, offset);
   }
 
   obtainPhotosCountByYear(userId: string, year: number, limit: number, offset: number) {
@@ -57,14 +77,14 @@ export class PhotosUsecase {
 
     const to = dayjs(from).add(1, 'year').subtract(1, 'second');
 
-    return this.repository.getCountByDate(userId, from, to.toDate(), limit, offset);
+    return this.photosRepository.getCountByDate(userId, from, to.toDate(), limit, offset);
   }
 
   savePhoto(photo: Omit<Photo, 'id'>): Promise<PhotoId> {
-    return this.repository.create(photo);
+    return this.photosRepository.create(photo);
   }
 
   removePhoto(photoId: PhotoId): Promise<void> {
-    return this.repository.deleteById(photoId);
+    return this.photosRepository.deleteById(photoId);
   }
 }
