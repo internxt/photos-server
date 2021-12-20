@@ -1,22 +1,27 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import { Collection } from 'mongodb';
 import { config } from 'dotenv';
 
 import decorateWithAuth from './middleware/auth/jwt';
 
 import { buildRouter as buildDevicesRouter } from './api/devices';
-import { Database } from './database/Database';
-import { MongoDB } from './database/MongoDB';
 import { buildRouter as buildPhotosRouter } from './api/photos';
+import { buildRouter as buildSharesRouter } from './api/shares';
+
+import { Database } from './database/Database';
+import { MongoDB, MongoDBCollections } from './database/MongoDB';
+
 import { PhotosController } from './api/photos/controller';
 import { PhotosUsecase } from './api/photos/usecase';
 import { PhotosRepository } from './api/photos/repository';
-import { FastifyRouter } from './api/router';
 import { DevicesController } from './api/devices/controller';
 import { DevicesUsecase } from './api/devices/usecase';
 import { DevicesRepository } from './api/devices/repository';
-import { PhotoDocument } from './database/mongo/models/Photo';
-import { DeviceDocument } from './database/mongo/models/Device';
+import { UsersRepository } from './api/users/repository';
+import { UsersUsecase } from './api/users/usecase';
+import { SharesRepository } from './api/shares/repository';
+import { SharesUsecase } from './api/shares/usecase';
+import { UsersController } from './api/users/controller';
+import { SharesController } from './api/shares/controller';
 
 config();
 
@@ -34,20 +39,31 @@ export interface StopManager {
   dbInstance: Database;
 }
 
-function getPhotosRouter(photosCollection: Collection<PhotoDocument>): FastifyRouter {
-  const photosRepository = new PhotosRepository(photosCollection);
-  const photosUsecase = new PhotosUsecase(photosRepository);
-  const photosController = new PhotosController(photosUsecase);
+async function initHTTPServer(collections: MongoDBCollections, fastify: FastifyInstance) {
+  const devicesRepository = new DevicesRepository(collections.devices);
+  const usersRepository = new UsersRepository(collections.users);
+  const photosRepository = new PhotosRepository(collections.photos);
+  const sharesRepository = new SharesRepository(collections.shares);
 
-  return buildPhotosRouter(photosController);
-}
-
-function getDevicesRouter(devicesCollection: Collection<DeviceDocument>): FastifyRouter {
-  const devicesRepository = new DevicesRepository(devicesCollection);
   const devicesUsecase = new DevicesUsecase(devicesRepository);
-  const devicesController = new DevicesController(devicesUsecase);
+  const usersUsecase = new UsersUsecase(usersRepository, devicesRepository);
+  const photosUsecase = new PhotosUsecase(photosRepository, usersRepository);
+  const sharesUsecase = new SharesUsecase(sharesRepository, photosRepository);
 
-  return buildDevicesRouter(devicesController);
+  const devicesController = new DevicesController(devicesUsecase);
+  const usersController = new UsersController(usersUsecase);
+  const photosController = new PhotosController(photosUsecase);
+  const sharesController = new SharesController(sharesUsecase);
+
+  const devicesRouter = buildDevicesRouter(devicesController);
+  const photosRouter = buildPhotosRouter(photosController);
+  const sharesRouter = buildSharesRouter(sharesController);
+
+  await decorateWithAuth(fastify, {});
+
+  fastify.register(devicesRouter.handler, { prefix: devicesRouter.prefix });
+  fastify.register(photosRouter.handler, { prefix: photosRouter.prefix });
+  fastify.register(sharesRouter.handler, { prefix: sharesRouter.prefix });
 }
 
 function generateStopHandler(fastify: FastifyInstance, db: Database): StopManager {
@@ -92,17 +108,9 @@ async function start(config: ServerConfig): Promise<StopManager> {
   );
 
   await database.connect();
-  const collections = database.getCollections();
+  await initHTTPServer(database.getCollections(), fastify);
 
-  const photosRouter = getPhotosRouter(collections.photos);
-  const devicesRouter = getDevicesRouter(collections.devices);
-
-  await decorateWithAuth(fastify, {});
-
-  fastify.register(devicesRouter.handler, { prefix: devicesRouter.prefix });
-  fastify.register(photosRouter.handler, { prefix: photosRouter.prefix });
   fastify.log.info('Connected to database');
-
   await fastify.listen(config.port || 8000, '0.0.0.0');
 
   return generateStopHandler(fastify, database);
