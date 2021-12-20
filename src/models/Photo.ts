@@ -5,6 +5,12 @@ export type PhotoType = string;
 export type FileId = string;
 export type PhotoId = string;
 
+export enum PhotoStatus {
+  Exists = 'EXISTS',
+  Trashed = 'TRASHED',
+  Deleted = 'DELETED'
+}
+
 export interface Photo {
   id: PhotoId;
   name: string;
@@ -16,4 +22,5 @@ export interface Photo {
   previewId: FileId;
   deviceId: DeviceId;
   userId: UserId;
+  status: PhotoStatus
 }
