@@ -1,22 +1,9 @@
-import { PhotoId } from '../../models/Photo';
+import { UsecaseError } from '../../core/Usecase';
 import { Share, ShareId } from '../../models/Share';
 import { UserId } from '../../models/User';
+import { PhotoNotFoundError } from '../photos/usecase';
 import { PhotosRepository } from '../photos/repository';
 import { SharesRepository } from './repository';
-
-// TODO: Move to core/usecase.ts
-class UsecaseError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-// TODO: Move to photos domain
-export class PhotoNotFoundError extends UsecaseError {
-  constructor(photoId: PhotoId) {
-    super('Photo ' + photoId + ' not found');
-  }
-}
 
 export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {

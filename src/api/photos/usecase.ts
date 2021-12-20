@@ -3,6 +3,12 @@ import dayjs from 'dayjs';
 import { Photo, PhotoId } from '../../models/Photo';
 import { PhotosRepository } from './repository';
 
+export class PhotoNotFoundError extends UsecaseError {
+  constructor(photoId: PhotoId) {
+    super('Photo ' + photoId + ' not found');
+  }
+}
+
 export class PhotosUsecase {
   private repository: PhotosRepository;
 
