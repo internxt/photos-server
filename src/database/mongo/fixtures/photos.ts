@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { PhotoStatus } from '../../../models/Photo';
 
 import { PhotoDocument } from '../models/Photo';
 import { devices } from './devices';
@@ -21,6 +22,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     type: 'jpg',
     userId: userOne._id,
     width: 10,
+    status: PhotoStatus.Exists
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
@@ -35,6 +37,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     type: 'jpg',
     userId: userOne._id,
     width: 10,
+    status: PhotoStatus.Exists
   },
 ];
 
@@ -52,6 +55,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     type: 'jpg',
     userId: userTwo._id,
     width: 10,
+    status: PhotoStatus.Exists
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
@@ -66,6 +70,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     type: 'jpg',
     userId: userTwo._id,
     width: 10,
+    status: PhotoStatus.Exists
   },
 ];
 
