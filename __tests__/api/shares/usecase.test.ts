@@ -1,10 +1,11 @@
 import { Collection } from 'mongodb';
 import { stub } from 'sinon';
 import { PhotosRepository } from '../../../src/api/photos/repository';
+import { PhotoNotFoundError } from '../../../src/api/photos/usecase';
 
 import { SharesRepository } from '../../../src/api/shares/repository';
-import { PhotoNotFoundError, ShareNotOwnedByThisUserError, SharesUsecase } from '../../../src/api/shares/usecase';
-import { Photo } from '../../../src/models/Photo';
+import { ShareNotOwnedByThisUserError, SharesUsecase } from '../../../src/api/shares/usecase';
+import { Photo, PhotoStatus } from '../../../src/models/Photo';
 import { Share } from '../../../src/models/Share';
 
 const SharesCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
@@ -74,7 +75,8 @@ describe('Shares usecases', () => {
         size: 400,
         type: 'jpg',
         userId,
-        width: 40
+        width: 40,
+        status: PhotoStatus.Exists
       };
 
       const shareToCreate: Omit<Share, 'id'> = {
@@ -127,7 +129,8 @@ describe('Shares usecases', () => {
         size: 400,
         type: 'jpg',
         userId,
-        width: 40
+        width: 40,
+        status: PhotoStatus.Exists
       };
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
@@ -160,7 +163,8 @@ describe('Shares usecases', () => {
         size: 400,
         type: 'jpg',
         userId,
-        width: 40
+        width: 40,
+        status: PhotoStatus.Exists
       };
 
       const shareToUpdate: Share = {
@@ -213,7 +217,8 @@ describe('Shares usecases', () => {
         size: 400,
         type: 'jpg',
         userId,
-        width: 40
+        width: 40,
+        status: PhotoStatus.Exists
       };
       const shareToUpdate: Share = {
         id: shareId,

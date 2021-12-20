@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
 import { photos } from '../../../src/database/mongo/fixtures/photos';
+import { PhotoStatus } from '../../../src/models/Photo';
 
 config();
 
@@ -77,7 +78,8 @@ describe('Photos usecases', () => {
       size: alreadyExistentPhoto.size,
       type: alreadyExistentPhoto.type,
       userId: alreadyExistentPhoto.userId.toString(),
-      width: alreadyExistentPhoto.width
+      width: alreadyExistentPhoto.width,
+      status: PhotoStatus.Exists
     });
 
     expect(received).not.toBeNull();
