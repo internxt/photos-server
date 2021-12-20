@@ -1,8 +1,7 @@
-import { Collection, Document, Filter, FindCursor, ObjectId } from 'mongodb';
+import { Collection, Document, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { ShareDocument } from '../../database/mongo/models/Share';
-import { Photo, PhotoId } from '../../models/Photo';
 import { Share, ShareId } from '../../models/Share';
 
 function toObjectId(id: string) {

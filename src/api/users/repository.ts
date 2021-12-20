@@ -45,6 +45,7 @@ export class UsersRepository implements Repository<User> {
       });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   get(where: Filter<UserDocument>) {
     return Promise.reject('Not implemented yet');
   }
@@ -67,6 +68,7 @@ export class UsersRepository implements Repository<User> {
     await this.collection.deleteOne({ _id: toObjectId(id) });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async delete(where: Filter<Document>) {
     return Promise.reject('Not implemented yet');
   }

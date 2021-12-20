@@ -12,13 +12,13 @@ class UsecaseError extends Error {
 }
 
 // TODO: Move to photos domain
-class PhotoNotFoundError extends UsecaseError {
+export class PhotoNotFoundError extends UsecaseError {
   constructor(photoId: PhotoId) {
     super('Photo ' + photoId + ' not found');
   }
 }
 
-class ShareNotOwnedByThisUserError extends UsecaseError {
+export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {
     super('Photo to share is not owned by the user ' + userId);
   }

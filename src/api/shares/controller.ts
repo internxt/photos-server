@@ -3,7 +3,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { SharesUsecase } from './usecase';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
-import { Share, ShareId } from '../../models/Share';
+import { Share } from '../../models/Share';
 import { CreateShareType, UpdateShareType } from './schemas';
 
 export class SharesController {
