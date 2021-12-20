@@ -4,6 +4,7 @@ import { Database } from './Database';
 import { DeviceDocument } from './mongo/models/Device';
 import { PhotoDocument } from './mongo/models/Photo';
 import { UserDocument } from './mongo/models/User';
+import { ShareDocument } from './mongo/models/Share';
 
 export class MongoDB implements Database {
   private uri: string;
@@ -40,7 +41,8 @@ export class MongoDB implements Database {
     return {
       photos: this.db.collection<PhotoDocument>('photos'),
       devices: this.db.collection<DeviceDocument>('devices'),
-      users: this.db.collection<UserDocument>('users')
+      users: this.db.collection<UserDocument>('users'),
+      shares: this.db.collection<ShareDocument>('shares'),
     };
   }
 
