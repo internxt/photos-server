@@ -3,6 +3,7 @@ import { Collection, Document, Filter, FindCursor, ObjectId } from 'mongodb';
 import { Repository } from '../../core/Repository';
 import { PhotoDocument } from '../../database/mongo/models/Photo';
 import { Photo, PhotoId } from '../../models/Photo';
+import { UserId } from '../../models/User';
 
 function toObjectId(id: string) {
   return new ObjectId(id);
@@ -36,6 +37,29 @@ export class PhotosRepository implements Repository<Photo> {
   get(where: Filter<PhotoDocument>) {
     return this.collection
       .find<PhotoDocument>(where)
+      .toArray()
+      .then((results) => {
+        return results.map(mongoDocToModel);
+      });
+  }
+
+  getByUserIdAndAfterDate(
+    userId: UserId, 
+    from: Date,
+    where: Filter<PhotoDocument>,
+    skip: number, 
+    limit: number
+  ): Promise<Photo[]> {
+    return this.collection
+      .find<PhotoDocument>({ 
+        ...where,
+        userId: toObjectId(userId),
+        createdAt: {
+          $gte: from
+        }
+      })
+      .skip(skip)
+      .limit(limit)
       .toArray()
       .then((results) => {
         return results.map(mongoDocToModel);
