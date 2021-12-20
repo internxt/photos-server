@@ -1,8 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import dayjs from 'dayjs';
 
-import { Photo, PhotoId } from '../../models/Photo';
+import { Photo, PhotoId, PhotoStatus } from '../../models/Photo';
 import { PhotosUsecase } from './usecase';
-import { CreatePhotoType } from './schemas';
+import { CreatePhotoType, GetPhotosQueryParamsType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 
@@ -11,6 +12,28 @@ export class PhotosController {
 
   constructor(usecase: PhotosUsecase) {
     this.usecase = usecase;
+  }
+
+  async getPhotos(
+    req: FastifyRequest<{ Querystring: GetPhotosQueryParamsType }>,
+    rep: FastifyReply  
+  ) {
+    const user = req.user as AuthorizedUser;
+    const { from, limit, skip, status } = req.query;
+
+    if (!dayjs(from).isValid()) {
+      rep.status(400).send({ message: 'Bad "from" date format' });
+    }
+
+    const photos = await this.usecase.obtainPhotos(
+      user.payload.uuid, 
+      new Date(from),
+      limit, 
+      skip, 
+      status
+    );
+
+    rep.send(photos);
   }
 
   async getPhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
@@ -30,7 +53,7 @@ export class PhotosController {
 
   async postPhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const photo: Omit<Photo, 'id'> = req.body;
+    const photo: Omit<Photo, 'id' | 'status'> = req.body;
 
     if (photo.width <= 0 || photo.heigth <= 0 || photo.size <= 0) {
       return rep.code(400).send({ message: 'Invalid params' });
@@ -40,7 +63,7 @@ export class PhotosController {
       return rep.code(403).send({ message: 'Forbidden' });
     }
 
-    const createdDeviceId = await this.usecase.savePhoto(photo);
+    const createdDeviceId = await this.usecase.savePhoto({ ...photo, status: PhotoStatus.Exists });
 
     rep.code(201).send({ id: createdDeviceId });
   }
