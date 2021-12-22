@@ -6,12 +6,13 @@
   "author": "Internxt",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "dev": "nodemon index.ts",
     "db:init": "ts-node ./src/database/mongo/scripts/init.ts",
+    "lint": "eslint ./src",
     "test": "yarn db:init && yarn jest --detectOpenHandles",
-    "build": "tsc",
     "coverage": "jest --coverage",
-    "lint": "eslint ./src"
+    "build": "tsc"
   },
   "dependencies": {
     "@internxt/inxt-js": "^1.2.16",
@@ -35,6 +36,7 @@
     "@typescript-eslint/parser": "^5.3.1",
     "axios": "^0.24.0",
     "eslint": "^8.2.0",
+    "husky": "^7.0.4",
     "jest": "^27.3.1",
     "node-mongodb-fixtures": "^3.2.9",
     "nodemon": "^2.0.15",
