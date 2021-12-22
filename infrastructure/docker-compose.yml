@@ -29,7 +29,7 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
     ports:
-      - 8081:8081
+      - 8082:8082 # 8081 is already in use by react-native runner
     depends_on:
       - photos-mongo
     networks:

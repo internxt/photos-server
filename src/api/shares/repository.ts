@@ -62,8 +62,8 @@ export class SharesRepository implements Repository<Share> {
     return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
   }
 
-  update(share: Share) {
-    return this.collection.updateOne({ _id: toObjectId(share.id) }, share).then(() => share);
+  update(id: string, merge: Omit<Partial<Share>, 'id'>) {
+    return this.collection.updateOne({ _id: toObjectId(id) }, merge).then(() => undefined);
   }
 
   async deleteById(id: ShareId) {

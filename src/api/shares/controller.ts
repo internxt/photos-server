@@ -3,7 +3,6 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { SharesUsecase } from './usecase';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
-import { Share } from '../../models/Share';
 import { CreateShareType, UpdateShareType } from './schemas';
 
 export class SharesController {
@@ -25,24 +24,21 @@ export class SharesController {
 
   async postShare(req: FastifyRequest<{ Body: CreateShareType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const share: Omit<Share, 'id'> = req.body;
-
-    const createdShareId = await this.usecase.saveShare(user.payload.uuid, share);
+    const createdShareId = await this.usecase.createShare(user.payload.uuid, req.body);
 
     rep.code(201).send({ id: createdShareId });
   }
 
   async putShare(req: FastifyRequest<{ Body: UpdateShareType }>, rep: FastifyReply) {
-    const shareUpdated: Share = req.body;
-    const user = req.user as AuthorizedUser;
-    const share = await this.usecase.obtainShareById(shareUpdated.id);
+    const {id, views} = req.body;
+    const share = await this.usecase.obtainShareById(id);
 
     if (!share) {
-      throw new NotFoundError({ resource: 'Photo' });
+      throw new NotFoundError({ resource: 'Share' });
     }
 
-    await this.usecase.updateShare(user.payload.uuid, share);
+    await this.usecase.updateShare(id, { views });
 
-    rep.send({ message: 'Deleted' });
+    rep.send({ message: 'Share updated' });
   }
 }
