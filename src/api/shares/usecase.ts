@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { PhotoId } from '../../models/Photo';
 import { Share, ShareId } from '../../models/Share';
 import { UserId } from '../../models/User';
@@ -18,6 +19,11 @@ export class PhotoNotFoundError extends UsecaseError {
   }
 }
 
+export class ShareNotFoundError extends UsecaseError {
+  constructor(shareId: string) {
+    super('Share ' + shareId + ' not found');
+  }
+}
 export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {
     super('Photo to share is not owned by the user ' + userId);
@@ -41,7 +47,8 @@ export class SharesUsecase {
     return this.repository.getByToken(token);
   }
 
-  async saveShare(userId: UserId, share: Omit<Share, 'id'>): Promise<ShareId> {
+  async createShare(userId: UserId, data: Omit<Share, 'id' | 'token'>): Promise<ShareId> {
+    const share: Omit<Share, 'id'> = { ...data, token: crypto.randomBytes(10).toString('hex')};
     const photo = await this.photosRepository.getById(share.photoId);
 
     if (!photo) {
@@ -55,16 +62,7 @@ export class SharesUsecase {
     return this.repository.create(share);
   }
 
-  async updateShare(userId: UserId, share: Share): Promise<Share> {
-    const photo = await this.photosRepository.getById(share.photoId);
-
-    if (!photo) {
-      throw new PhotoNotFoundError(share.photoId);
-    }
-
-    if (photo.userId !== userId) {
-      throw new ShareNotOwnedByThisUserError(userId);
-    }
-    return this.repository.update(share);
+  updateShare(shareId: string, merge: Pick<Share, 'views'>): Promise<void> {
+    return this.repository.update(shareId, merge);
   }
 }
