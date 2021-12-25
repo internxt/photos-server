@@ -63,9 +63,9 @@ export class PhotosController {
       return rep.code(403).send({ message: 'Forbidden' });
     }
 
-    const createdDeviceId = await this.usecase.savePhoto({ ...photo, status: PhotoStatus.Exists });
+    const createdPhoto = await this.usecase.savePhoto({ ...photo, status: PhotoStatus.Exists });
 
-    rep.code(201).send({ id: createdDeviceId });
+    rep.code(201).send(createdPhoto);
   }
 
   async deletePhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {

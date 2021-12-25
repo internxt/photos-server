@@ -51,7 +51,7 @@ export class SharesRepository implements Repository<Share> {
       });
   }
 
-  create(share: Omit<Share, 'id'>): Promise<ShareId> {
+  create(share: Omit<Share, 'id'>): Promise<Share> {
     const document: Omit<ShareDocument, '_id'> = {
       ...share,
       photoId: toObjectId(share.photoId),
@@ -59,7 +59,12 @@ export class SharesRepository implements Repository<Share> {
       updatedAt: new Date(),
     };
 
-    return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
+    return this.collection.insertOne(document).then(({ insertedId }) => {
+      return {
+        id: insertedId.toString(),
+        ...share
+      };
+    });
   }
 
   update(share: Share) {

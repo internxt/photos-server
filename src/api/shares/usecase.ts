@@ -28,7 +28,7 @@ export class SharesUsecase {
     return this.repository.getByToken(token);
   }
 
-  async saveShare(userId: UserId, share: Omit<Share, 'id'>): Promise<ShareId> {
+  async saveShare(userId: UserId, share: Omit<Share, 'id'>): Promise<Share> {
     const photo = await this.photosRepository.getById(share.photoId);
 
     if (!photo) {

@@ -80,7 +80,7 @@ export class PhotosUsecase {
     return this.photosRepository.getCountByDate(userId, from, to.toDate(), limit, offset);
   }
 
-  savePhoto(photo: Omit<Photo, 'id'>): Promise<PhotoId> {
+  savePhoto(photo: Omit<Photo, 'id'>): Promise<Photo> {
     return this.photosRepository.create(photo);
   }
 

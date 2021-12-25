@@ -27,9 +27,9 @@ export class SharesController {
     const user = req.user as AuthorizedUser;
     const share: Omit<Share, 'id'> = req.body;
 
-    const createdShareId = await this.usecase.saveShare(user.payload.uuid, share);
+    const createdShare = await this.usecase.saveShare(user.payload.uuid, share);
 
-    rep.code(201).send({ id: createdShareId });
+    rep.code(201).send(createdShare);
   }
 
   async putShare(req: FastifyRequest<{ Body: UpdateShareType }>, rep: FastifyReply) {

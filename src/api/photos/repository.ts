@@ -74,7 +74,7 @@ export class PhotosRepository implements Repository<Photo> {
     return this.getByDateRangesRaw(userId, from, to, limit, offset).toArray();
   }
 
-  create(photo: Omit<Photo, 'id'>): Promise<PhotoId> {
+  create(photo: Omit<Photo, 'id'>): Promise<Photo> {
     const document: Omit<PhotoDocument, '_id'> = {
       ...photo,
       userId: toObjectId(photo.userId),
@@ -83,7 +83,12 @@ export class PhotosRepository implements Repository<Photo> {
       updatedAt: new Date(),
     };
 
-    return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
+    return this.collection.insertOne(document).then(({ insertedId }) => {
+      return {
+        id: insertedId.toString(),
+        ...photo
+      };
+    });
   }
 
   update() {

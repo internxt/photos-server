@@ -31,34 +31,32 @@ export class UsersUsecase {
   async initUser(
     uuid: string, 
     network: Environment,
-    // config: Pick<EnvironmentConfig, 'bridgeUser' | 'bridgePass'>, 
     deviceInfo: Omit<Device, 'id' | 'userId'>
-  ): Promise<UserId> {
-    const userAlreadyExists = await this.isUserAlreadyInitialized(uuid);
+  ): Promise<User> {
+    const maybeUser: User | null = await this.obtainUserByUuid(uuid);
+    const userAlreadyExists = !!maybeUser;
 
     if (userAlreadyExists) {
-      throw new Error('User already exists');
+      return maybeUser;
     }
 
-    let userId: UserId = '';
+    let user: User | null = null;
     let bucketId = '';
-
-    // const network = new Environment({ ...config, bridgeUrl: process.env.NETWORK_URL });
 
     try {
       bucketId = await network.createBucket(`Photos-${uuid}`);
 
       const newUser: Omit<User, 'id'> = { uuid, bucketId };
-      userId = await this.usersRepository.create(newUser);
+      user = await this.usersRepository.create(newUser);
 
       // TODO: Does this device already exist? (look by name?? index name???)
-      const newDevice: Omit<Device, 'id'> = { ...deviceInfo, userId };
+      const newDevice: Omit<Device, 'id'> = { ...deviceInfo, userId: user.id };
       await this.devicesRepository.create(newDevice);
 
-      return userId;
+      return user;
     } catch (err) {
       const bucketWasInitialized = bucketId !== '';
-      const userWasInitialized = userId !== '';
+      const userWasInitialized = !!user;
 
       let finalErrorMessage = 'Error initializing user: ' + (err as Error).message;
 
@@ -66,7 +64,7 @@ export class UsersUsecase {
         const rollbackError = await this.rollbackUserInitialization(
           network,
           bucketId, 
-          userWasInitialized ? userId : null, 
+          userWasInitialized ? user!.id : null, 
         );
 
         if (rollbackError) {

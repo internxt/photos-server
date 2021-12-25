@@ -12,7 +12,7 @@ export class DevicesUsecase {
     return this.repository.getById(deviceId);
   }
 
-  saveDevice(device: Omit<Device, 'id'>): Promise<DeviceId> {
+  saveDevice(device: Omit<Device, 'id'>): Promise<Device> {
     return this.repository.create(device);
   }
 

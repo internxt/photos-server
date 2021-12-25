@@ -41,7 +41,7 @@ export class DevicesRepository implements Repository<Device> {
       });
   }
 
-  create(device: Omit<Device, 'id'>): Promise<DeviceId> {
+  create(device: Omit<Device, 'id'>): Promise<Device> {
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
       userId: toObjectId(device.userId),
@@ -49,7 +49,12 @@ export class DevicesRepository implements Repository<Device> {
       updatedAt: new Date(),
     };
 
-    return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
+    return this.collection.insertOne(document).then(({ insertedId }) => {
+      return { 
+        id: insertedId.toString(),
+        ...device
+      };
+    });
   }
 
   update() {
