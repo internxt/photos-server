@@ -6,6 +6,7 @@ import decorateWithAuth from './middleware/auth/jwt';
 import { buildRouter as buildDevicesRouter } from './api/devices';
 import { buildRouter as buildPhotosRouter } from './api/photos';
 import { buildRouter as buildSharesRouter } from './api/shares';
+import { buildRouter as buildUsersRouter } from './api/users';
 
 import { Database } from './database/Database';
 import { MongoDB, MongoDBCollections } from './database/MongoDB';
@@ -58,12 +59,14 @@ async function initHTTPServer(collections: MongoDBCollections, fastify: FastifyI
   const devicesRouter = buildDevicesRouter(devicesController);
   const photosRouter = buildPhotosRouter(photosController);
   const sharesRouter = buildSharesRouter(sharesController);
+  const usersRouter = buildUsersRouter(usersController);
 
   await decorateWithAuth(fastify, {});
 
   fastify.register(devicesRouter.handler, { prefix: devicesRouter.prefix });
   fastify.register(photosRouter.handler, { prefix: photosRouter.prefix });
   fastify.register(sharesRouter.handler, { prefix: sharesRouter.prefix });
+  fastify.register(usersRouter.handler, { prefix: usersRouter.prefix });
 }
 
 function generateStopHandler(fastify: FastifyInstance, db: Database): StopManager {
