@@ -51,7 +51,7 @@ async function initHTTPServer(collections: MongoDBCollections, fastify: FastifyI
   const photosUsecase = new PhotosUsecase(photosRepository, usersRepository);
   const sharesUsecase = new SharesUsecase(sharesRepository, photosRepository);
 
-  const devicesController = new DevicesController(devicesUsecase);
+  const devicesController = new DevicesController(devicesUsecase, usersUsecase);
   const usersController = new UsersController(usersUsecase);
   const photosController = new PhotosController(photosUsecase);
   const sharesController = new SharesController(sharesUsecase);
