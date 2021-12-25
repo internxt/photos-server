@@ -24,10 +24,6 @@ export class MongoDB implements Database {
     this.client = new MongoClient(this.uri);
   }
 
-  static buildURI(host: string, port: number, dbName: string) {
-    return `mongodb://${host}:${port}/${dbName}`;
-  }
-
   get URI() {
     return this.uri;
   }
