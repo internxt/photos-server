@@ -101,9 +101,9 @@ async function start(config: ServerConfig): Promise<StopManager> {
   const database = new MongoDB(process.env.DATABASE_URI);
 
   await database.connect();
-  await initHTTPServer(database.getCollections(), fastify);
-
   fastify.log.info('Connected to database');
+
+  await initHTTPServer(database.getCollections(), fastify);
   await fastify.listen(config.port || 8000, '0.0.0.0');
 
   return generateStopHandler(fastify, database);
