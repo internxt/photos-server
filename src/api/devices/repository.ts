@@ -41,6 +41,16 @@ export class DevicesRepository implements Repository<Device> {
       });
   }
 
+  getByMac(mac: string): Promise<Device | null> {
+    return this.collection.findOne<DeviceDocument>({ mac }).then((doc): Device | null => {
+      if (!doc || !doc._id) {
+        return null;
+      }
+
+      return mongoDocToModel(doc);
+    });
+  }
+
   create(device: Omit<Device, 'id'>): Promise<Device> {
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
