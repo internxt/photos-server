@@ -111,8 +111,8 @@ export class PhotosRepository implements Repository<Photo> {
     return this.collection
       .find<Photo>({
         userId: toObjectId(userId),
-        $gte: { createdAt: from },
-        $lte: { createdAt: to },
+        $gte: { creationDate: from },
+        $lte: { creationDate: to },
       })
       .skip(offset)
       .limit(limit);
