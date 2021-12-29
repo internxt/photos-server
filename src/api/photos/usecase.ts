@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { UsecaseError } from '../../core/Usecase';
 
-import { Photo, PhotoId, PhotoStatus } from '../../models/Photo';
+import { NewPhoto, Photo, PhotoId, PhotoStatus } from '../../models/Photo';
 import { UsersRepository } from '../users/repository';
 import { PhotosRepository } from './repository';
 
@@ -80,11 +80,28 @@ export class PhotosUsecase {
     return this.photosRepository.getCountByDate(userId, from, to.toDate(), limit, offset);
   }
 
-  savePhoto(photo: Omit<Photo, 'id'>): Promise<Photo> {
-    return this.photosRepository.create(photo);
+  savePhoto(photo: NewPhoto): Promise<Photo> {
+    const photoToCreate: Omit<Photo, 'id'> = {
+      ...photo,
+      status: PhotoStatus.Exists,
+      lastStatusChangeAt: new Date()
+    };
+
+    return this.photosRepository.create(photoToCreate);
   }
 
-  removePhoto(photoId: PhotoId): Promise<void> {
-    return this.photosRepository.deleteById(photoId);
+  async deletePhoto(photoId: string) {
+    return this.changePhotoStatus(photoId, PhotoStatus.Deleted);
+  }
+
+  async trashPhoto(photoId: string) {
+    return this.changePhotoStatus(photoId, PhotoStatus.Trashed);
+  }
+
+  private async changePhotoStatus(photoId: PhotoId, newStatus: PhotoStatus): Promise<void> {
+    await this.photosRepository.updateById(photoId, { 
+      status: newStatus,
+      lastStatusChangeAt: new Date()
+    });
   }
 }
