@@ -20,7 +20,7 @@ export class PhotosUsecase {
     this.usersRepository = usersRepository;
   }
 
-  async obtainPhotos(userUuid: string, from: Date, limit: number, skip: number, status: PhotoStatus) {
+  async obtainPhotos(userUuid: string, from: Date, limit: number, skip: number, status?: PhotoStatus) {
     const user = await this.usersRepository.getByUuid(userUuid);
 
     if (!user) {
@@ -30,7 +30,7 @@ export class PhotosUsecase {
     return this.photosRepository.getByUserIdAndAfterDate(
       user.id, 
       from,
-      { status }, 
+      status ? { status } : {}, 
       skip, 
       limit
     );
