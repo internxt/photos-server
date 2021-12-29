@@ -80,19 +80,23 @@ export class PhotosRepository implements Repository<Photo> {
       userId: toObjectId(photo.userId),
       deviceId: toObjectId(photo.deviceId),
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     };
 
     return this.collection.insertOne(document).then(({ insertedId }) => {
-      return {
-        id: insertedId.toString(),
-        ...photo
-      };
+      return { id: insertedId.toString(), ...photo };
     });
   }
 
   update() {
     return Promise.reject('Not implemented yet');
+  }
+
+  updateById(photoId: PhotoId, updatedPhoto: Partial<Photo>) {
+    return this.collection.updateOne({ _id: toObjectId(photoId) }, {
+      ...updatedPhoto,
+      updatedAt: new Date()
+    });
   }
 
   async deleteById(id: PhotoId) {
