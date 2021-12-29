@@ -15,14 +15,16 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     deviceId: userOneDeviceOne._id,
     fileId: 'photoOneFileId',
-    heigth: 10,
+    height: 10,
     name: 'photoOne',
     previewId: 'photoOnePreviewId',
     size: 10,
     type: 'jpg',
     userId: userOne._id,
     width: 10,
-    status: PhotoStatus.Exists
+    status: PhotoStatus.Exists,
+    creationDate: new Date('2021-11-16 18:32:45.110Z'),
+    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
@@ -30,14 +32,16 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     deviceId: userOneDeviceOne._id,
     fileId: 'photoTwoFileId',
-    heigth: 10,
+    height: 10,
     name: 'photoTwo',
     previewId: 'photoTwoPreviewId',
     size: 10,
     type: 'jpg',
     userId: userOne._id,
     width: 10,
-    status: PhotoStatus.Exists
+    status: PhotoStatus.Exists,
+    creationDate: new Date('2021-11-16 18:32:45.110Z'),
+    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
   },
 ];
 
@@ -48,14 +52,16 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     deviceId: userTwoDeviceOne._id,
     fileId: 'photoThirdFileId',
-    heigth: 10,
+    height: 10,
     name: 'photoThird',
     previewId: 'photoThirdPreviewId',
     size: 10,
     type: 'jpg',
     userId: userTwo._id,
     width: 10,
-    status: PhotoStatus.Exists
+    status: PhotoStatus.Exists,
+    creationDate: new Date('2021-11-16 18:32:45.110Z'),
+    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
@@ -63,14 +69,16 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     deviceId: userTwoDeviceTwo._id,
     fileId: 'photoFourthFileId',
-    heigth: 10,
+    height: 10,
     name: 'photoFourth',
     previewId: 'photoFourthPreviewId',
     size: 10,
     type: 'jpg',
     userId: userTwo._id,
     width: 10,
-    status: PhotoStatus.Exists
+    status: PhotoStatus.Exists,
+    creationDate: new Date('2021-11-16 18:32:45.110Z'),
+    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
   },
 ];
 
