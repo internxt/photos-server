@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 import { UsecaseError } from '../../core/Usecase';
 import { Share, ShareId } from '../../models/Share';
 import { UserId } from '../../models/User';
@@ -28,7 +30,8 @@ export class SharesUsecase {
     return this.repository.getByToken(token);
   }
 
-  async saveShare(userId: UserId, share: Omit<Share, 'id'>): Promise<Share> {
+  async createShare(userId: UserId, data: Omit<Share, 'id' | 'token'>): Promise<Share> {
+    const share: Omit<Share, 'id'> = { ...data, token: randomBytes(10).toString('hex')};
     const photo = await this.photosRepository.getById(share.photoId);
 
     if (!photo) {
@@ -42,16 +45,7 @@ export class SharesUsecase {
     return this.repository.create(share);
   }
 
-  async updateShare(userId: UserId, share: Share): Promise<Share> {
-    const photo = await this.photosRepository.getById(share.photoId);
-
-    if (!photo) {
-      throw new PhotoNotFoundError(share.photoId);
-    }
-
-    if (photo.userId !== userId) {
-      throw new ShareNotOwnedByThisUserError(userId);
-    }
-    return this.repository.update(share);
+  updateShare(shareId: string, merge: Pick<Share, 'views'>): Promise<void> {
+    return this.repository.update(shareId, merge);
   }
 }

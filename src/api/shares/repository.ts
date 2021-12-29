@@ -67,8 +67,8 @@ export class SharesRepository implements Repository<Share> {
     });
   }
 
-  update(share: Share) {
-    return this.collection.updateOne({ _id: toObjectId(share.id) }, share).then(() => share);
+  async update(id: string, merge: Omit<Partial<Share>, 'id'>) {
+    await this.collection.updateOne({ _id: toObjectId(id) }, merge);
   }
 
   async deleteById(id: ShareId) {
