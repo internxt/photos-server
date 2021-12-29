@@ -16,7 +16,6 @@ export class DevicesUsecase {
     const alreadyExistentDevice = await this.repository.getByMac(device.mac);
 
     if (alreadyExistentDevice) {
-      console.log('Device already exists');
       if (alreadyExistentDevice.userId !== device.userId) {
         throw new Error('Device not owned by this user');
       } else {
