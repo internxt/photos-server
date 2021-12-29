@@ -68,7 +68,7 @@ describe('Shares usecases', () => {
       const alreadyExistentPhoto: Photo = {
         deviceId,
         fileId: 'photo-file-id',
-        heigth: 50,
+        height: 50,
         id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
@@ -76,9 +76,12 @@ describe('Shares usecases', () => {
         type: 'jpg',
         userId,
         width: 40,
-        status: PhotoStatus.Exists
+        status: PhotoStatus.Exists,
+        creationDate: new Date(),
+        lastStatusChangeAt: new Date()
       };
 
+      const expectedShareId = 'share-id';
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
         encryptionKey: 'encriptionKey',
@@ -86,17 +89,17 @@ describe('Shares usecases', () => {
         token: 'token',
         views: 5
       };
-
-      const expected = 'share-id';
   
       const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
-      const createShareStub = stub(sharesRepository, 'create').returns(Promise.resolve(expected));
+      const createShareStub = stub(sharesRepository, 'create').returns(
+        Promise.resolve({ ...shareToCreate, id: expectedShareId })
+      );
 
       const received = await sharesUsecase.saveShare(alreadyExistentPhoto.userId, shareToCreate);
       
       expect(getPhotoByIdStub.calledOnce);
       expect(createShareStub.calledOnce);
-      expect(received).toEqual(expected);
+      expect(received).toEqual({ ...shareToCreate, id: expectedShareId });
     });
 
     it('Should throw an error if photo not found', async () => {
@@ -122,7 +125,7 @@ describe('Shares usecases', () => {
       const alreadyExistentPhoto: Photo = {
         deviceId,
         fileId: 'photo-file-id',
-        heigth: 50,
+        height: 50,
         id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
@@ -130,7 +133,9 @@ describe('Shares usecases', () => {
         type: 'jpg',
         userId,
         width: 40,
-        status: PhotoStatus.Exists
+        status: PhotoStatus.Exists,
+        creationDate: new Date(),
+        lastStatusChangeAt: new Date()
       };
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
@@ -156,7 +161,7 @@ describe('Shares usecases', () => {
       const alreadyExistentPhoto: Photo = {
         deviceId,
         fileId: 'photo-file-id',
-        heigth: 50,
+        height: 50,
         id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
@@ -164,7 +169,9 @@ describe('Shares usecases', () => {
         type: 'jpg',
         userId,
         width: 40,
-        status: PhotoStatus.Exists
+        status: PhotoStatus.Exists,
+        creationDate: new Date(),
+        lastStatusChangeAt: new Date()
       };
 
       const shareToUpdate: Share = {
@@ -210,7 +217,7 @@ describe('Shares usecases', () => {
       const alreadyExistentPhoto: Photo = {
         deviceId,
         fileId: 'photo-file-id',
-        heigth: 50,
+        height: 50,
         id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
@@ -218,7 +225,9 @@ describe('Shares usecases', () => {
         type: 'jpg',
         userId,
         width: 40,
-        status: PhotoStatus.Exists
+        status: PhotoStatus.Exists,
+        creationDate: new Date(),
+        lastStatusChangeAt: new Date()
       };
       const shareToUpdate: Share = {
         id: shareId,
