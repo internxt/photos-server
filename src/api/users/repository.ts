@@ -50,14 +50,19 @@ export class UsersRepository implements Repository<User> {
     return Promise.reject('Not implemented yet');
   }
 
-  create(user: Omit<User, 'id'>): Promise<UserId> {
+  create(user: Omit<User, 'id'>): Promise<User> {
     const document: Omit<UserDocument, '_id'> = {
       ...user,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
+    return this.collection.insertOne(document).then(({ insertedId }) => {
+      return {
+        id: insertedId.toString(),
+        ...user
+      };
+    });
   }
 
   update() {

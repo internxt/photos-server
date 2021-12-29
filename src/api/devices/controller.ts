@@ -5,17 +5,20 @@ import { DevicesUsecase } from './usecase';
 import { CreateDeviceType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
+import { UsersUsecase } from '../users/usecase';
 
 export class DevicesController {
-  private usecase: DevicesUsecase;
+  private devicesUsecase: DevicesUsecase;
+  private usersUsecase: UsersUsecase;
 
-  constructor(usecase: DevicesUsecase) {
-    this.usecase = usecase;
+  constructor(devicesUsecase: DevicesUsecase, usersUsecase: UsersUsecase) {
+    this.devicesUsecase = devicesUsecase;
+    this.usersUsecase = usersUsecase;
   }
 
   async getDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const device = await this.usecase.obtainDevice(req.params.id);
+    const device = await this.devicesUsecase.obtainDevice(req.params.id);
 
     if (!device) {
       throw new NotFoundError({ resource: 'Device' });
@@ -29,21 +32,27 @@ export class DevicesController {
   }
 
   async postDevice(req: FastifyRequest<{ Body: CreateDeviceType }>, rep: FastifyReply) {
-    const user = req.user as AuthorizedUser;
+    const { payload: { uuid }} = req.user as AuthorizedUser;
     const device: Omit<Device, 'id'> = req.body;
 
-    if (device.userId !== user.payload.uuid) {
+    const user = await this.usersUsecase.obtainUserByUuid(uuid);
+
+    if (!user) {
+      return rep.code(400).send();
+    }
+
+    if (device.userId !== user.id) {
       return rep.code(403).send({ message: 'Forbidden' });
     }
 
-    const createdDeviceId = await this.usecase.saveDevice(device);
+    const createdDevice = await this.devicesUsecase.saveDevice(device);
 
-    rep.code(201).send({ id: createdDeviceId });
+    rep.code(201).send(createdDevice);
   }
 
   async deleteDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const device = await this.usecase.obtainDevice(req.params.id);
+    const device = await this.devicesUsecase.obtainDevice(req.params.id);
 
     if (!device) {
       throw new NotFoundError({ resource: 'Device' });
@@ -53,7 +62,7 @@ export class DevicesController {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 
-    await this.usecase.removeDevice(req.params.id);
+    await this.devicesUsecase.removeDevice(req.params.id);
 
     rep.send({ message: 'Deleted' });
   }

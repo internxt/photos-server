@@ -10,7 +10,12 @@ declare module 'fastify' {
   export interface FastifyInstance<HttpServer = Server, HttpRequest = IncomingMessage, HttpResponse = ServerResponse> {
     authenticate(): any;
     jwt: {
-      sign: (params: { payload: any }) => string;
+      sign: (
+        params: { payload: any },
+        options: {
+          expiresIn: string | number 
+        }
+      ) => string;
     };
     // someOtherDecorator() => void..
   }

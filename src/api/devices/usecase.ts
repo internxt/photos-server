@@ -1,10 +1,10 @@
-import { Repository } from '../../core/Repository';
 import { Device, DeviceId } from '../../models/Device';
+import { DevicesRepository } from './repository';
 
 export class DevicesUsecase {
-  private repository: Repository<Device>;
+  private repository: DevicesRepository;
 
-  constructor(repo: Repository<Device>) {
+  constructor(repo: DevicesRepository) {
     this.repository = repo;
   }
 
@@ -12,7 +12,17 @@ export class DevicesUsecase {
     return this.repository.getById(deviceId);
   }
 
-  saveDevice(device: Omit<Device, 'id'>): Promise<DeviceId> {
+  async saveDevice(device: Omit<Device, 'id'>): Promise<Device> {
+    const alreadyExistentDevice = await this.repository.getByMac(device.mac);
+
+    if (alreadyExistentDevice) {
+      if (alreadyExistentDevice.userId !== device.userId) {
+        throw new Error('Device not owned by this user');
+      } else {
+        return alreadyExistentDevice;
+      }
+    }
+
     return this.repository.create(device);
   }
 

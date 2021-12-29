@@ -4,6 +4,7 @@ import { SharesUsecase } from './usecase';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { CreateShareType, UpdateShareType } from './schemas';
+import { Share } from '../../models/Share';
 
 export class SharesController {
   private usecase: SharesUsecase;
@@ -24,9 +25,11 @@ export class SharesController {
 
   async postShare(req: FastifyRequest<{ Body: CreateShareType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const createdShareId = await this.usecase.createShare(user.payload.uuid, req.body);
+    const share: Omit<Share, 'id' | 'token'> = req.body;
 
-    rep.code(201).send({ id: createdShareId });
+    const createdShare = await this.usecase.createShare(user.payload.uuid, share);
+
+    rep.code(201).send(createdShare);
   }
 
   async putShare(req: FastifyRequest<{ Body: UpdateShareType }>, rep: FastifyReply) {

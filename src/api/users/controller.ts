@@ -32,10 +32,16 @@ export class UsersController {
     rep.send(requestedUser);
   }
 
-  async postUser(req: FastifyRequest<{ Headers: {
-    'internxt-network-pass': string,
-    'internxt-network-user': string
-  }, Body: InitUserType }>, rep: FastifyReply) {
+  async postUser(
+    req: FastifyRequest<{
+      Headers: {
+        'internxt-network-pass': string,
+        'internxt-network-user': string
+      }, 
+      Body: InitUserType 
+    }>, 
+    rep: FastifyReply
+  ) {
     const user = req.user as AuthorizedUser;
     const deviceInfo: Omit<Device, 'id' | 'userId'> = req.body;
 
@@ -45,9 +51,9 @@ export class UsersController {
       bridgeUser: req.headers['internxt-network-user'].toString()
     });
 
-    const createdUserId = await this.usecase.initUser(user.payload.uuid, network, deviceInfo);
+    const createdOrAlreadyExistentUser = await this.usecase.initUser(user.payload.uuid, network, deviceInfo);
 
-    rep.code(201).send({ id: createdUserId });
+    rep.code(201).send(createdOrAlreadyExistentUser);
   }
 
   async deleteUserById(req: FastifyRequest<{ Params: { id: UserId }}>, rep: FastifyReply) {

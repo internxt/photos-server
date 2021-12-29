@@ -1,10 +1,18 @@
 import { FastifyRouter } from '../router';
 import { PhotosController } from './controller';
-import { CreatePhotoType, CreatePhotoSchema } from './schemas';
+import { CreatePhotoType, CreatePhotoSchema, GetPhotosQueryParamsSchema } from './schemas';
 
 export const buildRouter = (controller: PhotosController): FastifyRouter => {
   return {
     handler: (server, opts, done) => {
+      server.get('/', { 
+        preValidation: server.authenticate,
+        schema: {
+          querystring: GetPhotosQueryParamsSchema
+        }
+      }, 
+      controller.getPhotos.bind(controller)
+    );
       server.get('/:id', { preValidation: server.authenticate }, controller.getPhotoById.bind(controller));
       server.post<{ Body: CreatePhotoType }>(
         '/',

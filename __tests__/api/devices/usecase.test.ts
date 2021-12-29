@@ -32,17 +32,18 @@ describe('Devices usecases', () => {
   });
 
   it('saveDevice()', async () => {
-    const expected = 'deviceId';
     const deviceDoc: Device = {
-      id: expected,
+      id: 'deviceId',
       mac: '',
       name: '',
       userId: ''
     };
 
-    stub(repository, 'create').returns(Promise.resolve(expected));
+    stub(repository, 'getByMac').returns(Promise.resolve(null));
+    stub(repository, 'create').returns(Promise.resolve(deviceDoc));
 
     const received = await usecase.saveDevice(deviceDoc);
+    const expected = deviceDoc;
 
     expect(received).toStrictEqual(expected);
   });

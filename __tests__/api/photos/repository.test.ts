@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
 import { photos } from '../../../src/database/mongo/fixtures/photos';
+import { PhotoStatus } from '../../../src/models/Photo';
 
 config();
 
@@ -71,19 +72,22 @@ describe('Photos usecases', () => {
     const received = await repository.create({
       deviceId: alreadyExistentPhoto.deviceId.toString(),
       fileId: alreadyExistentPhoto.fileId,
-      heigth: alreadyExistentPhoto.heigth,
+      height: alreadyExistentPhoto.height,
       name: alreadyExistentPhoto.name,
       previewId: alreadyExistentPhoto.previewId,
       size: alreadyExistentPhoto.size,
       type: alreadyExistentPhoto.type,
       userId: alreadyExistentPhoto.userId.toString(),
-      width: alreadyExistentPhoto.width
+      width: alreadyExistentPhoto.width,
+      status: PhotoStatus.Exists,
+      creationDate: new Date(),
+      lastStatusChangeAt: new Date()
     });
 
     expect(received).not.toBeNull();
-    expect(() => new ObjectId(received)).not.toThrow();
+    expect(() => new ObjectId(received.id)).not.toThrow();
 
-    await repository.deleteById(received);
+    await repository.deleteById(received.id);
   });
 
   it('update()', async () => {

@@ -56,9 +56,9 @@ describe('Users repository', () => {
     });
 
     expect(received).not.toBeNull();
-    expect(() => new ObjectId(received)).not.toThrow();
+    expect(() => new ObjectId(received.id)).not.toThrow();
 
-    await repository.deleteById(received);
+    await repository.deleteById(received.id);
   });
 
   it('update()', async () => {

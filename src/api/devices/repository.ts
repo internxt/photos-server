@@ -41,7 +41,17 @@ export class DevicesRepository implements Repository<Device> {
       });
   }
 
-  create(device: Omit<Device, 'id'>): Promise<DeviceId> {
+  getByMac(mac: string): Promise<Device | null> {
+    return this.collection.findOne<DeviceDocument>({ mac }).then((doc): Device | null => {
+      if (!doc || !doc._id) {
+        return null;
+      }
+
+      return mongoDocToModel(doc);
+    });
+  }
+
+  create(device: Omit<Device, 'id'>): Promise<Device> {
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
       userId: toObjectId(device.userId),
@@ -49,7 +59,12 @@ export class DevicesRepository implements Repository<Device> {
       updatedAt: new Date(),
     };
 
-    return this.collection.insertOne(document).then(({ insertedId }) => insertedId.toString());
+    return this.collection.insertOne(document).then(({ insertedId }) => {
+      return { 
+        id: insertedId.toString(),
+        ...device
+      };
+    });
   }
 
   update() {
