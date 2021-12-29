@@ -54,7 +54,7 @@ export class PhotosRepository implements Repository<Photo> {
       .find<PhotoDocument>({ 
         ...where,
         userId: toObjectId(userId),
-        createdAt: {
+        lastStatusChangeAt: {
           $gte: from
         }
       })
