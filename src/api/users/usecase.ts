@@ -64,7 +64,7 @@ export class UsersUsecase {
         const rollbackError = await this.rollbackUserInitialization(
           network,
           bucketId, 
-          userWasInitialized ? user!.id : null, 
+          userWasInitialized ? (user as User).id : null, 
         );
 
         if (rollbackError) {
