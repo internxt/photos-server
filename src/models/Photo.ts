@@ -12,15 +12,19 @@ export enum PhotoStatus {
 }
 
 export interface Photo {
-  id: PhotoId;
-  name: string;
-  type: PhotoType;
-  size: number;
-  width: number;
-  heigth: number;
-  fileId: FileId;
-  previewId: FileId;
-  deviceId: DeviceId;
-  userId: UserId;
+  id: PhotoId
+  name: string
+  type: PhotoType
+  size: number
+  width: number
+  height: number
+  fileId: FileId
+  previewId: FileId
+  deviceId: DeviceId
+  userId: UserId
   status: PhotoStatus
+  lastStatusChangeAt: Date
+  creationDate: Date
 }
+
+export type NewPhoto = Omit<Photo, 'id' | 'lastStatusChangeAt' | 'status'>;
