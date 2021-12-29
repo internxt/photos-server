@@ -149,29 +149,35 @@ describe('Users usecases', () => {
     const deviceInfo = { mac: deviceMac, name: deviceName };
 
     it('Should init the user properly', async () => {
-      stub(usecase, 'isUserAlreadyInitialized').resolves(false);
+      const expected = { bucketId, id: userId, uuid };
+
+      stub(usecase, 'obtainUserByUuid').resolves(null);
       stub(network, 'createBucket').resolves(bucketId);
-      stub(usersRepository, 'create').resolves(userId);
-      stub(devicesRepository, 'create').resolves(deviceId);
+      stub(usersRepository, 'create').resolves(expected);
+      stub(devicesRepository, 'create').resolves({ id: deviceId, userId, ...deviceInfo });
 
       const rollbackStub = stub(usecase, 'rollbackUserInitialization');
-      const initializedUserId = await usecase.initUser(uuid, network, deviceInfo);
+      const received = await usecase.initUser(uuid, network, deviceInfo);
 
-      expect(initializedUserId).toEqual(userId);
+      expect(received).toStrictEqual(expected);
       expect(rollbackStub.callCount).toBe(0);
     });
 
-    it('Should throw if user already exists', async () => {
-      stub(usecase, 'isUserAlreadyInitialized').resolves(true);
+    it('Should return the user if already exists', async () => {
+      const expected = { id: '', bucketId, uuid };
 
-      expect(usecase.initUser(uuid, network, deviceInfo)).rejects.toEqual(Error('User already exists'));
+      stub(usecase, 'obtainUserByUuid').resolves(expected);
+
+      const received = await usecase.initUser(uuid, network, deviceInfo);
+
+      expect(received).toStrictEqual(expected);
     });
 
     describe('Should rollback if required when user init fails', () => {
       it('Should not rollback if bucket creation fails', async () => {
         const errorMessage = 'Bucket creation failed';
 
-        stub(usecase, 'isUserAlreadyInitialized').resolves(false);
+        stub(usecase, 'obtainUserByUuid').resolves(null);
         stub(network, 'createBucket').rejects(new Error(errorMessage));
         
         const rollbackStub = stub(usecase, 'rollbackUserInitialization');
@@ -188,7 +194,7 @@ describe('Users usecases', () => {
       it('Should rollback if user creation fails', async () => {
         const errorMessage = 'User creation failed';
 
-        stub(usecase, 'isUserAlreadyInitialized').resolves(false);
+        stub(usecase, 'obtainUserByUuid').resolves(null);
         stub(network, 'createBucket').resolves(bucketId);
         stub(usersRepository, 'create').rejects(new Error(errorMessage));
         
@@ -207,9 +213,9 @@ describe('Users usecases', () => {
       it('Should rollback if device creation fails', async () => {
         const errorMessage = 'Device creation failed';
 
-        stub(usecase, 'isUserAlreadyInitialized').resolves(false);
+        stub(usecase, 'obtainUserByUuid').resolves(null);
         stub(network, 'createBucket').resolves(bucketId);
-        stub(usersRepository, 'create').resolves(userId);
+        stub(usersRepository, 'create').resolves({ bucketId, id: userId, uuid });
         stub(devicesRepository, 'create').rejects(new Error(errorMessage));
         
         const rollbackStub = stub(usecase, 'rollbackUserInitialization');
