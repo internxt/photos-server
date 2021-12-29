@@ -53,7 +53,7 @@ async function initHTTPServer(collections: MongoDBCollections, fastify: FastifyI
 
   const devicesController = new DevicesController(devicesUsecase, usersUsecase);
   const usersController = new UsersController(usersUsecase);
-  const photosController = new PhotosController(photosUsecase);
+  const photosController = new PhotosController(photosUsecase, usersUsecase);
   const sharesController = new SharesController(sharesUsecase);
 
   const devicesRouter = buildDevicesRouter(devicesController);
