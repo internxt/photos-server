@@ -42,6 +42,7 @@ export class UsersController {
     }>, 
     rep: FastifyReply
   ) {
+
     const user = req.user as AuthorizedUser;
     const deviceInfo: Omit<Device, 'id' | 'userId'> = req.body;
 

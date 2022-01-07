@@ -92,11 +92,12 @@ export class PhotosRepository implements Repository<Photo> {
     return Promise.reject('Not implemented yet');
   }
 
-  updateById(photoId: PhotoId, updatedPhoto: Partial<Photo>) {
-    return this.collection.updateOne({ _id: toObjectId(photoId) }, {
-      ...updatedPhoto,
-      updatedAt: new Date()
-    });
+  updateById(photoId: PhotoId, updatedPhoto: Partial<PhotoDocument>) {
+    return this.collection.updateOne({ _id: toObjectId(photoId) }, 
+      {$set: {
+        ...updatedPhoto
+      }}
+    );
   }
 
   async deleteById(id: PhotoId) {
