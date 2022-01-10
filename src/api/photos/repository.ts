@@ -95,7 +95,8 @@ export class PhotosRepository implements Repository<Photo> {
   updateById(photoId: PhotoId, updatedPhoto: Partial<PhotoDocument>) {
     return this.collection.updateOne({ _id: toObjectId(photoId) }, 
       {$set: {
-        ...updatedPhoto
+        ...updatedPhoto,
+        updatedAt: new Date()
       }}
     );
   }
