@@ -28,6 +28,7 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://admin:password@photos-mongo:27017/photos
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      VCAP_APP_PORT: 8082
     ports:
       - 8082:8082 # 8081 is already in use by react-native runner
     depends_on:
