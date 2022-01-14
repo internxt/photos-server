@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { UsecaseError } from '../../core/Usecase';
 
 import { NewPhoto, Photo, PhotoId, PhotoStatus } from '../../models/Photo';
