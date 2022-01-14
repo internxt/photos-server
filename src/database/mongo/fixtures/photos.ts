@@ -23,8 +23,8 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     userId: userOne._id,
     width: 10,
     status: PhotoStatus.Exists,
-    creationDate: new Date('2021-11-16 18:32:45.110Z'),
-    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
+    takenAt: new Date('2021-11-16 18:32:45.110Z'),
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
@@ -40,8 +40,8 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     userId: userOne._id,
     width: 10,
     status: PhotoStatus.Exists,
-    creationDate: new Date('2021-11-16 18:32:45.110Z'),
-    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
+    takenAt: new Date('2021-11-16 18:32:45.110Z'),
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
 ];
 
@@ -60,8 +60,8 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     userId: userTwo._id,
     width: 10,
     status: PhotoStatus.Exists,
-    creationDate: new Date('2021-11-16 18:32:45.110Z'),
-    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
+    takenAt: new Date('2021-11-16 18:32:45.110Z'),
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
@@ -77,8 +77,8 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     userId: userTwo._id,
     width: 10,
     status: PhotoStatus.Exists,
-    creationDate: new Date('2021-11-16 18:32:45.110Z'),
-    lastStatusChangeAt: new Date('2021-11-16 18:32:45.110Z')
+    takenAt: new Date('2021-11-16 18:32:45.110Z'),
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
 ];
 

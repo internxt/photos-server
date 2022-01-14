@@ -23,8 +23,8 @@ export interface Photo {
   deviceId: DeviceId
   userId: UserId
   status: PhotoStatus
-  lastStatusChangeAt: Date
-  creationDate: Date
+  statusChangedAt: Date
+  takenAt: Date
 }
 
-export type NewPhoto = Omit<Photo, 'id' | 'lastStatusChangeAt' | 'status'>;
+export type NewPhoto = Omit<Photo, 'id' | 'statusChangedAt' | 'status'>;
