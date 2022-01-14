@@ -8,38 +8,42 @@ const [userOne, userTwo] = users;
 const userOneDevices: DeviceDocument[] = [
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
-    createdAt: new Date('2021-11-16 18:32:45.110Z'),
-    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    userId: userOne._id,
     mac: 'macOneUserOne' + userOne._id,
     name: 'deviceNameOne' + userOne._id,
-    userId: userOne._id,
+    synchronizedAt: new Date('January 1, 1971 00:00:01'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
-    createdAt: new Date('2021-11-16 18:32:45.110Z'),
-    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    userId: userOne._id,
     mac: 'macTwoUserOne' + userOne._id,
     name: 'deviceNameTwo' + userOne._id,
-    userId: userOne._id,
+    synchronizedAt: new Date('January 1, 1971 00:00:01'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
 ];
 
 const userTwoDevices: DeviceDocument[] = [
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaac'),
-    createdAt: new Date('2021-11-16 18:32:45.110Z'),
-    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    userId: userTwo._id,
     mac: 'macOneUserTwo' + userTwo._id,
     name: 'deviceNameOne' + userTwo._id,
-    userId: userTwo._id,
+    synchronizedAt: new Date('January 1, 1971 00:00:01'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
-    createdAt: new Date('2021-11-16 18:32:45.110Z'),
-    updatedAt: new Date('2021-11-16 18:32:45.110Z'),
+    userId: userTwo._id,
     mac: 'macTwoUserTwo' + userTwo._id,
     name: 'deviceNameTwo' + userTwo._id,
-    userId: userTwo._id,
+    synchronizedAt: new Date('January 1, 1971 00:00:01'),
+    createdAt: new Date('2021-11-16 18:32:45.110Z'),
+    updatedAt: new Date('2021-11-16 18:32:45.110Z')
   },
 ];
 

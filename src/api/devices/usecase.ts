@@ -1,5 +1,6 @@
 import { Device, DeviceId } from '../../models/Device';
 import { DevicesRepository } from './repository';
+import { CreateDeviceType } from './schemas';
 
 export class DevicesUsecase {
   private repository: DevicesRepository;
@@ -12,7 +13,7 @@ export class DevicesUsecase {
     return this.repository.getById(deviceId);
   }
 
-  async saveDevice(device: Omit<Device, 'id'>): Promise<Device> {
+  async saveDevice(device: CreateDeviceType): Promise<Device> {
     const alreadyExistentDevice = await this.repository.getByMac(device.mac);
 
     if (alreadyExistentDevice) {

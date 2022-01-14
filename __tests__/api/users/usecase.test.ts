@@ -154,7 +154,12 @@ describe('Users usecases', () => {
       stub(usecase, 'obtainUserByUuid').resolves(null);
       stub(network, 'createBucket').resolves(bucketId);
       stub(usersRepository, 'create').resolves(expected);
-      stub(devicesRepository, 'create').resolves({ id: deviceId, userId, ...deviceInfo });
+      stub(devicesRepository, 'create').resolves({
+        id: deviceId,
+        userId,
+        synchronizedAt: new Date('January 1, 1971 00:00:01'),
+        ...deviceInfo,
+      });
 
       const rollbackStub = stub(usecase, 'rollbackUserInitialization');
       const received = await usecase.initUser(uuid, network, deviceInfo);
