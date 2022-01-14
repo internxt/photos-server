@@ -74,6 +74,15 @@ export class DevicesRepository implements Repository<Device> {
     return Promise.reject('Not implemented yet');
   }
 
+  updateById(deviceId: DeviceId, changes: Partial<DeviceDocument>) {
+    return this.collection.updateOne({ _id: toObjectId(deviceId) }, 
+      {$set: {
+        ...changes,
+        updatedAt: new Date()
+      }}
+    );
+  }
+
   async deleteById(id: DeviceId) {
     await this.collection.deleteOne({ _id: toObjectId(id) });
   }

@@ -8,14 +8,17 @@ import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
 import { dateToUTC } from '../../lib/utils';
+import { DevicesUsecase } from '../devices/usecase';
 
 export class PhotosController {
   private photosUsecase: PhotosUsecase;
   private usersUsecase: UsersUsecase;
+  private devicesUsecase: DevicesUsecase;
 
-  constructor(photosUsecase: PhotosUsecase, usersUsecase: UsersUsecase) {
+  constructor(photosUsecase: PhotosUsecase, usersUsecase: UsersUsecase, devicesUsecase: DevicesUsecase) {
     this.photosUsecase = photosUsecase;
     this.usersUsecase = usersUsecase;
+    this.devicesUsecase = devicesUsecase;
   }
 
   async getPhotos(
@@ -89,6 +92,8 @@ export class PhotosController {
     }
 
     const createdPhoto = await this.photosUsecase.savePhoto(photo);
+
+    await this.devicesUsecase.updateSynchronizedAt(photo.deviceId, photo.creationDate);
 
     rep.code(201).send(createdPhoto);
   }
