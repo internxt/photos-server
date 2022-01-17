@@ -1,9 +1,8 @@
-import { Collection, Document, Filter, FindCursor, ObjectId } from 'mongodb';
+import { Collection, Document, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { PhotoDocument } from '../../database/mongo/models/Photo';
 import { Photo, PhotoId } from '../../models/Photo';
-import { UserId } from '../../models/User';
 
 function toObjectId(id: string) {
   return new ObjectId(id);
@@ -34,30 +33,8 @@ export class PhotosRepository implements Repository<Photo> {
     });
   }
 
-  get(where: Filter<PhotoDocument>) {
-    return this.collection
-      .find<PhotoDocument>(where)
-      .toArray()
-      .then((results) => {
-        return results.map(mongoDocToModel);
-      });
-  }
-
-  getByUserIdAndAfterDate(
-    userId: UserId, 
-    from: Date,
-    where: Filter<PhotoDocument>,
-    skip: number, 
-    limit: number
-  ): Promise<Photo[]> {
-    return this.collection
-      .find<PhotoDocument>({ 
-        ...where,
-        userId: toObjectId(userId),
-        lastStatusChangeAt: {
-          $gte: from
-        }
-      })
+  get(filter: Partial<Photo>, skip = 0, limit = 0) {
+    return this.getCursor(filter)
       .skip(skip)
       .limit(limit)
       .toArray()
@@ -66,25 +43,22 @@ export class PhotosRepository implements Repository<Photo> {
       });
   }
 
-  getCountByDate(userId: string, from: Date, to: Date, limit: number, offset: number): Promise<number> {
-    return this.getByDateRangesRaw(userId, from, to, limit, offset).count();
-  }
-
-  getByDateRanges(userId: string, from: Date, to: Date, limit: number, offset: number): Promise<Photo[]> {
-    return this.getByDateRangesRaw(userId, from, to, limit, offset).toArray();
+  count(filter: Partial<Photo>) {
+    return this.getCursor(filter).count();
   }
 
   create(photo: Omit<Photo, 'id'>): Promise<Photo> {
+    const now = new Date();
     const document: Omit<PhotoDocument, '_id'> = {
       ...photo,
       userId: toObjectId(photo.userId),
       deviceId: toObjectId(photo.deviceId),
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: now,
+      updatedAt: now
     };
 
     return this.collection.insertOne(document).then(({ insertedId }) => {
-      return { id: insertedId.toString(), ...photo };
+      return { id: insertedId.toString(), ...photo, createdAt: now, updatedAt: now };
     });
   }
 
@@ -109,14 +83,18 @@ export class PhotosRepository implements Repository<Photo> {
     await this.collection.deleteMany(where);
   }
 
-  private getByDateRangesRaw(userId: string, from: Date, to: Date, limit: number, offset: number): FindCursor<Photo> {
+  private getCursor({name, userId, status, statusChangedAt, deviceId }: Partial<Photo>) {
+    const filter: Filter<PhotoDocument> = {};
+
+    name ? filter.name = name : null;
+    status ? filter.status = status : null;
+    userId ? filter.userId = toObjectId(userId) : null;
+    statusChangedAt ? filter.statusChangedAt = {
+        $gte: statusChangedAt
+      } : null;
+    deviceId ? filter.deviceId = toObjectId(deviceId) : null;
+
     return this.collection
-      .find<Photo>({
-        userId: toObjectId(userId),
-        $gte: { creationDate: from },
-        $lte: { creationDate: to },
-      })
-      .skip(offset)
-      .limit(limit);
+      .find<PhotoDocument>(filter);
   }
 }

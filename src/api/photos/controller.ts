@@ -26,27 +26,26 @@ export class PhotosController {
     rep: FastifyReply  
   ) {
     const user = req.user as AuthorizedUser;
-    const { from, limit, skip, status } = req.query;
+    const { name, status, statusChangedAt, limit, skip, deviceId } = req.query;
 
     // TODO: from is the future + cast date to UTC
-    if (!dayjs(from).isValid()) {
+    if (!dayjs(statusChangedAt).isValid()) {
       rep.status(400).send({ message: 'Bad "from" date format' });
     }
 
-    const photos = await this.photosUsecase.obtainPhotos(
+    const {results, count} = await this.photosUsecase.get(
       user.payload.uuid, 
-      new Date(from),
-      limit, 
+      { name, status, statusChangedAt: statusChangedAt ? new Date(statusChangedAt) : undefined, deviceId},
       skip,
-      status
+      limit
     );
 
-    rep.send(photos);
+    rep.send({results, count});
   }
 
   async getPhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const photo = await this.photosUsecase.obtainPhotoById(req.params.id);
+    const photo = await this.photosUsecase.getById(req.params.id);
 
     if (!photo) {
       throw new NotFoundError({ resource: 'Photo' });
@@ -73,11 +72,11 @@ export class PhotosController {
       return rep.code(400).send({ message: 'Invalid params' });
     }
 
-    photo.creationDate = dateToUTC(photo.creationDate);
-    const creationDate = dayjs(photo.creationDate);
-    const createdInTheFuture = creationDate.isAfter(new Date());
+    photo.takenAt = dateToUTC(photo.takenAt);
+    const takenAt = dayjs(photo.takenAt);
+    const createdInTheFuture = takenAt.isAfter(new Date());
 
-    if (!creationDate.isValid() || createdInTheFuture) {
+    if (!takenAt.isValid() || createdInTheFuture) {
       return rep.code(400).send({ message: 'Invalid params' });
     }
 
@@ -101,7 +100,7 @@ export class PhotosController {
   async deletePhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
     const photoId = req.params.id;
     const user = req.user as AuthorizedUser;
-    const photo = await this.photosUsecase.obtainPhotoById(photoId);
+    const photo = await this.photosUsecase.getById(photoId);
 
     if (!photo) {
       throw new NotFoundError({ resource: 'Photo' });

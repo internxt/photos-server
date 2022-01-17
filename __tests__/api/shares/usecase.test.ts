@@ -77,8 +77,8 @@ describe('Shares usecases', () => {
         userId,
         width: 40,
         status: PhotoStatus.Exists,
-        creationDate: new Date(),
-        lastStatusChangeAt: new Date()
+        takenAt: new Date(),
+        statusChangedAt: new Date()
       };
 
       const expectedShareId = 'share-id';
@@ -134,8 +134,8 @@ describe('Shares usecases', () => {
         userId,
         width: 40,
         status: PhotoStatus.Exists,
-        creationDate: new Date(),
-        lastStatusChangeAt: new Date()
+        takenAt: new Date(),
+        statusChangedAt: new Date()
       };
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
@@ -170,8 +170,8 @@ describe('Shares usecases', () => {
         userId,
         width: 40,
         status: PhotoStatus.Exists,
-        creationDate: new Date(),
-        lastStatusChangeAt: new Date()
+        takenAt: new Date(),
+        statusChangedAt: new Date()
       };
 
       const shareToUpdate: Share = {
@@ -232,8 +232,8 @@ describe('Shares usecases', () => {
     //     userId,
     //     width: 40,
     //     status: PhotoStatus.Exists,
-    //     creationDate: new Date(),
-    //     lastStatusChangeAt: new Date()
+    //     takenAt: new Date(),
+    //     statusChangedAt: new Date()
     //   };
     //   const shareToUpdate: Share = {
     //     id: shareId,
