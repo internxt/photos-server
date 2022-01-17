@@ -80,8 +80,8 @@ describe('Photos usecases', () => {
       userId: alreadyExistentPhoto.userId.toString(),
       width: alreadyExistentPhoto.width,
       status: PhotoStatus.Exists,
-      creationDate: new Date(),
-      lastStatusChangeAt: new Date()
+      takenAt: new Date(),
+      statusChangedAt: new Date()
     });
 
     expect(received).not.toBeNull();

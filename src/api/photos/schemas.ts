@@ -13,14 +13,16 @@ export const CreatePhotoSchema = Type.Object({
   deviceId: Type.String(),
   userId: Type.String(),
   // TODO: Use ajv validation to force the format of a date on type String
-  creationDate: Type.Any()
+  takenAt: Type.Any()
 });
 
 export const GetPhotosQueryParamsSchema = Type.Object({
-  from: Type.String(),
+  name: Type.Optional(Type.String()),
+  status: Type.Optional(Type.Enum(PhotoStatus)),
+  statusChangedAt: Type.Optional(Type.String()),
+  deviceId: Type.Optional(Type.String()),
   limit: Type.Number(),
   skip: Type.Number(),
-  status: Type.Optional(Type.Enum(PhotoStatus))
 });
 
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;
