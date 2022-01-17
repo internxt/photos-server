@@ -92,7 +92,7 @@ export class PhotosController {
 
     const createdPhoto = await this.photosUsecase.savePhoto(photo);
 
-    await this.devicesUsecase.updateSynchronizedAt(photo.deviceId, photo.creationDate);
+    await this.devicesUsecase.updateSynchronizedAt(photo.deviceId, photo.takenAt);
 
     rep.code(201).send(createdPhoto);
   }
