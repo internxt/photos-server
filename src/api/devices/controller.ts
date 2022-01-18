@@ -33,7 +33,7 @@ export class DevicesController {
 
   async postDevice(req: FastifyRequest<{ Body: CreateDeviceType }>, rep: FastifyReply) {
     const { payload: { uuid }} = req.user as AuthorizedUser;
-    const device: Omit<Device, 'id'> = req.body;
+    const device: CreateDeviceType = req.body;
 
     const user = await this.usersUsecase.obtainUserByUuid(uuid);
 

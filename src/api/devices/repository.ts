@@ -51,10 +51,12 @@ export class DevicesRepository implements Repository<Device> {
     });
   }
 
-  create(device: Omit<Device, 'id'>): Promise<Device> {
+  create(device: Omit<Device, 'id' | 'synchronizedAt'>): Promise<Device> {
+    const synchronizedAt = new Date('January 1, 1971 00:00:01');
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
       userId: toObjectId(device.userId),
+      synchronizedAt,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -62,13 +64,23 @@ export class DevicesRepository implements Repository<Device> {
     return this.collection.insertOne(document).then(({ insertedId }) => {
       return { 
         id: insertedId.toString(),
-        ...device
+        ...device,
+        synchronizedAt
       };
     });
   }
 
   update() {
     return Promise.reject('Not implemented yet');
+  }
+
+  updateById(deviceId: DeviceId, changes: Partial<DeviceDocument>) {
+    return this.collection.updateOne({ _id: toObjectId(deviceId) }, 
+      {$set: {
+        ...changes,
+        updatedAt: new Date()
+      }}
+    );
   }
 
   async deleteById(id: DeviceId) {

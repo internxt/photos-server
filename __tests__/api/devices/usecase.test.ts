@@ -21,7 +21,8 @@ describe('Devices usecases', () => {
       id: deviceId,
       mac: '',
       name: '',
-      userId: ''
+      userId: '',
+      synchronizedAt: new Date()
     };
 
     stub(repository, 'getById').returns(Promise.resolve(deviceDoc));
@@ -36,7 +37,8 @@ describe('Devices usecases', () => {
       id: 'deviceId',
       mac: '',
       name: '',
-      userId: ''
+      userId: '',
+      synchronizedAt: new Date()
     };
 
     stub(repository, 'getByMac').returns(Promise.resolve(null));
@@ -54,7 +56,8 @@ describe('Devices usecases', () => {
       id: '',
       mac: '',
       name: '',
-      userId: ''
+      userId: '',
+      synchronizedAt: new Date()
     };
 
     stub(repository, 'getById').returns(Promise.resolve(deviceDoc));

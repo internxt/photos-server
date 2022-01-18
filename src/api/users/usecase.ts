@@ -3,6 +3,7 @@ import { Environment } from '@internxt/inxt-js';
 import { Device } from '../../models/Device';
 import { User, UserId } from '../../models/User';
 import { DevicesRepository } from '../devices/repository';
+import { CreateDeviceType } from '../devices/schemas';
 import { UsersRepository } from './repository';
 
 export class UsersUsecase {
@@ -31,7 +32,7 @@ export class UsersUsecase {
   async initUser(
     uuid: string, 
     network: Environment,
-    deviceInfo: Omit<Device, 'id' | 'userId'>
+    deviceInfo: Pick<Device, 'mac' | 'name'>
   ): Promise<User> {
     const maybeUser: User | null = await this.obtainUserByUuid(uuid);
     const userAlreadyExists = !!maybeUser;
@@ -50,7 +51,7 @@ export class UsersUsecase {
       user = await this.usersRepository.create(newUser);
 
       // TODO: Does this device already exist? (look by name?? index name???)
-      const newDevice: Omit<Device, 'id'> = { ...deviceInfo, userId: user.id };
+      const newDevice: CreateDeviceType = { ...deviceInfo, userId: user.id };
       await this.devicesRepository.create(newDevice);
 
       return user;

@@ -44,7 +44,7 @@ export class UsersController {
   ) {
 
     const user = req.user as AuthorizedUser;
-    const deviceInfo: Omit<Device, 'id' | 'userId'> = req.body;
+    const deviceInfo: Pick<Device, 'mac' | 'name'> = req.body;
 
     const network = new Environment({
       bridgeUrl: process.env.NETWORK_URL,
