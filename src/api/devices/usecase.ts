@@ -27,8 +27,12 @@ export class DevicesUsecase {
     return this.repository.create(device);
   }
 
-  updateSynchronizedAt(deviceId: string, synchronizedAt: Date) {
-    return this.repository.updateById(deviceId, { synchronizedAt });
+  updateNewestDate(deviceId: string, newestDate: Date) {
+    return this.repository.updateById(deviceId, { newestDate });
+  }
+
+  updateOldestDate(deviceId: string, oldestDate: Date) {
+    return this.repository.updateById(deviceId, { oldestDate });
   }
 
   removeDevice(deviceId: string): Promise<void> {

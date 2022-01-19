@@ -51,12 +51,14 @@ export class DevicesRepository implements Repository<Device> {
     });
   }
 
-  create(device: Omit<Device, 'id' | 'synchronizedAt'>): Promise<Device> {
-    const synchronizedAt = new Date('January 1, 1971 00:00:01');
+  create(device: Omit<Device, 'id' | 'newestDate' | 'oldestDate'>): Promise<Device> {
+    const newestDate = new Date('January 1, 1971 00:00:01');
+    const oldestDate = new Date();
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
       userId: toObjectId(device.userId),
-      synchronizedAt,
+      newestDate,
+      oldestDate,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -65,7 +67,8 @@ export class DevicesRepository implements Repository<Device> {
       return { 
         id: insertedId.toString(),
         ...device,
-        synchronizedAt
+        newestDate,
+        oldestDate
       };
     });
   }
