@@ -50,9 +50,14 @@ export class UsersUsecase {
       const newUser: Omit<User, 'id'> = { uuid, bucketId };
       user = await this.usersRepository.create(newUser);
 
-      // TODO: Does this device already exist? (look by name?? index name???)
-      const newDevice: CreateDeviceType = { ...deviceInfo, userId: user.id };
-      await this.devicesRepository.create(newDevice);
+      const alreadyCreatedDevice = await this.devicesRepository.getByMac(deviceInfo.mac);
+
+      if (alreadyCreatedDevice && alreadyCreatedDevice.userId !== user.id) {
+        throw new Error('Device not owned by this user');
+      }
+
+      const newDeviceData: CreateDeviceType = { ...deviceInfo, userId: user.id };
+      await this.devicesRepository.create(newDeviceData);
 
       return user;
     } catch (err) {
@@ -73,6 +78,7 @@ export class UsersUsecase {
         }
       }
 
+      console.log('finalErrorMessage:' ,finalErrorMessage);
       throw new Error(finalErrorMessage);
     }
   }

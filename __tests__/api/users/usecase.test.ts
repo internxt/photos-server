@@ -160,6 +160,7 @@ describe('Users usecases', () => {
         synchronizedAt: new Date('January 1, 1971 00:00:01'),
         ...deviceInfo,
       });
+      stub(devicesRepository, 'getByMac').resolves(null);
 
       const rollbackStub = stub(usecase, 'rollbackUserInitialization');
       const received = await usecase.initUser(uuid, network, deviceInfo);
