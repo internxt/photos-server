@@ -32,9 +32,8 @@ export class DevicesRepository implements Repository<Device> {
     });
   }
 
-  get(where: Filter<DeviceDocument>): Promise<Device[]> {
-    return this.collection
-      .find<DeviceDocument>(where)
+  get(filter: Partial<Device>) {
+    return this.getCursor(filter)
       .toArray()
       .then((results) => {
         return results.map(mongoDocToModel);
@@ -89,5 +88,14 @@ export class DevicesRepository implements Repository<Device> {
 
   async delete(where: Filter<DeviceDocument>) {
     await this.collection.deleteMany(where);
+  }
+
+  private getCursor({ userId }: Partial<Device>) {
+    const filter: Filter<DeviceDocument> = {};
+
+    userId ? filter.userId = toObjectId(userId) : null;
+
+    return this.collection
+      .find<DeviceDocument>(filter);
   }
 }
