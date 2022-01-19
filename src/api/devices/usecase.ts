@@ -31,18 +31,18 @@ export class DevicesUsecase {
     return results;
   }
 
-  async saveDevice(device: CreateDeviceType): Promise<Device> {
-    const alreadyExistentDevice = await this.devicesRepository.getByMac(device.mac);
+  async saveDevice(data: CreateDeviceType): Promise<Device> {
+    const alreadyExistentDevice = await this.devicesRepository.getByMac(data.mac);
 
     if (alreadyExistentDevice) {
-      if (alreadyExistentDevice.userId !== device.userId) {
+      if (alreadyExistentDevice.userId !== data.userId) {
         throw new Error('Device not owned by this user');
       } else {
         return alreadyExistentDevice;
       }
     }
 
-    return this.devicesRepository.create(device);
+    return this.devicesRepository.create(data);
   }
 
   updateSynchronizedAt(deviceId: string, synchronizedAt: Date) {
