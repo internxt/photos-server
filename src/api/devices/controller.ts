@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-import { Device, DeviceId } from '../../models/Device';
+import { DeviceId } from '../../models/Device';
 import { DevicesUsecase } from './usecase';
-import { CreateDeviceType } from './schemas';
+import { CreateDeviceType, GetDevicesQueryParamsType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
@@ -18,7 +18,7 @@ export class DevicesController {
 
   async getDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const device = await this.devicesUsecase.obtainDevice(req.params.id);
+    const device = await this.devicesUsecase.getDeviceById(req.params.id);
 
     if (!device) {
       throw new NotFoundError({ resource: 'Device' });
@@ -31,6 +31,18 @@ export class DevicesController {
     rep.send(device);
   }
 
+  async getDevices(
+    req: FastifyRequest<{ Querystring: GetDevicesQueryParamsType }>,
+    rep: FastifyReply  
+  ) {
+    const user = req.user as AuthorizedUser;
+
+    const results = await this.devicesUsecase.get(
+      user.payload.uuid
+    );
+
+    rep.send(results);
+  }
   async postDevice(req: FastifyRequest<{ Body: CreateDeviceType }>, rep: FastifyReply) {
     const { payload: { uuid }} = req.user as AuthorizedUser;
     const device: CreateDeviceType = req.body;
@@ -52,7 +64,7 @@ export class DevicesController {
 
   async deleteDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const device = await this.devicesUsecase.obtainDevice(req.params.id);
+    const device = await this.devicesUsecase.getDeviceById(req.params.id);
 
     if (!device) {
       throw new NotFoundError({ resource: 'Device' });

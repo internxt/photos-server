@@ -90,7 +90,7 @@ export class PhotosController {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 
-    const device = await this.devicesUsecase.obtainDevice(photo.deviceId);
+    const device = await this.devicesUsecase.getDeviceById(photo.deviceId);
     const createdPhoto = await this.photosUsecase.savePhoto(photo);
 
     if (!device) {

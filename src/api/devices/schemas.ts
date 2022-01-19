@@ -6,4 +6,7 @@ export const CreateDeviceSchema = Type.Object({
   userId: Type.String(),
 });
 
+export const GetDevicesQueryParamsSchema = Type.Object({});
+
 export type CreateDeviceType = Static<typeof CreateDeviceSchema>;
+export type GetDevicesQueryParamsType = Static<typeof GetDevicesQueryParamsSchema>;
