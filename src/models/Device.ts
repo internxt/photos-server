@@ -5,5 +5,5 @@ export interface Device {
   name: string;
   userId: string;
   newestDate: Date;
-  oldestDate: Date;
+  oldestDate: Date | null;
 }

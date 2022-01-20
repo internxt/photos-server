@@ -98,10 +98,10 @@ export class PhotosController {
     }
 
     if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
-      this.devicesUsecase.updateOldestDate(createdPhoto.deviceId, createdPhoto.takenAt);
+      this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
     }
 
-    if (createdPhoto.takenAt.getTime() < device.oldestDate.getTime()) {
+    if (!device.oldestDate || createdPhoto.takenAt.getTime() < device.oldestDate.getTime()) {
       this.devicesUsecase.updateOldestDate(createdPhoto.deviceId, createdPhoto.takenAt);
     }
 

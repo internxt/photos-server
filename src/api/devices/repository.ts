@@ -52,7 +52,7 @@ export class DevicesRepository implements Repository<Device> {
 
   create(device: Omit<Device, 'id' | 'newestDate' | 'oldestDate'>): Promise<Device> {
     const newestDate = new Date('January 1, 1971 00:00:01');
-    const oldestDate = new Date();
+    const oldestDate = null;
     const document: Omit<DeviceDocument, '_id'> = {
       ...device,
       userId: toObjectId(device.userId),

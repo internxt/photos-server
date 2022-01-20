@@ -45,7 +45,7 @@ describe('Devices usecases', () => {
 
     const received = { ...device, _id: alreadyExistentDevice._id }; 
 
-    expect({ ...received, oldestDate: undefined }).toStrictEqual({ ...received, oldestDate: undefined });
+    expect(received).toStrictEqual(expected);
   });
 
   it('get()', async () => {
@@ -61,7 +61,7 @@ describe('Devices usecases', () => {
 
     const received = { ...device, _id: alreadyExistentDevice._id }; 
 
-    expect({ ...received, oldestDate: undefined }).toStrictEqual({ ...expected, oldestDate: undefined });
+    expect(received).toStrictEqual(expected);
   });
 
   it('create()', async () => {
