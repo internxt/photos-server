@@ -78,7 +78,6 @@ export class UsersUsecase {
         }
       }
 
-      console.log('finalErrorMessage:' ,finalErrorMessage);
       throw new Error(finalErrorMessage);
     }
   }
