@@ -90,9 +90,20 @@ export class PhotosController {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 
+    const device = await this.devicesUsecase.getDeviceById(photo.deviceId);
     const createdPhoto = await this.photosUsecase.savePhoto(photo);
 
-    await this.devicesUsecase.updateSynchronizedAt(photo.deviceId, photo.takenAt);
+    if (!device) {
+      return rep.status(400).send({ message: 'Device not found' });
+    }
+
+    if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
+      this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
+    }
+
+    if (!device.oldestDate || createdPhoto.takenAt.getTime() < device.oldestDate.getTime()) {
+      this.devicesUsecase.updateOldestDate(createdPhoto.deviceId, createdPhoto.takenAt);
+    }
 
     rep.code(201).send(createdPhoto);
   }

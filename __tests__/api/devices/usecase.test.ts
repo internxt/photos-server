@@ -27,7 +27,8 @@ describe('Devices usecases', () => {
       mac: '',
       name: '',
       userId: '',
-      synchronizedAt: new Date()
+      newestDate: new Date('January 1, 1971 00:00:01'),
+      oldestDate: null
     };
 
     stub(devicesRepository, 'getById').returns(Promise.resolve(deviceDoc));
@@ -43,7 +44,8 @@ describe('Devices usecases', () => {
       mac: '',
       name: '',
       userId: '',
-      synchronizedAt: new Date()
+      newestDate: new Date('January 1, 1971 00:00:01'),
+      oldestDate: null
     };
 
     stub(devicesRepository, 'getByMac').returns(Promise.resolve(null));
@@ -62,7 +64,8 @@ describe('Devices usecases', () => {
       mac: '',
       name: '',
       userId: '',
-      synchronizedAt: new Date()
+      newestDate: new Date('January 1, 1971 00:00:01'),
+      oldestDate: null
     };
 
     stub(devicesRepository, 'getById').returns(Promise.resolve(deviceDoc));

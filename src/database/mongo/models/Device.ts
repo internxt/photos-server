@@ -4,7 +4,8 @@ import { Device } from '../../../models/Device';
 export interface DeviceDocument extends Omit<Device, 'id' | 'userId'> {
   _id: ObjectId;
   userId: ObjectId;
-  synchronizedAt: Date;
+  newestDate: Date;
+  oldestDate: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }

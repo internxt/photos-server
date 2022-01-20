@@ -158,7 +158,8 @@ describe('Users usecases', () => {
       stub(devicesRepository, 'create').resolves({
         id: deviceId,
         userId,
-        synchronizedAt: new Date('January 1, 1971 00:00:01'),
+        newestDate: new Date('January 1, 1971 00:00:01'),
+        oldestDate: null,
         ...deviceInfo,
       });
       stub(devicesRepository, 'getByMac').resolves(null);
