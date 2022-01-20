@@ -94,7 +94,7 @@ export class PhotosController {
     const createdPhoto = await this.photosUsecase.savePhoto(photo);
 
     if (!device) {
-      return rep.status(500).send({ message: 'Device not found' });
+      return rep.status(400).send({ message: 'Device not found' });
     }
 
     if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
