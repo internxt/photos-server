@@ -95,6 +95,7 @@ export class PhotosRepository implements Repository<Photo> {
     deviceId ? filter.deviceId = toObjectId(deviceId) : null;
 
     return this.collection
-      .find<PhotoDocument>(filter);
+      .find<PhotoDocument>(filter)
+      .sort({ takenAt: 'desc'});
   }
 }
