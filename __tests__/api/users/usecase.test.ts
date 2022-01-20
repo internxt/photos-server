@@ -6,6 +6,7 @@ import { v4 } from 'uuid';
 import { DevicesRepository } from '../../../src/api/devices/repository';
 import { UsersRepository } from '../../../src/api/users/repository';
 import { UsersUsecase } from '../../../src/api/users/usecase';
+import { users } from '../../../src/database/mongo/fixtures/users';
 import { User } from '../../../src/models/User';
 
 const UsersCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
@@ -160,6 +161,7 @@ describe('Users usecases', () => {
         synchronizedAt: new Date('January 1, 1971 00:00:01'),
         ...deviceInfo,
       });
+      stub(devicesRepository, 'getByMac').resolves(null);
 
       const rollbackStub = stub(usecase, 'rollbackUserInitialization');
       const received = await usecase.initUser(uuid, network, deviceInfo);
@@ -176,6 +178,26 @@ describe('Users usecases', () => {
       const received = await usecase.initUser(uuid, network, deviceInfo);
 
       expect(received).toStrictEqual(expected);
+    });
+
+    it('Should throw an error if the device mac is owned by another user', async () => {
+      const userOne = users[0];
+      const userTwo = users[1];
+      const errorMessage = 'Device not owned by this user';
+
+      stub(usecase, 'obtainUserByUuid').resolves(null);
+      stub(network, 'createBucket').resolves(bucketId);
+      stub(usersRepository, 'create').rejects(new Error(errorMessage));
+
+      try {
+        await usecase.initUser(userTwo.uuid, network, {
+          mac: 'macOneUserOne' + userOne._id,
+          name: 'deviceNameOne' + userOne._id
+        });
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect((err as Error).message).toContain(errorMessage);
+      }
     });
 
     describe('Should rollback if required when user init fails', () => {
