@@ -14,6 +14,7 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
       controller.getPhotos.bind(controller)
     );
       server.get('/:id', { preValidation: server.authenticate }, controller.getPhotoById.bind(controller));
+      server.get('/usage', { preValidation: server.authenticate }, controller.getUsage.bind(controller));
       server.post<{ Body: CreatePhotoType }>(
         '/',
         {

@@ -41,6 +41,18 @@ export class PhotosUsecase {
     return { results, count };
   }
 
+  async getUsage(userUuid: string): Promise<number> {
+    const user = await this.usersRepository.getByUuid(userUuid);
+
+    if (!user) {
+      throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
+    }
+
+    const usage = await this.photosRepository.getUsage(user.id);
+
+    return usage;
+  }
+
   savePhoto(photo: NewPhoto): Promise<Photo> {
     const photoToCreate: Omit<Photo, 'id'> = {
       ...photo,
