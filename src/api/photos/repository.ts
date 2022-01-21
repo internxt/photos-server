@@ -33,7 +33,7 @@ export class PhotosRepository implements Repository<Photo> {
     });
   }
 
-  get(filter: Partial<Photo>, skip = 0, limit = 0) {
+  get(filter: Partial<Photo>, skip = 0, limit = 1) {
     return this.getCursor(filter)
       .skip(skip)
       .limit(limit)

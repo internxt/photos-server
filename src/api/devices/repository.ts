@@ -15,6 +15,23 @@ function mongoDocToModel(doc: DeviceDocument): Device {
   return { ...doc, id, userId };
 }
 
+function modelToMongoDoc(model: Partial<Device>): Partial<DeviceDocument> {
+  const doc: Partial<DeviceDocument> = {};
+  const copyModel = Object.assign({}, model);
+  delete copyModel.id;
+  delete copyModel.userId;
+
+  if (model.id) {
+    doc._id = new ObjectId(model.id);
+  }
+
+  if (model.userId) {
+    doc.userId = new ObjectId(model.userId);
+  }
+
+  return { ...doc, ...(copyModel as Omit<Partial<Device>, 'id' | 'userId'>) };
+} 
+
 export class DevicesRepository implements Repository<Device> {
   private collection: Collection<DeviceDocument>;
 
@@ -33,7 +50,7 @@ export class DevicesRepository implements Repository<Device> {
   }
 
   get(filter: Partial<Device>) {
-    return this.getCursor(filter)
+    return this.collection.find(modelToMongoDoc(filter))
       .toArray()
       .then((results) => {
         return results.map(mongoDocToModel);
@@ -91,14 +108,5 @@ export class DevicesRepository implements Repository<Device> {
 
   async delete(where: Filter<DeviceDocument>) {
     await this.collection.deleteMany(where);
-  }
-
-  private getCursor({ userId }: Partial<Device>) {
-    const filter: Filter<DeviceDocument> = {};
-
-    userId ? filter.userId = toObjectId(userId) : null;
-
-    return this.collection
-      .find<DeviceDocument>(filter);
   }
 }

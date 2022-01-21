@@ -15,6 +15,9 @@ if (!process.env.DATABASE_URI) {
 const database = new MongoDB(process.env.DATABASE_URI);
 let repository: UsersRepository;
 
+const userToBeDeleted = { ...users[0] };
+const alwaysExistingUser = { ...users[1] };
+
 beforeAll((ready) => {
   database.connect().then(() => {
     repository = new UsersRepository(database.getCollections().users);
@@ -34,7 +37,7 @@ afterAll((finish) => {
 
 describe('Users repository', () => {
   it('getById()', async () => {
-    const alreadyExistentUser = { ...users[0] };
+    const alreadyExistentUser = alwaysExistingUser;
     const expected = { ...alreadyExistentUser, id: alreadyExistentUser._id.toString() };
     const user = await repository.getById(alreadyExistentUser._id.toString());
 
@@ -45,7 +48,7 @@ describe('Users repository', () => {
     expect(received).toStrictEqual(expected);
   });
 
-  it('get()', async () => {
+  it('get()', () => {
     expect(repository.get({})).rejects.toEqual('Not implemented yet');
   });
 
@@ -66,7 +69,7 @@ describe('Users repository', () => {
   });
 
   it('deleteById()', async () => {
-    const alreadyExistentUser = { ...users[0] };
+    const alreadyExistentUser = userToBeDeleted;
 
     await repository.deleteById(alreadyExistentUser._id.toString('hex'));
 

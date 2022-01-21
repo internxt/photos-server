@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { DevicesRepository } from '../../../src/api/devices/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
 import { devices } from '../../../src/database/mongo/fixtures/devices';
+import { getRandomString } from '../../utils';
 
 config();
 
@@ -13,6 +14,9 @@ if (!process.env.DATABASE_URI) {
 
 const database = new MongoDB(process.env.DATABASE_URI);
 let repository: DevicesRepository;
+
+const deviceToBeDeleted = { ...devices[0] };
+const alwaysExistingDevice = { ...devices[1] };
 
 beforeAll((ready) => {
   database.connect().then(() => {
@@ -31,9 +35,9 @@ afterAll((finish) => {
   });
 });
 
-describe('Devices usecases', () => {
+describe('Devices repository', () => {
   it('getById()', async () => {
-    const alreadyExistentDevice = { ...devices[0] };
+    const alreadyExistentDevice = alwaysExistingDevice;
     const expected = { 
       ...alreadyExistentDevice, 
       id: alreadyExistentDevice._id.toString(),
@@ -49,7 +53,7 @@ describe('Devices usecases', () => {
   });
 
   it('get()', async () => {
-    const alreadyExistentDevice = { ...devices[0] };
+    const alreadyExistentDevice = alwaysExistingDevice;
     const expected = { 
       ...alreadyExistentDevice, 
       id: alreadyExistentDevice._id.toString(),
@@ -65,11 +69,10 @@ describe('Devices usecases', () => {
   });
 
   it('create()', async () => {
-    const alreadyExistentDevice = { ...devices[0] };
     const received = await repository.create({
-      mac: alreadyExistentDevice.mac,
-      name: alreadyExistentDevice.name,
-      userId: alreadyExistentDevice.userId.toString(),
+      mac: getRandomString(12),
+      name: getRandomString(12),
+      userId: getRandomString(12),
     });
 
     expect(received).not.toBeNull();
@@ -78,12 +81,12 @@ describe('Devices usecases', () => {
     await repository.deleteById(received.id);
   });
 
-  it('update()', async () => {
+  it('update()', () => {
     expect(repository.update()).rejects.toEqual('Not implemented yet');
   });
 
   it('deleteById()', async () => {
-    const alreadyExistentDevice = { ...devices[0] };
+    const alreadyExistentDevice = deviceToBeDeleted;
 
     await repository.deleteById(alreadyExistentDevice._id.toString('hex'));
 
@@ -93,7 +96,7 @@ describe('Devices usecases', () => {
   });
 
   it('delete()', async () => {
-    const alreadyExistentDevice = { ...devices[0] };
+    const alreadyExistentDevice = deviceToBeDeleted;
 
     await repository.delete({ mac: alreadyExistentDevice.mac });
 

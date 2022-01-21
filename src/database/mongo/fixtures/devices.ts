@@ -51,4 +51,4 @@ const userTwoDevices: DeviceDocument[] = [
   },
 ];
 
-export const devices: Required<DeviceDocument>[] = [...userOneDevices, ...userTwoDevices];
+export const devices: Required<DeviceDocument>[] = userOneDevices.concat(userTwoDevices);

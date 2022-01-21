@@ -2,7 +2,6 @@ import { UsecaseError } from '../../core/Usecase';
 import { Device, DeviceId } from '../../models/Device';
 import { UsersRepository } from '../users/repository';
 import { DevicesRepository } from './repository';
-import { CreateDeviceType } from './schemas';
 
 export class DevicesUsecase {
   private readonly devicesRepository: DevicesRepository;
@@ -31,15 +30,14 @@ export class DevicesUsecase {
     return results;
   }
 
-  async saveDevice(data: CreateDeviceType): Promise<Device> {
+  async saveDevice(data: Pick<Device, 'mac' | 'userId' | 'name'>): Promise<Device> {
     const alreadyExistentDevice = await this.devicesRepository.getByMac(data.mac);
-
+    
     if (alreadyExistentDevice) {
-      if (alreadyExistentDevice.userId !== data.userId) {
-        throw new Error('Device not owned by this user');
-      } else {
+      if (alreadyExistentDevice.userId === data.userId) {
         return alreadyExistentDevice;
       }
+      throw new UsecaseError('Device not owned by this user');
     }
 
     return this.devicesRepository.create(data);
