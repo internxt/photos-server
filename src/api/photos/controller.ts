@@ -64,6 +64,17 @@ export class PhotosController {
     rep.send(photo);
   }
 
+  async getUsage(
+    req: FastifyRequest,
+    rep: FastifyReply  
+  ) {
+    const user = req.user as AuthorizedUser;
+
+    const usage = await this.photosUsecase.getUsage(user.payload.uuid);
+
+    rep.send({ usage });
+  }
+
   async postPhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
     const photo: NewPhoto = req.body;
