@@ -45,11 +45,11 @@ export class PhotosRepository implements Repository<Photo> {
 
   async getUsage(userId: string): Promise<number> {
     const result: { _id: null; usage: number} | null = await this.collection.aggregate<{ _id: null; usage: number}>([
-      { $match: { userId }},
+      { $match: { userId: toObjectId(userId) }},
       {
         $group: {
           _id: null,
-          usage: {$sum: '$size'},
+          usage: { $sum: '$size' },
         }
       }
     ]).next();
