@@ -5,6 +5,7 @@ import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
 import { photos } from '../../../src/database/mongo/fixtures/photos';
 import { PhotoStatus } from '../../../src/models/Photo';
+import { getRandomString } from '../../utils';
 
 config();
 
@@ -14,6 +15,9 @@ if (!process.env.DATABASE_URI) {
 
 const database = new MongoDB(process.env.DATABASE_URI);
 let repository: PhotosRepository;
+
+const photoToBeDeleted = { ...photos[0] };
+const existingPhoto = { ...photos[1] };
 
 beforeAll((ready) => {
   database.connect().then(() => {
@@ -32,9 +36,9 @@ afterAll((finish) => {
   });
 });
 
-describe('Photos usecases', () => {
+describe('Photos repository methods', () => {
   it('getById()', async () => {
-    const alreadyExistentPhoto = { ...photos[0] };
+    const alreadyExistentPhoto = existingPhoto;
     const expected = { 
       ...alreadyExistentPhoto, 
       id: alreadyExistentPhoto._id.toString(),
@@ -51,13 +55,14 @@ describe('Photos usecases', () => {
   });
 
   it('get()', async () => {
-    const alreadyExistentPhoto = { ...photos[0] };
+    const alreadyExistentPhoto = existingPhoto;
     const expected = { 
       ...alreadyExistentPhoto, 
       id: alreadyExistentPhoto._id.toString(),
       deviceId: alreadyExistentPhoto.deviceId.toString(),
       userId: alreadyExistentPhoto.userId.toString()
     };
+
     const [photo] = await repository.get({ name: alreadyExistentPhoto.name });
 
     expect(photo).not.toBeNull();
@@ -73,7 +78,7 @@ describe('Photos usecases', () => {
       deviceId: alreadyExistentPhoto.deviceId.toString(),
       fileId: alreadyExistentPhoto.fileId,
       height: alreadyExistentPhoto.height,
-      name: alreadyExistentPhoto.name,
+      name: getRandomString(10),
       previewId: alreadyExistentPhoto.previewId,
       size: alreadyExistentPhoto.size,
       type: alreadyExistentPhoto.type,
@@ -90,7 +95,7 @@ describe('Photos usecases', () => {
     await repository.deleteById(received.id);
   });
 
-  it('update()', async () => {
+  it('update()', () => {
     expect(repository.update()).rejects.toEqual('Not implemented yet');
   });
 
@@ -105,7 +110,7 @@ describe('Photos usecases', () => {
   });
 
   it('delete()', async () => {
-    const alreadyExistentPhoto = { ...photos[0] };
+    const alreadyExistentPhoto = photoToBeDeleted;
 
     await repository.delete({ name: alreadyExistentPhoto.name });
 
