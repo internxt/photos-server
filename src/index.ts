@@ -63,10 +63,11 @@ async function initHTTPServer(collections: MongoDBCollections, fastify: FastifyI
 
   await decorateWithAuth(fastify, {});
 
-  fastify.register(devicesRouter.handler, { prefix: devicesRouter.prefix });
-  fastify.register(photosRouter.handler, { prefix: photosRouter.prefix });
-  fastify.register(sharesRouter.handler, { prefix: sharesRouter.prefix });
-  fastify.register(usersRouter.handler, { prefix: usersRouter.prefix });
+  const API_PREFIX = 'api/';
+  fastify.register(devicesRouter.handler, { prefix: API_PREFIX + devicesRouter.prefix });
+  fastify.register(photosRouter.handler, { prefix: API_PREFIX + photosRouter.prefix });
+  fastify.register(sharesRouter.handler, { prefix: API_PREFIX + sharesRouter.prefix });
+  fastify.register(usersRouter.handler, { prefix: API_PREFIX + usersRouter.prefix });
 }
 
 function generateStopHandler(fastify: FastifyInstance, db: Database): StopManager {
