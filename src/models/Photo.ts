@@ -23,6 +23,7 @@ export interface Photo {
   deviceId: DeviceId
   userId: UserId
   status: PhotoStatus
+  hash: string;
   statusChangedAt: Date
   takenAt: Date
 }

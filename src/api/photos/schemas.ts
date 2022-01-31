@@ -13,7 +13,8 @@ export const CreatePhotoSchema = Type.Object({
   deviceId: Type.String(),
   userId: Type.String(),
   // TODO: Use ajv validation to force the format of a date on type String
-  takenAt: Type.Any()
+  takenAt: Type.Any(),
+  hash: Type.String()
 });
 
 export const GetPhotosQueryParamsSchema = Type.Object({

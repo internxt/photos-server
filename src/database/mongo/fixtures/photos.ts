@@ -23,6 +23,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     userId: userOne._id,
     width: 10,
     status: PhotoStatus.Exists,
+    hash: 'aaaaaaaaaaaaaaaaaaaaaaaa',
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
     statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
@@ -40,6 +41,7 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     userId: userOne._id,
     width: 10,
     status: PhotoStatus.Exists,
+    hash: 'aaaaaaaaaaaaaaaaaaaaaaab',
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
     statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
@@ -60,6 +62,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     userId: userTwo._id,
     width: 10,
     status: PhotoStatus.Exists,
+    hash: 'aaaaaaaaaaaaaaaaaaaaaaac',
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
     statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
@@ -77,6 +80,7 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     userId: userTwo._id,
     width: 10,
     status: PhotoStatus.Exists,
+    hash: 'aaaaaaaaaaaaaaaaaaaaaaad',
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
     statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
   },
