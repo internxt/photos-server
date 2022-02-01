@@ -77,14 +77,14 @@ export class PhotosController {
 
   async postPhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const photo: NewPhoto = req.body;
+    const body: NewPhoto = req.body;
 
-    if (photo.width <= 0 || photo.height <= 0 || photo.size <= 0) {
+    if (body.width <= 0 || body.height <= 0 || body.size <= 0) {
       return rep.code(400).send({ message: 'Invalid params' });
     }
 
-    photo.takenAt = dateToUTC(photo.takenAt);
-    const takenAt = dayjs(photo.takenAt);
+    body.takenAt = dateToUTC(body.takenAt);
+    const takenAt = dayjs(body.takenAt);
     const createdInTheFuture = takenAt.isAfter(new Date());
 
     if (!takenAt.isValid() || createdInTheFuture) {
@@ -97,12 +97,12 @@ export class PhotosController {
       return rep.status(400).send();
     }
 
-    if (photo.userId !== photosUser.id) {
+    if (body.userId !== photosUser.id) {
       return rep.status(403).send({ message: 'Forbidden' });
     }
 
-    const device = await this.devicesUsecase.getDeviceById(photo.deviceId);
-    const createdPhoto = await this.photosUsecase.savePhoto(photo);
+    const device = await this.devicesUsecase.getDeviceById(body.deviceId);
+    const createdPhoto = await this.photosUsecase.savePhoto(body);
 
     if (!device) {
       return rep.status(400).send({ message: 'Device not found' });

@@ -53,11 +53,12 @@ export class PhotosUsecase {
     return usage;
   }
 
-  savePhoto(photo: NewPhoto): Promise<Photo> {
+  savePhoto(data: NewPhoto): Promise<Photo> {
+    const now = new Date();
     const photoToCreate: Omit<Photo, 'id'> = {
-      ...photo,
+      ...data,
       status: PhotoStatus.Exists,
-      statusChangedAt: new Date()
+      statusChangedAt: now
     };
 
     return this.photosRepository.create(photoToCreate);

@@ -61,18 +61,18 @@ export class PhotosRepository implements Repository<Photo> {
     return this.getCursor(filter).count();
   }
 
-  create(photo: Omit<Photo, 'id'>): Promise<Photo> {
+  create(data: Omit<Photo, 'id'>): Promise<Photo> {
     const now = new Date();
     const document: Omit<PhotoDocument, '_id'> = {
-      ...photo,
-      userId: toObjectId(photo.userId),
-      deviceId: toObjectId(photo.deviceId),
+      ...data,
+      userId: toObjectId(data.userId),
+      deviceId: toObjectId(data.deviceId),
       createdAt: now,
       updatedAt: now
     };
 
     return this.collection.insertOne(document).then(({ insertedId }) => {
-      return { id: insertedId.toString(), ...photo, createdAt: now, updatedAt: now };
+      return { id: insertedId.toString(), ...data, createdAt: now, updatedAt: now };
     });
   }
 

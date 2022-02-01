@@ -84,6 +84,7 @@ describe('Photos repository methods', () => {
       type: alreadyExistentPhoto.type,
       userId: alreadyExistentPhoto.userId.toString(),
       width: alreadyExistentPhoto.width,
+      hash: alreadyExistentPhoto.hash,
       status: PhotoStatus.Exists,
       takenAt: new Date(),
       statusChangedAt: new Date()

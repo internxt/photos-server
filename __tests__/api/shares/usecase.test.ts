@@ -77,6 +77,7 @@ describe('Shares usecases', () => {
         userId,
         width: 40,
         status: PhotoStatus.Exists,
+        hash: '12345',
         takenAt: new Date(),
         statusChangedAt: new Date()
       };
@@ -134,6 +135,7 @@ describe('Shares usecases', () => {
         userId,
         width: 40,
         status: PhotoStatus.Exists,
+        hash: '1234',
         takenAt: new Date(),
         statusChangedAt: new Date()
       };
@@ -169,6 +171,7 @@ describe('Shares usecases', () => {
         type: 'jpg',
         userId,
         width: 40,
+        hash: '1234',
         status: PhotoStatus.Exists,
         takenAt: new Date(),
         statusChangedAt: new Date()
