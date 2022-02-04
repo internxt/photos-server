@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 
 import { DeviceId } from '../../models/Device';
 import { DevicesUsecase } from './usecase';
-import { CreateDeviceType, GetDevicesQueryParamsType } from './schemas';
+import { CreateDeviceType, FixMacAddressType, GetDevicesQueryParamsType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
@@ -60,6 +60,18 @@ export class DevicesController {
     const createdDevice = await this.devicesUsecase.saveDevice(device);
 
     rep.code(201).send(createdDevice);
+  }
+
+    async fixMacAddress(req: FastifyRequest<{ Body: FixMacAddressType }>, rep: FastifyReply) {
+    const { payload: { uuid }} = req.user as AuthorizedUser;
+    const { mac, uniqueId } = req.body;
+    const user = await this.usersUsecase.obtainUserByUuid(uuid);
+
+    if (user) {
+      await this.devicesUsecase.fixMacAddress({userId: user.id, mac, uniqueId});
+    }
+
+    rep.code(201).send();
   }
 
   async deleteDeviceById(req: FastifyRequest<{ Params: { id: DeviceId } }>, rep: FastifyReply) {
