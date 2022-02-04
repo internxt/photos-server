@@ -43,12 +43,7 @@ export class PhotosUsecase {
 
   async getUsage(userUuid: string): Promise<number> {
     const user = await this.usersRepository.getByUuid(userUuid);
-
-    if (!user) {
-      throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
-    }
-
-    const usage = await this.photosRepository.getUsage(user.id);
+    const usage = user ? await this.photosRepository.getUsage(user.id) : 0;
 
     return usage;
   }
