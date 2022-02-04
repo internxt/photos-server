@@ -75,6 +75,8 @@ export class UsersUsecase {
 
         if (rollbackError) {
           finalErrorMessage += `and ${rollbackError.message}`;
+        } else {
+          finalErrorMessage += ' | initUser rollback applied successfully';
         }
       }
 
