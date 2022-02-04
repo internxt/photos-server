@@ -53,7 +53,7 @@ export class UsersUsecase {
       const alreadyCreatedDevice = await this.devicesRepository.getByMac(deviceInfo.mac);
 
       if (alreadyCreatedDevice && alreadyCreatedDevice.userId !== user.id) {
-        throw new Error('Device not owned by this user');
+        throw new Error(`Device with mac "${deviceInfo.mac}" not owned by this user`);
       }
 
       const newDeviceData: CreateDeviceType = { ...deviceInfo, userId: user.id };
