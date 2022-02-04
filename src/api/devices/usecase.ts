@@ -47,7 +47,7 @@ export class DevicesUsecase {
     const alreadyExistentDevice = await this.devicesRepository.getByMac(mac);
 
     if (alreadyExistentDevice?.userId === userId) {
-      await this.devicesRepository.fixMacAddress({mac, uniqueId});
+      await this.devicesRepository.fixMacAddress({userId, mac, uniqueId});
     }
   }
 

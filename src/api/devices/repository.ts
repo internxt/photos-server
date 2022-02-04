@@ -102,8 +102,8 @@ export class DevicesRepository implements Repository<Device> {
     );
   }
     
-  fixMacAddress({mac, uniqueId}: {mac: string, uniqueId: string}) {
-    return this.collection.updateOne({ mac }, 
+  fixMacAddress({userId, mac, uniqueId}: {userId: string, mac: string, uniqueId: string}) {
+    return this.collection.updateOne({ userId: toObjectId(userId), mac }, 
       {$set: {
         mac: uniqueId,
         updatedAt: new Date()
