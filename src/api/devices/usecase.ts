@@ -43,6 +43,14 @@ export class DevicesUsecase {
     return this.devicesRepository.create(data);
   }
 
+  async fixMacAddress({ userId, mac, uniqueId}: { userId: string, mac: string, uniqueId: string}) {
+    const alreadyExistentDevice = await this.devicesRepository.getByMac(mac);
+
+    if (alreadyExistentDevice?.userId === userId) {
+      await this.devicesRepository.fixMacAddress({userId, mac, uniqueId});
+    }
+  }
+
   updateNewestDate(deviceId: string, newestDate: Date) {
     return this.devicesRepository.updateById(deviceId, { newestDate });
   }

@@ -101,6 +101,15 @@ export class DevicesRepository implements Repository<Device> {
       }}
     );
   }
+    
+  fixMacAddress({userId, mac, uniqueId}: {userId: string, mac: string, uniqueId: string}) {
+    return this.collection.updateOne({ userId: toObjectId(userId), mac }, 
+      {$set: {
+        mac: uniqueId,
+        updatedAt: new Date()
+      }}
+    );
+  }
 
   async deleteById(id: DeviceId) {
     await this.collection.deleteOne({ _id: toObjectId(id) });

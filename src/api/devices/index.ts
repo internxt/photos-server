@@ -1,6 +1,12 @@
 import { FastifyRouter } from '../router';
 import { DevicesController } from './controller';
-import { CreateDeviceType, CreateDeviceSchema, GetDevicesQueryParamsSchema } from './schemas';
+import {
+  CreateDeviceType,
+  CreateDeviceSchema,
+  GetDevicesQueryParamsSchema,
+  FixMacAddressSchema,
+  FixMacAddressType
+} from './schemas';
 
 export const buildRouter = (controller: DevicesController): FastifyRouter => {
   return {
@@ -23,6 +29,16 @@ export const buildRouter = (controller: DevicesController): FastifyRouter => {
           },
         },
         controller.postDevice.bind(controller),
+      );
+      server.post<{ Body: FixMacAddressType }>(
+        '/fix-mac-address',
+        {
+          preValidation: server.authenticate,
+          schema: {
+            body: FixMacAddressSchema,
+          },
+        },
+        controller.fixMacAddress.bind(controller),
       );
       server.delete('/:id', { preValidation: server.authenticate }, controller.deleteDeviceById.bind(controller));
 
