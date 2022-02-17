@@ -25,6 +25,7 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
         },
         controller.postPhoto.bind(controller),
       );
+      server.patch('/:id', { preValidation: server.authenticate }, controller.updatePhotoById.bind(controller));
       server.delete('/:id', { preValidation: server.authenticate }, controller.deletePhotoById.bind(controller));
 
       done();

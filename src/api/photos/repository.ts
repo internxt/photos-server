@@ -63,8 +63,10 @@ export class PhotosRepository implements Repository<Photo> {
 
   create(data: Omit<Photo, 'id'>): Promise<Photo> {
     const now = new Date();
+    const previews = data.previews || [];
     const document: Omit<PhotoDocument, '_id'> = {
       ...data,
+      previews,
       userId: toObjectId(data.userId),
       deviceId: toObjectId(data.deviceId),
       createdAt: now,
@@ -72,7 +74,7 @@ export class PhotosRepository implements Repository<Photo> {
     };
 
     return this.collection.insertOne(document).then(({ insertedId }) => {
-      return { id: insertedId.toString(), ...data, createdAt: now, updatedAt: now };
+      return { id: insertedId.toString(), ...data, previews, createdAt: now, updatedAt: now };
     });
   }
 

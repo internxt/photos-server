@@ -1,4 +1,5 @@
 import { UsecaseError } from '../../core/Usecase';
+import { PhotoDocument } from '../../database/mongo/models/Photo';
 
 import { NewPhoto, Photo, PhotoId, PhotoStatus } from '../../models/Photo';
 import { UsersRepository } from '../users/repository';
@@ -65,6 +66,10 @@ export class PhotosUsecase {
 
   async trashPhoto(photoId: string) {
     return this.changePhotoStatus(photoId, PhotoStatus.Trashed);
+  }
+
+  async updateById(photoId: PhotoId, changes: Partial<PhotoDocument>): Promise<void> {
+    await this.photosRepository.updateById(photoId, changes);
   }
 
   private async changePhotoStatus(photoId: PhotoId, newStatus: PhotoStatus): Promise<void> {
