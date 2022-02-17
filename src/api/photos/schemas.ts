@@ -9,12 +9,30 @@ export const CreatePhotoSchema = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   fileId: Type.String(),
-  previewId: Type.String(),
+  previewId: Type.String(), // UNUSED
   deviceId: Type.String(),
   userId: Type.String(),
-  // TODO: Use ajv validation to force the format of a date on type String
+  previews: Type.Optional(
+    Type.Array(Type.Object({
+      width: Type.Number(),
+      height: Type.Number(),
+      size: Type.Number(),
+      fileId: Type.String()
+    }))
+  ),
   takenAt: Type.Any(),
   hash: Type.String()
+});
+
+export const UpdatePhotoSchema = Type.Object({
+  previews: Type.Optional(
+    Type.Array(Type.Object({
+      width: Type.Number(),
+      height: Type.Number(),
+      size: Type.Number(),
+      fileId: Type.String()
+    }))
+  ),
 });
 
 export const GetPhotosQueryParamsSchema = Type.Object({
@@ -27,4 +45,5 @@ export const GetPhotosQueryParamsSchema = Type.Object({
 });
 
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;
+export type UpdatePhotoType = Static<typeof UpdatePhotoSchema>;
 export type GetPhotosQueryParamsType = Static<typeof GetPhotosQueryParamsSchema>;

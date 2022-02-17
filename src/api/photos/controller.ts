@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import { NewPhoto, PhotoId } from '../../models/Photo';
 import { PhotosUsecase } from './usecase';
-import { CreatePhotoType, GetPhotosQueryParamsType } from './schemas';
+import { CreatePhotoType, GetPhotosQueryParamsType, UpdatePhotoType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
@@ -117,6 +117,31 @@ export class PhotosController {
     }
 
     rep.code(201).send(createdPhoto);
+  }
+
+  async updatePhotoById(req: FastifyRequest<{ Params: { id: PhotoId }, Body: UpdatePhotoType }>, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+    const photoId = req.params.id;
+    const body = req.body;
+    const photo = await this.photosUsecase.getById(photoId);
+
+    if (!photo) {
+      throw new NotFoundError({ resource: 'Photo' });
+    }
+
+    const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+
+    if (!photosUser) {
+      return rep.status(400).send();
+    }
+
+    if (photo.userId !== photosUser.id) {
+      return rep.status(403).send({ message: 'Forbidden' });
+    }
+
+    await this.photosUsecase.updateById(req.params.id, body);
+
+    rep.send({ message: 'Updated photo' });
   }
 
   async deletePhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
