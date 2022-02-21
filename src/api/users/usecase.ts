@@ -50,7 +50,7 @@ export class UsersUsecase {
       const newUser: Omit<User, 'id'> = { uuid, bucketId };
       user = await this.usersRepository.create(newUser);
 
-      const alreadyCreatedDevice = await this.devicesRepository.getByMac(deviceInfo.mac);
+      const alreadyCreatedDevice = await this.devicesRepository.getByUserIdAndMac(user.id, deviceInfo.mac);
 
       if (alreadyCreatedDevice && alreadyCreatedDevice.userId !== user.id) {
         throw new Error(`Device with mac "${deviceInfo.mac}" not owned by this user`);

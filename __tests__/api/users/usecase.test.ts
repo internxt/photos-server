@@ -162,7 +162,7 @@ describe('Users usecases', () => {
         oldestDate: null,
         ...deviceInfo,
       });
-      stub(devicesRepository, 'getByMac').resolves(null);
+      stub(devicesRepository, 'getByUserIdAndMac').resolves(null);
 
       const rollbackStub = stub(usecase, 'rollbackUserInitialization');
       const received = await usecase.initUser(uuid, network, deviceInfo);
