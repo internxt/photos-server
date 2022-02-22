@@ -1,6 +1,14 @@
 import { Type, Static } from '@sinclair/typebox';
 
-import { PhotoStatus } from '../../models/Photo';
+import { PhotoPreviewType, PhotoStatus } from '../../models/Photo';
+
+export const PhotoPreviewSchema = Type.Object({
+  width: Type.Number(),
+  height: Type.Number(),
+  size: Type.Number(),
+  fileId: Type.String(),
+  type: Type.Enum(PhotoPreviewType),
+});
 
 export const CreatePhotoSchema = Type.Object({
   name: Type.String(),
@@ -13,12 +21,7 @@ export const CreatePhotoSchema = Type.Object({
   deviceId: Type.String(),
   userId: Type.String(),
   previews: Type.Optional(
-    Type.Array(Type.Object({
-      width: Type.Number(),
-      height: Type.Number(),
-      size: Type.Number(),
-      fileId: Type.String()
-    }))
+    Type.Array(PhotoPreviewSchema)
   ),
   takenAt: Type.Any(),
   hash: Type.String()
@@ -26,12 +29,7 @@ export const CreatePhotoSchema = Type.Object({
 
 export const UpdatePhotoSchema = Type.Object({
   previews: Type.Optional(
-    Type.Array(Type.Object({
-      width: Type.Number(),
-      height: Type.Number(),
-      size: Type.Number(),
-      fileId: Type.String()
-    }))
+    Type.Array(PhotoPreviewSchema)
   ),
 });
 
