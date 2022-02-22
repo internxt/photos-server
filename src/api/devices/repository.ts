@@ -57,8 +57,8 @@ export class DevicesRepository implements Repository<Device> {
       });
   }
 
-  getByMac(mac: string): Promise<Device | null> {
-    return this.collection.findOne<DeviceDocument>({ mac }).then((doc): Device | null => {
+  getByUserIdAndMac(userId: string, mac: string): Promise<Device | null> {
+    return this.collection.findOne<DeviceDocument>({ userId: toObjectId(userId), mac }).then((doc): Device | null => {
       if (!doc || !doc._id) {
         return null;
       }

@@ -31,20 +31,13 @@ export class DevicesUsecase {
   }
 
   async saveDevice(data: Pick<Device, 'mac' | 'userId' | 'name'>): Promise<Device> {
-    const alreadyExistentDevice = await this.devicesRepository.getByMac(data.mac);
+    const alreadyExistentDevice = await this.devicesRepository.getByUserIdAndMac(data.userId, data.mac);
     
-    if (alreadyExistentDevice) {
-      if (alreadyExistentDevice.userId === data.userId) {
-        return alreadyExistentDevice;
-      }
-      throw new UsecaseError('Device not owned by this user');
-    }
-
-    return this.devicesRepository.create(data);
+    return alreadyExistentDevice || this.devicesRepository.create(data);
   }
 
   async fixMacAddress({ userId, mac, uniqueId}: { userId: string, mac: string, uniqueId: string}) {
-    const alreadyExistentDevice = await this.devicesRepository.getByMac(mac);
+    const alreadyExistentDevice = await this.devicesRepository.getByUserIdAndMac(userId, mac);
 
     if (alreadyExistentDevice?.userId === userId) {
       await this.devicesRepository.fixMacAddress({userId, mac, uniqueId});

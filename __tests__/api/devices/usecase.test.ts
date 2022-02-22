@@ -48,7 +48,7 @@ describe('Devices usecases', () => {
       oldestDate: null
     };
 
-    stub(devicesRepository, 'getByMac').returns(Promise.resolve(null));
+    stub(devicesRepository, 'getByUserIdAndMac').returns(Promise.resolve(null));
     stub(devicesRepository, 'create').returns(Promise.resolve(deviceDoc));
 
     const received = await usecase.saveDevice(deviceDoc);
