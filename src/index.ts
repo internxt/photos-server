@@ -1,4 +1,5 @@
 import Fastify, { FastifyInstance } from 'fastify';
+import fastifyCors from 'fastify-cors';
 import { config } from 'dotenv';
 
 import decorateWithAuth from './middleware/auth/jwt';
@@ -93,6 +94,22 @@ async function start(config: ServerConfig): Promise<StopManager> {
   } else {
     fastify = Fastify({ logger: config.logger.enabled });
   }
+
+  fastify.register(fastifyCors, {
+    allowedHeaders: [
+      'sessionId',
+      'Content-Type',
+      'Authorization',
+      'method',
+      'internxt-version',
+      'internxt-client',
+      'internxt-mnemonic',
+    ],
+    exposedHeaders: ['sessionId'],
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+  });
 
   if (!process.env.DATABASE_URI || !process.env.DATABASE_NAME) {
     fastify.log.error('Missing env vars');
