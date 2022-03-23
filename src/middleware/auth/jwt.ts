@@ -5,6 +5,10 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 export interface AuthorizedUser {
   payload: {
     uuid: string;
+    networkCredentials: {
+      user: string;
+      pass: string;
+    };
   };
 }
 
