@@ -52,8 +52,10 @@ export class PhotosController {
         bridgePass,
         bridgeUser,
       });
+
+      const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
       const response = await network.getDownloadLinks(
-        `Photos-${user.payload.uuid}`,
+        photosUser!.bucketId,
         results.map((photo) => photo.previewId),
       );
 
