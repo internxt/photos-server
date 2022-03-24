@@ -9,6 +9,7 @@ import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
 import { dateToUTC } from '../../lib/utils';
 import { DevicesUsecase } from '../devices/usecase';
+import { Environment } from '@internxt/inxt-js';
 
 export class PhotosController {
   private photosUsecase: PhotosUsecase;
@@ -22,25 +23,48 @@ export class PhotosController {
   }
 
   async getPhotos(
-    req: FastifyRequest<{ Querystring: GetPhotosQueryParamsType }>,
-    rep: FastifyReply  
+    req: FastifyRequest<{
+      Querystring: GetPhotosQueryParamsType;
+    }>,
+    rep: FastifyReply,
   ) {
     const user = req.user as AuthorizedUser;
-    const { name, status, statusChangedAt, limit, skip, deviceId } = req.query;
+    const { name, status, statusChangedAt, limit, skip, deviceId, includeDownloadLinks } = req.query;
 
     // TODO: from is the future + cast date to UTC
     if (!dayjs(statusChangedAt).isValid()) {
       rep.status(400).send({ message: 'Bad "from" date format' });
     }
 
-    const {results, count} = await this.photosUsecase.get(
-      user.payload.uuid, 
-      { name, status, statusChangedAt: statusChangedAt ? new Date(statusChangedAt) : undefined, deviceId},
+    const { results, count } = await this.photosUsecase.get(
+      user.payload.uuid,
+      { name, status, statusChangedAt: statusChangedAt ? new Date(statusChangedAt) : undefined, deviceId },
       skip,
-      limit
+      limit,
     );
 
-    rep.send({results, count});
+    if (!includeDownloadLinks) {
+      rep.send({ results, count });
+    } else {
+      const { user: bridgeUser, pass: bridgePass } = user.payload.networkCredentials;
+      const network = new Environment({
+        bridgeUrl: process.env.NETWORK_URL,
+        bridgePass,
+        bridgeUser,
+      });
+      const response = await network.getDownloadLinks(
+        `Photos-${user.payload.uuid}`,
+        results.map((photo) => photo.previewId),
+      );
+
+      const resultsWithDownloadLinks = response.map(({ link, index }, i) => ({
+        ...results[i],
+        previewLink: link,
+        previewIndex: index,
+      }));
+
+      rep.send({ results: resultsWithDownloadLinks, count });
+    }
   }
 
   async getPhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
@@ -64,10 +88,7 @@ export class PhotosController {
     rep.send(photo);
   }
 
-  async getUsage(
-    req: FastifyRequest,
-    rep: FastifyReply  
-  ) {
+  async getUsage(req: FastifyRequest, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
 
     const usage = await this.photosUsecase.getUsage(user.payload.uuid);
@@ -119,7 +140,7 @@ export class PhotosController {
     rep.code(201).send(createdPhoto);
   }
 
-  async updatePhotoById(req: FastifyRequest<{ Params: { id: PhotoId }, Body: UpdatePhotoType }>, rep: FastifyReply) {
+  async updatePhotoById(req: FastifyRequest<{ Params: { id: PhotoId }; Body: UpdatePhotoType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
     const photoId = req.params.id;
     const body = req.body;

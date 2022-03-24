@@ -20,17 +20,13 @@ export const CreatePhotoSchema = Type.Object({
   previewId: Type.String(), // UNUSED
   deviceId: Type.String(),
   userId: Type.String(),
-  previews: Type.Optional(
-    Type.Array(PhotoPreviewSchema)
-  ),
+  previews: Type.Optional(Type.Array(PhotoPreviewSchema)),
   takenAt: Type.Any(),
-  hash: Type.String()
+  hash: Type.String(),
 });
 
 export const UpdatePhotoSchema = Type.Object({
-  previews: Type.Optional(
-    Type.Array(PhotoPreviewSchema)
-  ),
+  previews: Type.Optional(Type.Array(PhotoPreviewSchema)),
 });
 
 export const GetPhotosQueryParamsSchema = Type.Object({
@@ -40,6 +36,7 @@ export const GetPhotosQueryParamsSchema = Type.Object({
   deviceId: Type.Optional(Type.String()),
   limit: Type.Number(),
   skip: Type.Number(),
+  includeDownloadLinks: Type.Optional(Type.Boolean()),
 });
 
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;
