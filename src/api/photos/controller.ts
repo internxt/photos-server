@@ -65,7 +65,7 @@ export class PhotosController {
         previewIndex: index,
       }));
 
-      rep.send({ results: resultsWithDownloadLinks, count });
+      rep.send({ results: resultsWithDownloadLinks, count, bucketId: photosUser!.bucketId });
     }
   }
 
