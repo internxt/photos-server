@@ -1,5 +1,6 @@
 import { Collection } from 'mongodb';
 import { stub } from 'sinon';
+import { ExpiredError } from '../../../src/api/errors/http/Expired';
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { PhotoNotFoundError } from '../../../src/api/photos/usecase';
 
@@ -47,6 +48,25 @@ describe('Shares usecases', () => {
 
     expect(received).toStrictEqual(expected);
     expect(spy).toHaveBeenCalledWith(shareId, { views: expected.views - 1 });
+  });
+
+  it('obtainShareById() with expired share should throw', async () => {
+    const expected: Share = {
+      id: shareId,
+      bucket: bucketId,
+      encryptedMnemonic: 'encriptionKey',
+      photoIds: ['aaaaaaaaaaaa'],
+      token: 'token',
+      views: 0,
+    };
+
+    stub(sharesRepository, 'getById').returns(Promise.resolve(expected));
+    try {
+      await sharesUsecase.obtainShareById(expected.id);
+      expect(true).toBeFalsy();
+    } catch (err) {
+      expect(err).toBeInstanceOf(ExpiredError);
+    }
   });
 
   it('obtainShareByToken()', async () => {

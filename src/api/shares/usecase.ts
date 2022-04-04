@@ -5,6 +5,7 @@ import { PhotoNotFoundError } from '../photos/usecase';
 import { PhotosRepository } from '../photos/repository';
 import { SharesRepository } from './repository';
 import { NotFoundError } from '../errors/http/NotFound';
+import { ExpiredError } from '../errors/http/Expired';
 
 export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {
@@ -25,6 +26,10 @@ export class SharesUsecase {
     const share = await this.repository.getById(id);
     if (!share) {
       throw new NotFoundError({ resource: 'Share' });
+    }
+
+    if (share.views <= 0) {
+      throw new ExpiredError();
     }
     await this.repository.update(id, { views: share.views - 1 });
     return share;
