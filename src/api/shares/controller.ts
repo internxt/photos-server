@@ -12,10 +12,10 @@ export class SharesController {
     this.usecase = usecase;
   }
 
-  async getShare(req: FastifyRequest<{ Params: { id: string } }>, rep: FastifyReply) {
+  async getShare(req: FastifyRequest<{ Params: { id: string }; Querystring: { code: string } }>, rep: FastifyReply) {
     const share = await this.usecase.obtainShareById(req.params.id);
-
-    rep.send(share);
+    const photos = await this.usecase.getPhotosFromShare(share, req.query.code);
+    rep.send({ ...share, photos });
   }
 
   async postShare(req: FastifyRequest<{ Body: CreateShareType }>, rep: FastifyReply) {

@@ -6,6 +6,9 @@ import { PhotosRepository } from '../photos/repository';
 import { SharesRepository } from './repository';
 import { NotFoundError } from '../errors/http/NotFound';
 import { ExpiredError } from '../errors/http/Expired';
+import { Photo } from '../../models/Photo';
+import { aes } from '@internxt/lib';
+import { Environment } from '@internxt/inxt-js';
 
 export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {
@@ -59,5 +62,24 @@ export class SharesUsecase {
 
   updateShare(shareId: string, merge: Pick<Share, 'views'>): Promise<void> {
     return this.repository.update(shareId, merge);
+  }
+
+  async getPhotosFromShare(
+    share: Share,
+    mnemonicDecryptionKey: string,
+  ): Promise<(Pick<Photo, 'fileId' | 'name' | 'size' | 'type'> & { decryptionKey: string })[]> {
+    const mnemonic = aes.decrypt(share.encryptedMnemonic, mnemonicDecryptionKey);
+    const photos = [];
+    for (const photoId of share.photoIds) {
+      const photo = await this.photosRepository.getById(photoId);
+      const file = await Environment.getFileInfo(process.env.NETWORK_URL!, share.bucket, photo!.fileId, share.token);
+      const decryptionKey = (
+        await Environment.utils.generateFileKey(mnemonic, share.bucket, Buffer.from(file.index, 'hex'))
+      ).toString('hex');
+
+      const { fileId, name, size, type } = photo!;
+      photos.push({ fileId, name, size, type, decryptionKey });
+    }
+    return photos;
   }
 }
