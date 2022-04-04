@@ -91,7 +91,9 @@ describe('Shares usecases', () => {
         views: 5,
       };
 
-      const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
+      const getPhotoByIdStub = stub(photosRepository, 'getByMultipleIds').returns(
+        Promise.resolve([alreadyExistentPhoto]),
+      );
       const createShareStub = stub(sharesRepository, 'create').returns(
         Promise.resolve({ ...shareToCreate, id: expectedShareId }),
       );
@@ -112,7 +114,7 @@ describe('Shares usecases', () => {
         views: 5,
       };
 
-      stub(photosRepository, 'getById').returns(Promise.resolve(null));
+      stub(photosRepository, 'getByMultipleIds').returns(Promise.resolve([]));
 
       try {
         await sharesUsecase.createShare(userId, shareToCreate);
@@ -147,7 +149,7 @@ describe('Shares usecases', () => {
         views: 5,
       };
 
-      stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
+      stub(photosRepository, 'getByMultipleIds').returns(Promise.resolve([alreadyExistentPhoto]));
 
       try {
         await sharesUsecase.createShare(userId + 'notthisuser', shareToCreate);

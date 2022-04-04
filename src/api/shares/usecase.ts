@@ -1,7 +1,5 @@
-import { randomBytes } from 'crypto';
-
 import { UsecaseError } from '../../core/Usecase';
-import { Share, ShareId } from '../../models/Share';
+import { MAX_PHOTOS_IN_SHARE, Share, ShareId } from '../../models/Share';
 import { UserId } from '../../models/User';
 import { PhotoNotFoundError } from '../photos/usecase';
 import { PhotosRepository } from '../photos/repository';
@@ -30,15 +28,18 @@ export class SharesUsecase {
     return this.repository.getByToken(token);
   }
 
-  async createShare(userId: UserId, data: Omit<Share, 'id' | 'token'>): Promise<Share> {
-    const share: Omit<Share, 'id'> = { ...data, token: randomBytes(10).toString('hex') };
-    const photo = await this.photosRepository.getById(share.photoIds[0]);
+  async createShare(userId: UserId, data: Omit<Share, 'id'>): Promise<Share> {
+    const share: Omit<Share, 'id'> = data;
+    const photos = await this.photosRepository.getByMultipleIds(data.photoIds, 0, MAX_PHOTOS_IN_SHARE);
 
-    if (!photo) {
-      throw new PhotoNotFoundError(share.photoIds[0]);
+    if (photos.length !== data.photoIds.length) {
+      const photoMissingId = data.photoIds.find((id) => !photos.find((photo) => photo.id === id))!;
+      throw new PhotoNotFoundError(photoMissingId);
     }
 
-    if (photo.userId !== userId) {
+    const allPhotosAreOwnedByThisUser = photos.every((photo) => photo.userId === userId);
+
+    if (!allPhotosAreOwnedByThisUser) {
       throw new ShareNotOwnedByThisUserError(userId);
     }
 

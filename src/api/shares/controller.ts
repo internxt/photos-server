@@ -25,7 +25,7 @@ export class SharesController {
 
   async postShare(req: FastifyRequest<{ Body: CreateShareType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const share: Omit<Share, 'id' | 'token'> = req.body;
+    const share: Omit<Share, 'id'> = req.body;
 
     const createdShare = await this.usecase.createShare(user.payload.uuid, share);
 
@@ -33,7 +33,7 @@ export class SharesController {
   }
 
   async putShare(req: FastifyRequest<{ Body: UpdateShareType }>, rep: FastifyReply) {
-    const {id, views} = req.body;
+    const { id, views } = req.body;
     const share = await this.usecase.obtainShareById(id);
 
     if (!share) {

@@ -33,6 +33,15 @@ export class PhotosRepository implements Repository<Photo> {
     });
   }
 
+  getByMultipleIds(id: PhotoId[], skip: number, limit: number): Promise<Photo[]> {
+    return this.collection
+      .find<PhotoDocument>({ _id: { $in: id.map(toObjectId) } })
+      .skip(skip)
+      .limit(limit)
+      .toArray()
+      .then((docs) => docs.map(mongoDocToModel));
+  }
+
   get(filter: Partial<Photo>, skip = 0, limit = 1) {
     return this.getCursor(filter)
       .skip(skip)
@@ -44,15 +53,17 @@ export class PhotosRepository implements Repository<Photo> {
   }
 
   async getUsage(userId: string): Promise<number> {
-    const result: { _id: null; usage: number} | null = await this.collection.aggregate<{ _id: null; usage: number}>([
-      { $match: { userId: toObjectId(userId) }},
-      {
-        $group: {
-          _id: null,
-          usage: { $sum: '$size' },
-        }
-      }
-    ]).next();
+    const result: { _id: null; usage: number } | null = await this.collection
+      .aggregate<{ _id: null; usage: number }>([
+        { $match: { userId: toObjectId(userId) } },
+        {
+          $group: {
+            _id: null,
+            usage: { $sum: '$size' },
+          },
+        },
+      ])
+      .next();
 
     return result?.usage || 0;
   }
@@ -70,7 +81,7 @@ export class PhotosRepository implements Repository<Photo> {
       userId: toObjectId(data.userId),
       deviceId: toObjectId(data.deviceId),
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
 
     return this.collection.insertOne(document).then(({ insertedId }) => {
@@ -83,11 +94,14 @@ export class PhotosRepository implements Repository<Photo> {
   }
 
   updateById(photoId: PhotoId, updatedPhoto: Partial<PhotoDocument>) {
-    return this.collection.updateOne({ _id: toObjectId(photoId) }, 
-      {$set: {
-        ...updatedPhoto,
-        updatedAt: new Date()
-      }}
+    return this.collection.updateOne(
+      { _id: toObjectId(photoId) },
+      {
+        $set: {
+          ...updatedPhoto,
+          updatedAt: new Date(),
+        },
+      },
     );
   }
 
@@ -99,19 +113,19 @@ export class PhotosRepository implements Repository<Photo> {
     await this.collection.deleteMany(where);
   }
 
-  private getCursor({name, userId, status, statusChangedAt, deviceId }: Partial<Photo>) {
+  private getCursor({ name, userId, status, statusChangedAt, deviceId }: Partial<Photo>) {
     const filter: Filter<PhotoDocument> = {};
 
-    name ? filter.name = name : null;
-    status ? filter.status = status : null;
-    userId ? filter.userId = toObjectId(userId) : null;
-    statusChangedAt ? filter.statusChangedAt = {
-        $gte: statusChangedAt
-      } : null;
-    deviceId ? filter.deviceId = toObjectId(deviceId) : null;
+    name ? (filter.name = name) : null;
+    status ? (filter.status = status) : null;
+    userId ? (filter.userId = toObjectId(userId)) : null;
+    statusChangedAt
+      ? (filter.statusChangedAt = {
+          $gte: statusChangedAt,
+        })
+      : null;
+    deviceId ? (filter.deviceId = toObjectId(deviceId)) : null;
 
-    return this.collection
-      .find<PhotoDocument>(filter)
-      .sort({ takenAt: 'desc'});
+    return this.collection.find<PhotoDocument>(filter).sort({ takenAt: 'desc' });
   }
 }
