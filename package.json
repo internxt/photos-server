@@ -15,7 +15,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@internxt/inxt-js": "=1.5.0",
+    "@internxt/inxt-js": "=1.6.0",
+    "@internxt/lib": "^1.1.6",
     "@sinclair/typebox": "^0.20.5",
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",

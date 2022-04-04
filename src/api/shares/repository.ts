@@ -10,9 +10,9 @@ function toObjectId(id: string) {
 
 function mongoDocToModel(doc: ShareDocument): Share {
   const id = doc._id.toString();
-  const photoId = doc.photoId.toString();
+  const photoIds = doc.photoIds.map((id) => id.toString());
 
-  return { ...doc, id, photoId };
+  return { ...doc, id, photoIds };
 }
 
 export class SharesRepository implements Repository<Share> {
@@ -54,7 +54,7 @@ export class SharesRepository implements Repository<Share> {
   create(share: Omit<Share, 'id'>): Promise<Share> {
     const document: Omit<ShareDocument, '_id'> = {
       ...share,
-      photoId: toObjectId(share.photoId),
+      photoIds: share.photoIds.map((id) => toObjectId(id)),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -62,7 +62,7 @@ export class SharesRepository implements Repository<Share> {
     return this.collection.insertOne(document).then(({ insertedId }) => {
       return {
         id: insertedId.toString(),
-        ...share
+        ...share,
       };
     });
   }

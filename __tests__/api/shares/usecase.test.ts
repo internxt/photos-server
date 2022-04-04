@@ -1,5 +1,6 @@
 import { Collection } from 'mongodb';
 import { stub } from 'sinon';
+import { ExpiredError } from '../../../src/api/errors/http/Expired';
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { PhotoNotFoundError } from '../../../src/api/photos/usecase';
 
@@ -33,27 +34,49 @@ describe('Shares usecases', () => {
     const expected: Share = {
       id: shareId,
       bucket: bucketId,
-      encryptionKey: 'encriptionKey',
-      photoId: 'aaaaaaaaaaaa',
+      encryptedMnemonic: 'encriptionKey',
+      photoIds: ['aaaaaaaaaaaa'],
       token: 'token',
-      views: 5
+      views: 5,
     };
 
     stub(sharesRepository, 'getById').returns(Promise.resolve(expected));
+    stub(sharesRepository, 'update').returns(Promise.resolve());
 
+    const spy = jest.spyOn(sharesRepository, 'update');
     const received = await sharesUsecase.obtainShareById(expected.id);
 
     expect(received).toStrictEqual(expected);
+    expect(spy).toHaveBeenCalledWith(shareId, { views: expected.views - 1 });
+  });
+
+  it('obtainShareById() with expired share should throw', async () => {
+    const expected: Share = {
+      id: shareId,
+      bucket: bucketId,
+      encryptedMnemonic: 'encriptionKey',
+      photoIds: ['aaaaaaaaaaaa'],
+      token: 'token',
+      views: 0,
+    };
+
+    stub(sharesRepository, 'getById').returns(Promise.resolve(expected));
+    try {
+      await sharesUsecase.obtainShareById(expected.id);
+      expect(true).toBeFalsy();
+    } catch (err) {
+      expect(err).toBeInstanceOf(ExpiredError);
+    }
   });
 
   it('obtainShareByToken()', async () => {
     const expected: Share = {
       id: shareId,
       bucket: bucketId,
-      encryptionKey: 'encriptionKey',
-      photoId: 'aaaaaaaaaaaa',
+      encryptedMnemonic: 'encriptionKey',
+      photoIds: ['aaaaaaaaaaaa'],
       token: 'token',
-      views: 5
+      views: 5,
     };
 
     stub(sharesRepository, 'getByToken').returns(Promise.resolve(expected));
@@ -79,25 +102,27 @@ describe('Shares usecases', () => {
         status: PhotoStatus.Exists,
         hash: '12345',
         takenAt: new Date(),
-        statusChangedAt: new Date()
+        statusChangedAt: new Date(),
       };
 
       const expectedShareId = 'share-id';
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
-        encryptionKey: 'encriptionKey',
-        photoId: 'aaaaaaaaaaaa',
+        encryptedMnemonic: 'encriptionKey',
+        photoIds: ['aaaaaaaaaaaa'],
         token: 'token',
-        views: 5
+        views: 5,
       };
-  
-      const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
+
+      const getPhotoByIdStub = stub(photosRepository, 'getByMultipleIds').returns(
+        Promise.resolve([alreadyExistentPhoto]),
+      );
       const createShareStub = stub(sharesRepository, 'create').returns(
-        Promise.resolve({ ...shareToCreate, id: expectedShareId })
+        Promise.resolve({ ...shareToCreate, id: expectedShareId }),
       );
 
       const received = await sharesUsecase.createShare(alreadyExistentPhoto.userId, shareToCreate);
-      
+
       expect(getPhotoByIdStub.calledOnce);
       expect(createShareStub.calledOnce);
       expect(received).toEqual({ ...shareToCreate, id: expectedShareId });
@@ -106,20 +131,20 @@ describe('Shares usecases', () => {
     it('Should throw an error if photo not found', async () => {
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
-        encryptionKey: 'encriptionKey',
-        photoId: 'aaaaaaaaaaaa',
+        encryptedMnemonic: 'encriptionKey',
+        photoIds: ['aaaaaaaaaaaa'],
         token: 'token',
-        views: 5
+        views: 5,
       };
-  
-      stub(photosRepository, 'getById').returns(Promise.resolve(null));
-      
+
+      stub(photosRepository, 'getByMultipleIds').returns(Promise.resolve([]));
+
       try {
         await sharesUsecase.createShare(userId, shareToCreate);
         expect(true).toBeFalsy();
       } catch (err) {
         expect(err).toBeInstanceOf(PhotoNotFoundError);
-      }      
+      }
     });
 
     it('Should throw an error if photo is not owned by the user', async () => {
@@ -137,26 +162,26 @@ describe('Shares usecases', () => {
         status: PhotoStatus.Exists,
         hash: '1234',
         takenAt: new Date(),
-        statusChangedAt: new Date()
+        statusChangedAt: new Date(),
       };
       const shareToCreate: Omit<Share, 'id'> = {
         bucket: bucketId,
-        encryptionKey: 'encriptionKey',
-        photoId: 'aaaaaaaaaaaa',
+        encryptedMnemonic: 'encriptionKey',
+        photoIds: ['aaaaaaaaaaaa'],
         token: 'token',
-        views: 5
+        views: 5,
       };
-  
-      stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
-      
+
+      stub(photosRepository, 'getByMultipleIds').returns(Promise.resolve([alreadyExistentPhoto]));
+
       try {
         await sharesUsecase.createShare(userId + 'notthisuser', shareToCreate);
         expect(true).toBeFalsy();
       } catch (err) {
         expect(err).toBeInstanceOf(ShareNotOwnedByThisUserError);
-      }      
+      }
     });
-  });  
+  });
 
   describe('updateShare()', () => {
     it('Should update a share properly', async () => {
@@ -174,18 +199,18 @@ describe('Shares usecases', () => {
         hash: '1234',
         status: PhotoStatus.Exists,
         takenAt: new Date(),
-        statusChangedAt: new Date()
+        statusChangedAt: new Date(),
       };
 
       const shareToUpdate: Share = {
         id: shareId,
         bucket: bucketId,
-        encryptionKey: 'encriptionKey',
-        photoId: 'aaaaaaaaaaaa',
+        encryptedMnemonic: 'encriptionKey',
+        photoIds: ['aaaaaaaaaaaa'],
         token: 'token',
-        views: 5
+        views: 5,
       };
-  
+
       const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
       const updateShareStub = stub(sharesRepository, 'update').returns(Promise.resolve(undefined));
 
@@ -194,8 +219,8 @@ describe('Shares usecases', () => {
         expect(true).toBeTruthy();
       } catch (err) {
         expect(true).toBeFalsy();
-      } 
-      
+      }
+
       expect(getPhotoByIdStub.calledOnce);
       expect(updateShareStub.calledOnce);
     });
@@ -204,12 +229,12 @@ describe('Shares usecases', () => {
     //   const shareToUpdate: Share = {
     //     id: shareId,
     //     bucket: bucketId,
-    //     encryptionKey: 'encriptionKey',
-    //     photoId: 'aaaaaaaaaaaa',
+    //     encryptedMnemonic: 'encriptionKey',
+    //     photoIds: 'aaaaaaaaaaaa',
     //     token: 'token',
     //     views: 5
     //   };
-  
+
     //   stub(photosRepository, 'getById').returns(Promise.resolve(null));
     //   stub(sharesRepository, 'update').returns(Promise.resolve());
 
@@ -219,7 +244,7 @@ describe('Shares usecases', () => {
     //   } catch (err) {
     //     console.log(err);
     //     expect(err).toBeInstanceOf(PhotoNotFoundError);
-    //   }      
+    //   }
     // });
 
     // it('Should throw an error if photo is not owned by the user', async () => {
@@ -227,7 +252,7 @@ describe('Shares usecases', () => {
     //     deviceId,
     //     fileId: 'photo-file-id',
     //     height: 50,
-    //     id: photoId,
+    //     id: photoIds,
     //     name: 'myphoto',
     //     previewId: 'previewId',
     //     size: 400,
@@ -241,12 +266,12 @@ describe('Shares usecases', () => {
     //   const shareToUpdate: Share = {
     //     id: shareId,
     //     bucket: bucketId,
-    //     encryptionKey: 'encriptionKey',
-    //     photoId: 'aaaaaaaaaaaa',
+    //     encryptedMnemonic: 'encriptionKey',
+    //     photoIds: 'aaaaaaaaaaaa',
     //     token: 'token',
     //     views: 5
     //   };
-  
+
     //   stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
     //   stub(sharesRepository, 'update').returns(Promise.resolve());
 
@@ -255,7 +280,7 @@ describe('Shares usecases', () => {
     //     expect(true).toBeFalsy();
     //   } catch (err) {
     //     expect(err).toBeInstanceOf(ShareNotOwnedByThisUserError);
-    //   }      
+    //   }
     // });
   });
 });
