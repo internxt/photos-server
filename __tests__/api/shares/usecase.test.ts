@@ -46,7 +46,7 @@ describe('Shares usecases', () => {
     const received = await sharesUsecase.obtainShareById(expected.id);
 
     expect(received).toStrictEqual(expected);
-    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(shareId, { views: expected.views - 1 });
   });
 
   it('obtainShareByToken()', async () => {
