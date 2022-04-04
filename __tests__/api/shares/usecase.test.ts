@@ -40,10 +40,13 @@ describe('Shares usecases', () => {
     };
 
     stub(sharesRepository, 'getById').returns(Promise.resolve(expected));
+    stub(sharesRepository, 'update').returns(Promise.resolve());
 
+    const spy = jest.spyOn(sharesRepository, 'update');
     const received = await sharesUsecase.obtainShareById(expected.id);
 
     expect(received).toStrictEqual(expected);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('obtainShareByToken()', async () => {

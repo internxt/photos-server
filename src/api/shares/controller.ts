@@ -1,9 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 import { SharesUsecase } from './usecase';
-import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
-import { CreateShareType, UpdateShareType } from './schemas';
+import { CreateShareType } from './schemas';
 import { Share } from '../../models/Share';
 
 export class SharesController {
@@ -13,12 +12,8 @@ export class SharesController {
     this.usecase = usecase;
   }
 
-  async getShareByToken(req: FastifyRequest<{ Params: { token: string } }>, rep: FastifyReply) {
-    const share = await this.usecase.obtainShareByToken(req.params.token);
-
-    if (!share) {
-      throw new NotFoundError({ resource: 'Share' });
-    }
+  async getShare(req: FastifyRequest<{ Params: { id: string } }>, rep: FastifyReply) {
+    const share = await this.usecase.obtainShareById(req.params.id);
 
     rep.send(share);
   }
@@ -30,18 +25,5 @@ export class SharesController {
     const createdShare = await this.usecase.createShare(user.payload.uuid, share);
 
     rep.code(201).send(createdShare);
-  }
-
-  async putShare(req: FastifyRequest<{ Body: UpdateShareType }>, rep: FastifyReply) {
-    const { id, views } = req.body;
-    const share = await this.usecase.obtainShareById(id);
-
-    if (!share) {
-      throw new NotFoundError({ resource: 'Share' });
-    }
-
-    await this.usecase.updateShare(id, { views });
-
-    rep.send({ message: 'Share updated' });
   }
 }

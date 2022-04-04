@@ -5,7 +5,7 @@ import { CreateShareSchema, CreateShareType, UpdateShareSchema, UpdateShareType 
 export const buildRouter = (controller: SharesController): FastifyRouter => {
   return {
     handler: (server, opts, done) => {
-      server.get('/:token', controller.getShareByToken.bind(controller));
+      server.get('/:id', controller.getShare.bind(controller));
       server.post<{ Body: CreateShareType }>(
         '/',
         {
@@ -15,11 +15,6 @@ export const buildRouter = (controller: SharesController): FastifyRouter => {
           },
         },
         controller.postShare.bind(controller),
-      );
-      server.put<{ Body: UpdateShareType }>(
-        '/:id',
-        { preValidation: server.authenticate, schema: { body: UpdateShareSchema } },
-        controller.putShare.bind(controller),
       );
 
       done();

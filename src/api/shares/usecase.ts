@@ -4,6 +4,7 @@ import { UserId } from '../../models/User';
 import { PhotoNotFoundError } from '../photos/usecase';
 import { PhotosRepository } from '../photos/repository';
 import { SharesRepository } from './repository';
+import { NotFoundError } from '../errors/http/NotFound';
 
 export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {
@@ -20,8 +21,13 @@ export class SharesUsecase {
     this.photosRepository = photosRepository;
   }
 
-  obtainShareById(id: ShareId) {
-    return this.repository.getById(id);
+  async obtainShareById(id: ShareId) {
+    const share = await this.repository.getById(id);
+    if (!share) {
+      throw new NotFoundError({ resource: 'Share' });
+    }
+    await this.repository.update(id, { views: share.views - 1 });
+    return share;
   }
 
   obtainShareByToken(token: string) {
