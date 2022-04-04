@@ -31,11 +31,11 @@ export class SharesUsecase {
   }
 
   async createShare(userId: UserId, data: Omit<Share, 'id' | 'token'>): Promise<Share> {
-    const share: Omit<Share, 'id'> = { ...data, token: randomBytes(10).toString('hex')};
-    const photo = await this.photosRepository.getById(share.photoId);
+    const share: Omit<Share, 'id'> = { ...data, token: randomBytes(10).toString('hex') };
+    const photo = await this.photosRepository.getById(share.photoIds[0]);
 
     if (!photo) {
-      throw new PhotoNotFoundError(share.photoId);
+      throw new PhotoNotFoundError(share.photoIds[0]);
     }
 
     if (photo.userId !== userId) {

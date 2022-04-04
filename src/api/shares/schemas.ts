@@ -1,9 +1,9 @@
 import { Type, Static } from '@sinclair/typebox';
 
 export const CreateShareSchema = Type.Object({
-  encryptionKey: Type.String(),
+  encryptedMnemonic: Type.String(),
   views: Type.Number(),
-  photoId: Type.String(),
+  photoIds: Type.Array(Type.String()),
   bucket: Type.String(),
 });
 

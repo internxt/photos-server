@@ -29,8 +29,8 @@ const userOneShares: ShareDocument[] = [
     createdAt: new Date('2021-11-16 18:32:45.110Z'),
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     bucket: '---',
-    encryptionKey: 'eoeoeoeeo',
-    photoId: photoOne._id,
+    encryptedMnemonic: 'eoeoeoeeo',
+    photoIds: [photoOne._id],
     token: 'aaaaa',
     views: 10,
   },
@@ -39,8 +39,8 @@ const userOneShares: ShareDocument[] = [
     createdAt: new Date('2021-11-16 18:32:45.110Z'),
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     bucket: '---',
-    encryptionKey: 'eoeoeoeeo',
-    photoId: photoTwo._id,
+    encryptedMnemonic: 'eoeoeoeeo',
+    photoIds: [photoTwo._id],
     token: 'aaaaa',
     views: 10,
   },
@@ -52,8 +52,8 @@ const userTwoShares: ShareDocument[] = [
     createdAt: new Date('2021-11-16 18:32:45.110Z'),
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     bucket: '---',
-    encryptionKey: 'eoeoeoeeo',
-    photoId: photoThree._id,
+    encryptedMnemonic: 'eoeoeoeeo',
+    photoIds: [photoThree._id],
     token: 'aaaaa',
     views: 10,
   },
@@ -62,16 +62,16 @@ const userTwoShares: ShareDocument[] = [
     createdAt: new Date('2021-11-16 18:32:45.110Z'),
     updatedAt: new Date('2021-11-16 18:32:45.110Z'),
     bucket: '---',
-    encryptionKey: 'eoeoeoeeo',
-    photoId: photoFour._id,
+    encryptedMnemonic: 'eoeoeoeeo',
+    photoIds: [photoFour._id],
     token: 'aaaaa',
     views: 10,
   },
 ];
 
 function existsPhotosWithMoreThanOneShare(): boolean {
-  const userOnePhotoIds = userOneShares.map((share) => share.photoId);
-  const userTwoPhotoIds = userTwoShares.map((share) => share.photoId);
+  const userOnePhotoIds = userOneShares.map((share) => share.photoIds);
+  const userTwoPhotoIds = userTwoShares.map((share) => share.photoIds);
 
   const duplicatedUserOneShares = userOnePhotoIds.some((photoId, index) => {
     const foundDuplicatedPhoto = userOnePhotoIds.indexOf(photoId, index + 1) !== -1;

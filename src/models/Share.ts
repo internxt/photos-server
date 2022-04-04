@@ -6,9 +6,9 @@ export type ShareId = string;
 
 export interface Share {
   id: ShareId;
-  encryptionKey: string;
+  encryptedMnemonic: string;
   token: string;
-  photoId: PhotoId;
+  photoIds: PhotoId[];
   bucket: BucketId;
   views: number;
 }
