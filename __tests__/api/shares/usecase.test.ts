@@ -26,7 +26,7 @@ const bucketId = 'bucket-id';
 const shareId = 'share-id';
 const deviceId = 'device-id';
 const userId = 'user-id';
-const photoIds = 'photo-id';
+const photoId = 'photo-id';
 
 describe('Shares usecases', () => {
   it('obtainShareById()', async () => {
@@ -72,7 +72,7 @@ describe('Shares usecases', () => {
         deviceId,
         fileId: 'photo-file-id',
         height: 50,
-        id: photoIds,
+        id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
         size: 400,
@@ -132,7 +132,7 @@ describe('Shares usecases', () => {
         deviceId,
         fileId: 'photo-file-id',
         height: 50,
-        id: photoIds,
+        id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
         size: 400,
@@ -169,7 +169,7 @@ describe('Shares usecases', () => {
         deviceId,
         fileId: 'photo-file-id',
         height: 50,
-        id: photoIds,
+        id: photoId,
         name: 'myphoto',
         previewId: 'previewId',
         size: 400,
