@@ -9,6 +9,7 @@ import { ExpiredError } from '../errors/http/Expired';
 import { Photo } from '../../models/Photo';
 import { aes } from '@internxt/lib';
 import { Environment } from '@internxt/inxt-js';
+import { UsersRepository } from '../users/repository';
 
 export class ShareNotOwnedByThisUserError extends UsecaseError {
   constructor(userId: UserId) {
@@ -17,13 +18,11 @@ export class ShareNotOwnedByThisUserError extends UsecaseError {
 }
 
 export class SharesUsecase {
-  private repository: SharesRepository;
-  private photosRepository: PhotosRepository;
-
-  constructor(repository: SharesRepository, photosRepository: PhotosRepository) {
-    this.repository = repository;
-    this.photosRepository = photosRepository;
-  }
+  constructor(
+    private repository: SharesRepository,
+    private photosRepository: PhotosRepository,
+    private usersRepository: UsersRepository,
+  ) {}
 
   async obtainShareById(id: ShareId) {
     const share = await this.repository.getById(id);
@@ -42,7 +41,7 @@ export class SharesUsecase {
     return this.repository.getByToken(token);
   }
 
-  async createShare(userId: UserId, data: Omit<Share, 'id'>): Promise<Share> {
+  async createShare(userUUID: string, data: Omit<Share, 'id'>): Promise<Share> {
     const share: Omit<Share, 'id'> = data;
     const photos = await this.photosRepository.getByMultipleIds(data.photoIds, 0, MAX_PHOTOS_IN_SHARE);
 
@@ -50,6 +49,8 @@ export class SharesUsecase {
       const photoMissingId = data.photoIds.find((id) => !photos.find((photo) => photo.id === id))!;
       throw new PhotoNotFoundError(photoMissingId);
     }
+
+    const { id: userId } = (await this.usersRepository.getByUuid(userUUID))!;
 
     const allPhotosAreOwnedByThisUser = photos.every((photo) => photo.userId === userId);
 

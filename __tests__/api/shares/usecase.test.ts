@@ -6,21 +6,25 @@ import { PhotoNotFoundError } from '../../../src/api/photos/usecase';
 
 import { SharesRepository } from '../../../src/api/shares/repository';
 import { ShareNotOwnedByThisUserError, SharesUsecase } from '../../../src/api/shares/usecase';
+import { UsersRepository } from '../../../src/api/users/repository';
 import { Photo, PhotoStatus } from '../../../src/models/Photo';
 import { Share } from '../../../src/models/Share';
 
 const SharesCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
 const PhotosCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
+const UsersCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
 
 let sharesRepository: SharesRepository;
 let photosRepository: PhotosRepository;
+let usersRepository: UsersRepository;
 let sharesUsecase: SharesUsecase;
 
 beforeEach(() => {
   sharesRepository = new SharesRepository(SharesCollectionStubbed());
   photosRepository = new PhotosRepository(PhotosCollectionStubbed());
+  usersRepository = new UsersRepository(UsersCollectionStubbed());
 
-  sharesUsecase = new SharesUsecase(sharesRepository, photosRepository);
+  sharesUsecase = new SharesUsecase(sharesRepository, photosRepository, usersRepository);
 });
 
 const bucketId = 'bucket-id';
@@ -120,6 +124,7 @@ describe('Shares usecases', () => {
       const createShareStub = stub(sharesRepository, 'create').returns(
         Promise.resolve({ ...shareToCreate, id: expectedShareId }),
       );
+      stub(usersRepository, 'getByUuid').returns(Promise.resolve({ id: userId, uuid: 'uuid', bucketId }));
 
       const received = await sharesUsecase.createShare(alreadyExistentPhoto.userId, shareToCreate);
 
@@ -173,9 +178,12 @@ describe('Shares usecases', () => {
       };
 
       stub(photosRepository, 'getByMultipleIds').returns(Promise.resolve([alreadyExistentPhoto]));
+      stub(usersRepository, 'getByUuid').returns(
+        Promise.resolve({ id: userId + 'notthisuser', uuid: 'uuid', bucketId }),
+      );
 
       try {
-        await sharesUsecase.createShare(userId + 'notthisuser', shareToCreate);
+        await sharesUsecase.createShare('uuid', shareToCreate);
         expect(true).toBeFalsy();
       } catch (err) {
         expect(err).toBeInstanceOf(ShareNotOwnedByThisUserError);
