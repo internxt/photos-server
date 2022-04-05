@@ -45,9 +45,9 @@ describe('Shares usecases', () => {
     };
 
     stub(sharesRepository, 'getById').returns(Promise.resolve(expected));
-    stub(sharesRepository, 'update').returns(Promise.resolve());
+    stub(sharesRepository, 'updateById').returns(Promise.resolve());
 
-    const spy = jest.spyOn(sharesRepository, 'update');
+    const spy = jest.spyOn(sharesRepository, 'updateById');
     const received = await sharesUsecase.obtainShareById(expected.id);
 
     expect(received).toStrictEqual(expected);
@@ -220,7 +220,7 @@ describe('Shares usecases', () => {
       };
 
       const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
-      const updateShareStub = stub(sharesRepository, 'update').returns(Promise.resolve(undefined));
+      const updateShareStub = stub(sharesRepository, 'updateById').returns(Promise.resolve(undefined));
 
       try {
         await sharesUsecase.updateShare(alreadyExistentPhoto.userId, shareToUpdate);
