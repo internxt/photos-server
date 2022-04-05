@@ -33,7 +33,7 @@ export class SharesUsecase {
     if (share.views <= 0) {
       throw new ExpiredError();
     }
-    await this.repository.update(id, { views: share.views - 1 });
+    await this.repository.updateById(id, { views: share.views - 1 });
     return share;
   }
 
@@ -62,7 +62,7 @@ export class SharesUsecase {
   }
 
   updateShare(shareId: string, merge: Pick<Share, 'views'>): Promise<void> {
-    return this.repository.update(shareId, merge);
+    return this.repository.updateById(shareId, merge);
   }
 
   async getPhotosFromShare(
