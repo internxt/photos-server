@@ -15,7 +15,10 @@ export class SharesController {
   async getShare(req: FastifyRequest<{ Params: { id: string }; Querystring: { code: string } }>, rep: FastifyReply) {
     const share = await this.usecase.obtainShareById(req.params.id);
     const photos = await this.usecase.getPhotosFromShare(share, req.query.code);
-    rep.send({ ...share, photos });
+
+    const { encryptedMnemonic: _, ...rest } = share;
+
+    rep.send({ ...rest, photos });
   }
 
   async postShare(req: FastifyRequest<{ Body: CreateShareType }>, rep: FastifyReply) {
