@@ -16,6 +16,16 @@ export const buildRouter = (controller: SharesController): FastifyRouter => {
         },
         controller.postShare.bind(controller),
       );
+      server.patch<{ Body: UpdateShareType; Params: { id: string } }>(
+        '/:id',
+        {
+          preValidation: server.authenticate,
+          schema: {
+            body: UpdateShareSchema,
+          },
+        },
+        controller.patchShare.bind(controller),
+      );
 
       done();
     },

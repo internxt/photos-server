@@ -61,7 +61,22 @@ export class SharesUsecase {
     return this.repository.create(share);
   }
 
-  updateShare(shareId: string, merge: Pick<Share, 'views'>): Promise<void> {
+  async updateShare(shareId: string, userUUID: string, merge: Pick<Share, 'views'>): Promise<void> {
+    const share = await this.repository.getById(shareId);
+
+    if (!share) {
+      throw new NotFoundError({ resource: `Share ${shareId}` });
+    }
+
+    const photo = await this.photosRepository.getById(share.photoIds[0]);
+    const { id: userId } = (await this.usersRepository.getByUuid(userUUID))!;
+
+    const shareWasCreatedByThisUser = photo?.userId === userId;
+
+    if (!shareWasCreatedByThisUser) {
+      throw new ShareNotOwnedByThisUserError(userId);
+    }
+
     return this.repository.updateById(shareId, merge);
   }
 

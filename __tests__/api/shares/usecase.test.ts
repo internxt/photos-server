@@ -219,11 +219,15 @@ describe('Shares usecases', () => {
         views: 5,
       };
 
+      const obtainShareByIdStub = stub(sharesRepository, 'getById').returns(Promise.resolve(shareToUpdate));
       const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
+      const getUserByUUIDStub = stub(usersRepository, 'getByUuid').returns(
+        Promise.resolve({ bucketId: bucketId, uuid: 'uuid', id: alreadyExistentPhoto.userId }),
+      );
       const updateShareStub = stub(sharesRepository, 'updateById').returns(Promise.resolve(undefined));
 
       try {
-        await sharesUsecase.updateShare(alreadyExistentPhoto.userId, shareToUpdate);
+        await sharesUsecase.updateShare(shareToUpdate.id, alreadyExistentPhoto.userId, { views: 44 });
         expect(true).toBeTruthy();
       } catch (err) {
         expect(true).toBeFalsy();
@@ -231,64 +235,54 @@ describe('Shares usecases', () => {
 
       expect(getPhotoByIdStub.calledOnce);
       expect(updateShareStub.calledOnce);
+      expect(obtainShareByIdStub.calledOnce);
+      expect(getUserByUUIDStub.calledOnce);
     });
+    it('Should throw if share does not belong to the authenticated user', async () => {
+      const alreadyExistentPhoto: Photo = {
+        deviceId,
+        fileId: 'photo-file-id',
+        height: 50,
+        id: photoId,
+        name: 'myphoto',
+        previewId: 'previewId',
+        size: 400,
+        type: 'jpg',
+        userId,
+        width: 40,
+        hash: '1234',
+        status: PhotoStatus.Exists,
+        takenAt: new Date(),
+        statusChangedAt: new Date(),
+      };
 
-    // it('Should throw an error if photo not found', async () => {
-    //   const shareToUpdate: Share = {
-    //     id: shareId,
-    //     bucket: bucketId,
-    //     encryptedMnemonic: 'encriptionKey',
-    //     photoIds: 'aaaaaaaaaaaa',
-    //     token: 'token',
-    //     views: 5
-    //   };
+      const shareToUpdate: Share = {
+        id: shareId,
+        bucket: bucketId,
+        encryptedMnemonic: 'encriptionKey',
+        photoIds: ['aaaaaaaaaaaa'],
+        token: 'token',
+        views: 5,
+      };
 
-    //   stub(photosRepository, 'getById').returns(Promise.resolve(null));
-    //   stub(sharesRepository, 'update').returns(Promise.resolve());
+      const obtainShareByIdStub = stub(sharesRepository, 'getById').returns(Promise.resolve(shareToUpdate));
+      const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
+      const getUserByUUIDStub = stub(usersRepository, 'getByUuid').returns(
+        Promise.resolve({ bucketId: bucketId, uuid: 'uuid', id: alreadyExistentPhoto.userId }),
+      );
+      const updateShareStub = stub(sharesRepository, 'updateById').returns(Promise.resolve(undefined));
 
-    //   try {
-    //     await sharesUsecase.updateShare(shareId, shareToUpdate);
-    //     expect(true).toBeFalsy();
-    //   } catch (err) {
-    //     console.log(err);
-    //     expect(err).toBeInstanceOf(PhotoNotFoundError);
-    //   }
-    // });
+      try {
+        await sharesUsecase.updateShare(shareToUpdate.id, 'not-owner-id', { views: 44 });
+        expect(true).toBeFalsy();
+      } catch (err) {
+        expect(true).toBeTruthy();
+      }
 
-    // it('Should throw an error if photo is not owned by the user', async () => {
-    //   const alreadyExistentPhoto: Photo = {
-    //     deviceId,
-    //     fileId: 'photo-file-id',
-    //     height: 50,
-    //     id: photoIds,
-    //     name: 'myphoto',
-    //     previewId: 'previewId',
-    //     size: 400,
-    //     type: 'jpg',
-    //     userId,
-    //     width: 40,
-    //     status: PhotoStatus.Exists,
-    //     takenAt: new Date(),
-    //     statusChangedAt: new Date()
-    //   };
-    //   const shareToUpdate: Share = {
-    //     id: shareId,
-    //     bucket: bucketId,
-    //     encryptedMnemonic: 'encriptionKey',
-    //     photoIds: 'aaaaaaaaaaaa',
-    //     token: 'token',
-    //     views: 5
-    //   };
-
-    //   stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
-    //   stub(sharesRepository, 'update').returns(Promise.resolve());
-
-    //   try {
-    //     await sharesUsecase.updateShare(shareId, shareToUpdate);
-    //     expect(true).toBeFalsy();
-    //   } catch (err) {
-    //     expect(err).toBeInstanceOf(ShareNotOwnedByThisUserError);
-    //   }
-    // });
+      expect(getPhotoByIdStub.calledOnce);
+      expect(updateShareStub.calledOnce);
+      expect(obtainShareByIdStub.calledOnce);
+      expect(getUserByUUIDStub.calledOnce);
+    });
   });
 });

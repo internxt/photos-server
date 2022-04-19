@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 
 import { SharesUsecase } from './usecase';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
-import { CreateShareType } from './schemas';
+import { CreateShareType, UpdateShareType } from './schemas';
 import { Share } from '../../models/Share';
 
 export class SharesController {
@@ -28,5 +28,13 @@ export class SharesController {
     const createdShare = await this.usecase.createShare(user.payload.uuid, share);
 
     rep.code(201).send(createdShare);
+  }
+
+  async patchShare(req: FastifyRequest<{ Params: { id: string }; Body: UpdateShareType }>, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+
+    await this.usecase.updateShare(req.params.id, user.payload.uuid, req.body);
+
+    rep.code(200).send();
   }
 }

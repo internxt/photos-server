@@ -10,8 +10,7 @@ export const CreateShareSchema = Type.Object({
 });
 
 export const UpdateShareSchema = Type.Object({
-  id: Type.String(),
-  views: Type.Number(),
+  views: Type.Number({ minimum: 0 }),
 });
 
 export type CreateShareType = Static<typeof CreateShareSchema>;
