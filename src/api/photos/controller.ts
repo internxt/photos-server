@@ -194,6 +194,10 @@ export class PhotosController {
   async photosExist(req: FastifyRequest<{ Body: CheckPhotosExistenceType }>, rep: FastifyReply) {
     const { photos } = req.body;
     const user = req.user as AuthorizedUser;
+
+    if (photos.length > 50) {
+      return rep.status(413).send('Sent photos can not be more than 50');
+    }
     
     const photosWithDate: Pick<Photo, 'name' | 'takenAt' | 'hash'>[] = [];
   
