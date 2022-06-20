@@ -42,6 +42,38 @@ export class PhotosRepository implements Repository<Photo> {
       .then((docs) => docs.map(mongoDocToModel));
   }
 
+   /**
+   * Gets multiple photos based on the conditions. 
+   * All the conditions should have the same fields.
+   * @param where 
+   * @returns 
+   */
+    getByMultipleWhere(photoConditions: Partial<Photo>[]): Promise<Photo[]> {
+      const where: Record<string, Record<'$in', unknown[]>> = {};
+  
+      for (const conditions of photoConditions) {
+        Object.keys(conditions).forEach((key) => {
+          if (where[key]) {
+            if (key === 'userId') {
+              where[key].$in.push(new ObjectId(conditions[key as keyof Photo] as string));
+            } else {
+              where[key].$in.push(conditions[key as keyof Photo]);
+            }
+          } else {
+            if (key === 'userId') {
+              where[key] = { $in: [ new ObjectId(conditions[key as keyof Photo] as string) ] };
+            } else {
+              where[key] = { $in: [ conditions[key as keyof Photo] ] };
+            }
+          }
+        });
+      }
+  
+      return this.collection
+        .find<PhotoDocument>(where).toArray()
+        .then((docs) => docs.map(mongoDocToModel));
+    }
+
   get(filter: Partial<Photo>, skip = 0, limit = 1) {
     return this.getCursor(filter)
       .skip(skip)
