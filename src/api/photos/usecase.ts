@@ -6,8 +6,8 @@ import { User } from '../../models/User';
 import { UsersRepository } from '../users/repository';
 import { PhotosRepository } from './repository';
 
-type PhotoNotFound = Pick<Photo, 'name' | 'takenAt' | 'hash'>;
-type PhotosLookupResponse = ((Photo | PhotoNotFound) & { exists: boolean })[]
+export type PhotoNotFound = Pick<Photo, 'name' | 'takenAt' | 'hash'>;
+export type PhotosLookupResponse = ((Photo | PhotoNotFound) & { exists: boolean })[]
 
 export class PhotoNotFoundError extends UsecaseError {
   constructor(photoId: PhotoId) {
