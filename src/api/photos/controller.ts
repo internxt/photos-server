@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import dayjs from 'dayjs';
 
-import { NewPhoto, PhotoId } from '../../models/Photo';
+import { NewPhoto, Photo, PhotoId } from '../../models/Photo';
 import { PhotosUsecase } from './usecase';
-import { CreatePhotoType, GetPhotosQueryParamsType, UpdatePhotoType } from './schemas';
+import { CheckPhotosExistenceType, CreatePhotoType, GetPhotosQueryParamsType, UpdatePhotoType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
@@ -189,5 +189,27 @@ export class PhotosController {
     await this.photosUsecase.deletePhoto(req.params.id);
 
     rep.send({ message: 'Deleted' });
+  }
+
+  async photosExist(req: FastifyRequest<{ Body: CheckPhotosExistenceType }>, rep: FastifyReply) {
+    const { photos } = req.body;
+    const user = req.user as AuthorizedUser;
+    
+    const photosWithDate: Pick<Photo, 'name' | 'takenAt' | 'hash'>[] = [];
+  
+    for (const photo of photos) {
+      if (!dayjs(photo.takenAt).isValid()) {
+        return rep.status(400).send({ message: 'Bad "takenAt" date format for photo with hash ' + photo.hash });
+      }
+
+      photosWithDate.push({ ...photo, takenAt: dateToUTC(photo.takenAt) });
+    }
+
+    const existenceChecks = await this.photosUsecase.photosWithTheseCharacteristicsExist(
+      user.payload.uuid,
+      photosWithDate
+    );
+
+    rep.send({ photos: existenceChecks });
   }
 }
