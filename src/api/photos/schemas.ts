@@ -39,6 +39,17 @@ export const GetPhotosQueryParamsSchema = Type.Object({
   includeDownloadLinks: Type.Optional(Type.Boolean()),
 });
 
+const PhotoExistsSchema = Type.Object({
+  hash: Type.String(),
+  takenAt: Type.Any(),
+  name: Type.String()
+});
+
+export const CheckPhotosExistenceSchema = Type.Object({
+  photos: Type.Array(PhotoExistsSchema)
+});
+
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;
 export type UpdatePhotoType = Static<typeof UpdatePhotoSchema>;
 export type GetPhotosQueryParamsType = Static<typeof GetPhotosQueryParamsSchema>;
+export type CheckPhotosExistenceType = Static<typeof CheckPhotosExistenceSchema>;
