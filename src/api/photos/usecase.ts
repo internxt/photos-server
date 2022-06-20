@@ -2,8 +2,12 @@ import { UsecaseError } from '../../core/Usecase';
 import { PhotoDocument } from '../../database/mongo/models/Photo';
 
 import { NewPhoto, Photo, PhotoId, PhotoStatus } from '../../models/Photo';
+import { User } from '../../models/User';
 import { UsersRepository } from '../users/repository';
 import { PhotosRepository } from './repository';
+
+type PhotoNotFound = Pick<Photo, 'name' | 'takenAt' | 'hash'>;
+type PhotosLookupResponse = ((Photo | PhotoNotFound) & { exists: boolean })[]
 
 export class PhotoNotFoundError extends UsecaseError {
   constructor(photoId: PhotoId) {
@@ -40,6 +44,37 @@ export class PhotosUsecase {
     const count = await this.photosRepository.count({userId: user.id, ...filter});
 
     return { results, count };
+  }
+
+  async photosWithTheseCharacteristicsExist(
+    userUuid: User['uuid'],
+    photos: PhotoNotFound[]
+  ): Promise<PhotosLookupResponse> {
+    const user = await this.usersRepository.getByUuid(userUuid);
+
+    if (!user) {
+      throw new UsecaseError('User does not exist');
+    }
+
+    const foundPhotos: Photo[] = await this.photosRepository.getByMultipleWhere(
+      photos.map(p => ({ ...p, userId: user.id }))
+    );
+ 
+    return photos.map((photo) => {
+      const foundPhotoIndex = foundPhotos.findIndex((foundPhoto) => {
+        return foundPhoto.name === photo.name && 
+          foundPhoto.takenAt.toString() === photo.takenAt.toString() && 
+          foundPhoto.hash === photo.hash;
+      });
+
+      const photoFound = foundPhotoIndex !== -1;
+
+      if (photoFound) {
+        return { ...foundPhotos[foundPhotoIndex], exists: true };
+      } else {
+        return { ...photo, exists: false };
+      }
+    });
   }
 
   async getUsage(userUuid: string): Promise<number> {
