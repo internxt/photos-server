@@ -84,6 +84,22 @@ export class PhotosRepository implements Repository<Photo> {
       });
   }
 
+  getOne({name, takenAt}: Partial<Photo>) {
+    const filter: Filter<PhotoDocument> = {};
+    name ? (filter.name = name) : null;
+    takenAt ? (filter.takenAt = takenAt) : null;
+    
+    return this.collection.findOne<PhotoDocument>(filter).then((doc): Photo | null => {
+      if (!doc || !doc._id) {
+        return null;
+      }
+
+      return mongoDocToModel(doc);
+    });
+  }
+
+
+
   async getUsage(userId: string): Promise<number> {
     const result: { _id: null; usage: number } | null = await this.collection
       .aggregate<{ _id: null; usage: number }>([

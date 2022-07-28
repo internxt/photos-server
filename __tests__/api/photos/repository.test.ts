@@ -72,6 +72,24 @@ describe('Photos repository methods', () => {
     expect(received).toStrictEqual(expected);
   });
 
+  it('getOne()', async () => {
+    const alreadyExistentPhoto = existingPhoto;
+    const expected = { 
+      ...alreadyExistentPhoto, 
+      id: alreadyExistentPhoto._id.toString(),
+      deviceId: alreadyExistentPhoto.deviceId.toString(),
+      userId: alreadyExistentPhoto.userId.toString()
+    };
+
+    const photo = await repository.getOne({ name: alreadyExistentPhoto.name });
+
+    expect(photo).not.toBeNull();
+
+    const received = { ...photo, _id: alreadyExistentPhoto._id }; 
+
+    expect(received).toStrictEqual(expected);
+  });
+
   it('create()', async () => {
     const alreadyExistentPhoto = { ...photos[0] };
     const received = await repository.create({

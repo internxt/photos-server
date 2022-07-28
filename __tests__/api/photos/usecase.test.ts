@@ -67,6 +67,28 @@ describe('Photos usecases', () => {
       expect(received).toStrictEqual(expected);
     });
 
+    it('When a photo is going to be saved, should update the hash if the photo already exists', async () => {
+      const existingPhoto: Photo = {...photoThatExists, hash: 'incorrect-hash'};
+
+      stub(photosRepository, 'getOne').resolves(existingPhoto);
+      stub(photosRepository, 'updateById').resolves();
+
+      const received = await usecase.savePhoto({...photoThatExists, hash: 'correct-hash'});
+
+      expect(received).toStrictEqual({ ...existingPhoto, hash: 'correct-hash' });
+    });
+
+    it('When a photo is going to be saved, should create it if the photo does not exists', async () => {
+      const newPhoto: Photo = photoThatExists;
+
+      stub(photosRepository, 'getOne').resolves(null);
+      stub(photosRepository, 'create').resolves(newPhoto);
+      
+      const received = await usecase.savePhoto(photoThatExists);
+
+      expect(received).toStrictEqual(newPhoto);
+    });
+
     it('When a photo is deleted, should be marked as already existent', async () => {
       const deletedPhoto: Photo = { ...photoThatExists, status: PhotoStatus.Deleted };
 
