@@ -110,10 +110,15 @@ export class PhotosUsecase {
     const existingPhoto = await this.photosRepository.getOne({name: data.name, takenAt: data.takenAt});
 
     if(!existingPhoto) {
-      return this.photosRepository.create(photoToCreate);
       
+      return this.photosRepository.create(photoToCreate);
     } else {
-      this.photosRepository.updateById(existingPhoto.id, {
+
+      if(existingPhoto.hash === photoToCreate.hash) {
+        throw new UsecaseError('A photo with this characteristics already exists');
+      }
+
+      await this.photosRepository.updateById(existingPhoto.id, {
         hash: data.hash
       });
 
