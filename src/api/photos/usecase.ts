@@ -107,7 +107,11 @@ export class PhotosUsecase {
      * was already uploaded, but the hash was wrong.
      */
       
-    const existingPhoto = await this.photosRepository.getOne({name: data.name, takenAt: data.takenAt});
+    const existingPhoto = await this.photosRepository.getOne({
+                                                        userId: data.userId, 
+                                                        name: data.name, 
+                                                        takenAt: data.takenAt
+                                                      });
 
     if(!existingPhoto) {
       
