@@ -108,10 +108,10 @@ export class PhotosUsecase {
      */
       
     const existingPhoto = await this.photosRepository.getOne({
-                                                        userId: data.userId, 
-                                                        name: data.name, 
-                                                        takenAt: data.takenAt
-                                                      });
+      userId: data.userId,
+      name: data.name,
+      takenAt: data.takenAt,
+    });
 
     if(!existingPhoto) {
       
