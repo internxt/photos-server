@@ -84,7 +84,7 @@ export class PhotosUsecase {
     return usage;
   }
 
-  savePhoto(data: NewPhoto): Promise<Photo> {
+  async savePhoto(data: NewPhoto): Promise<Photo> {
     const now = new Date();
     const photoToCreate: Omit<Photo, 'id'> = {
       ...data,
@@ -92,7 +92,45 @@ export class PhotosUsecase {
       statusChangedAt: now
     };
 
-    return this.photosRepository.create(photoToCreate);
+    /**
+     * PATCH PHOTO HASH
+     * 
+     * In Drive-mobile the photo hash was malformed, since the
+     * hash was created using a malformed value, now that is fixed
+     * we need to patch the hash of those photos that match
+     * in name and date with the photo that wants to be saved so we
+     * avoid duplicated photos.
+     * 
+     * If the incoming photo matches in name and date with an already
+     * existing photo, we don't create the photo, we just update the hash
+     * of the one that already exists because it means that the photo
+     * was already uploaded, but the hash was wrong.
+     */
+      
+    const existingPhoto = await this.photosRepository.getOne({
+      userId: data.userId,
+      name: data.name,
+      takenAt: data.takenAt,
+    });
+
+    if(!existingPhoto) {
+      
+      return this.photosRepository.create(photoToCreate);
+    } else {
+
+      if(existingPhoto.hash === photoToCreate.hash) {
+        throw new UsecaseError('A photo with this characteristics already exists');
+      }
+
+      await this.photosRepository.updateById(existingPhoto.id, {
+        hash: data.hash
+      });
+
+      return {
+        ...existingPhoto,
+        hash: data.hash
+      };
+    }    
   }
 
   async deletePhoto(photoId: string) {
