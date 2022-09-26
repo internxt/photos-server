@@ -38,7 +38,7 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
         controller.postPhoto.bind(controller),
       );
       server.post<{ Body: CreatePhotoType }>(
-        '/maybe-existing-photo',
+        '/photo/exists',
         {
           preValidation: server.authenticate,
           schema: {
