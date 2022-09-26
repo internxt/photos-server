@@ -98,6 +98,17 @@ export class PhotosController {
     rep.send({ usage });
   }
 
+  async findOrCreatePhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+    const [checkedPhoto] = await this.photosUsecase.photosWithTheseCharacteristicsExist(user.payload.uuid, [req.body]);
+
+    if (checkedPhoto.exists) {
+      return rep.code(200).send(checkedPhoto);
+    } else {
+      return this.postPhoto(req, rep);
+    }
+  }
+
   async postPhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
     const body: NewPhoto = req.body;
