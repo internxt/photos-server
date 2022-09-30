@@ -59,10 +59,11 @@ export class PhotosController {
         results.map((photo) => photo.previewId),
       );
 
-      const resultsWithDownloadLinks = response.map(({ link, index }, i) => ({
+
+      const resultsWithDownloadLinks = response.map((result, i) => ({
         ...results[i],
-        previewLink: link,
-        previewIndex: index,
+        previewLink: (result && result.link) || '',
+        previewIndex: (result && result.index) || '',
       }));
 
       rep.send({ results: resultsWithDownloadLinks, count, bucketId: photosUser!.bucketId });
