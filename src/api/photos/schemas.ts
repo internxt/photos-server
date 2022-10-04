@@ -25,6 +25,7 @@ export const CreatePhotoSchema = Type.Object({
   hash: Type.String(),
   itemType: Type.Enum(PhotosItemType),
   duration: Type.Optional(Type.Number()),
+  networkBucketId: Type.String(),
 });
 
 export const UpdatePhotoSchema = Type.Object({
@@ -44,11 +45,11 @@ export const GetPhotosQueryParamsSchema = Type.Object({
 const PhotoExistsSchema = Type.Object({
   hash: Type.String(),
   takenAt: Type.Any(),
-  name: Type.String()
+  name: Type.String(),
 });
 
 export const CheckPhotosExistenceSchema = Type.Object({
-  photos: Type.Array(PhotoExistsSchema)
+  photos: Type.Array(PhotoExistsSchema),
 });
 
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;
