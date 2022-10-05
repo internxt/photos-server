@@ -2,9 +2,15 @@ import { Collection } from 'mongodb';
 import { stub } from 'sinon';
 
 import { PhotosRepository } from '../../../src/api/photos/repository';
-import { PhotoNotFound, PhotosLookupResponse, PhotosUsecase } from '../../../src/api/photos/usecase';
+import { 
+  PhotoNotFound, 
+  PhotosLookupResponse, 
+  PhotosUsecase, 
+  WrongBucketIdError 
+} from '../../../src/api/photos/usecase';
 import { UsersRepository } from '../../../src/api/users/repository';
 import { Photo, PhotosItemType, PhotoStatus } from '../../../src/models/Photo';
+import { User } from '../../../src/models/User';
 
 const PhotosCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
 const UsersCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
@@ -121,6 +127,29 @@ describe('Photos usecases', () => {
       );
 
       expect(received).toStrictEqual([{ ...deletedPhoto, exists: true }]);
+    });
+  });
+
+  describe('Photo creation', () => {
+    it('When a photo has the wrong bucket id, is not going to be created', async () => {
+      const wrongBucketId: User['bucketId'] = '';
+      const newPhotoWithBucketId: Photo & { networkBucketId: string }= {
+        ...photoThatExists, 
+        networkBucketId: wrongBucketId
+      };
+
+      stub(photosRepository, 'getOne').resolves(null);
+      stub(usersRepository, 'getByBucket').resolves(
+        newPhotoWithBucketId.networkBucketId === user.bucketId ? user : null
+      );
+
+      try {
+        await usecase.savePhoto(newPhotoWithBucketId);
+
+        expect(false).toBeTruthy();
+      } catch (err) {
+        expect(err).toBeInstanceOf(WrongBucketIdError);
+      }
     });
   });
 });
