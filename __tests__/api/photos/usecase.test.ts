@@ -37,7 +37,7 @@ const photoThatExists: Photo = {
   statusChangedAt: new Date(),
   takenAt: new Date(),
   type: 'jpg',
-  userId: 'user-id',
+  userId: user.id,
   width: 500,
   itemType: PhotosItemType.PHOTO,
   previews: []
@@ -74,7 +74,11 @@ describe('Photos usecases', () => {
       stub(photosRepository, 'getOne').resolves(existingPhoto);
       stub(photosRepository, 'updateById').resolves();
 
-      const received = await usecase.savePhoto({...photoThatExists, hash: 'correct-hash'});
+      const received = await usecase.savePhoto({
+        ...photoThatExists, 
+        hash: 'correct-hash', 
+        networkBucketId: user.bucketId 
+      });
 
       expect(received).toStrictEqual({ ...existingPhoto, hash: 'correct-hash' });
     });
@@ -84,8 +88,9 @@ describe('Photos usecases', () => {
 
       stub(photosRepository, 'getOne').resolves(null);
       stub(photosRepository, 'create').resolves(newPhoto);
+      stub(usersRepository, 'getByBucket').resolves(user);
       
-      const received = await usecase.savePhoto(photoThatExists);
+      const received = await usecase.savePhoto({ ...photoThatExists, networkBucketId: user.bucketId });
 
       expect(received).toStrictEqual(newPhoto);
     });
