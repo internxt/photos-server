@@ -114,6 +114,11 @@ export class PhotosUsecase {
     });
 
     if(!existingPhoto) {
+      const user = await this.usersRepository.getByBucket(data.networkBucketId);
+      
+      if (!user) {
+        throw new UsecaseError('User not found by network bucket id');
+      }
       
       return this.photosRepository.create(photoToCreate);
     } else {
