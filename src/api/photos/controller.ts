@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import dayjs from 'dayjs';
 
 import { NewPhoto, Photo, PhotoId } from '../../models/Photo';
-import { PhotosUsecase } from './usecase';
+import { PhotosUsecase, WrongBucketIdError } from './usecase';
 import { CheckPhotosExistenceType, CreatePhotoType, GetPhotosQueryParamsType, UpdatePhotoType } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
@@ -137,11 +137,22 @@ export class PhotosController {
     }
 
     const device = await this.devicesUsecase.getDeviceById(body.deviceId);
-    const createdPhoto = await this.photosUsecase.savePhoto(body);
 
     if (!device) {
       return rep.status(400).send({ message: 'Device not found' });
     }
+
+    let createdPhoto: Photo;
+
+    try {
+      createdPhoto = await this.photosUsecase.savePhoto(body);
+    } catch (err) {
+      if (err instanceof WrongBucketIdError) {
+        return rep.status(400).send({ message: err.message });
+      }
+      throw err;
+    }
+    
 
     if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
       this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
