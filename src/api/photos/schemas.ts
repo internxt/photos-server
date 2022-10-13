@@ -1,6 +1,6 @@
 import { Type, Static } from '@sinclair/typebox';
 
-import { PhotoPreviewType, PhotoStatus } from '../../models/Photo';
+import { PhotoPreviewType, PhotoStatus, PhotosItemType } from '../../models/Photo';
 
 export const PhotoPreviewSchema = Type.Object({
   width: Type.Number(),
@@ -23,6 +23,8 @@ export const CreatePhotoSchema = Type.Object({
   previews: Type.Optional(Type.Array(PhotoPreviewSchema)),
   takenAt: Type.Any(),
   hash: Type.String(),
+  itemType: Type.Enum(PhotosItemType),
+  duration: Type.Optional(Type.Number()),
 });
 
 export const UpdatePhotoSchema = Type.Object({

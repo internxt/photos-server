@@ -7,7 +7,7 @@ import { PhotoNotFoundError } from '../../../src/api/photos/usecase';
 import { SharesRepository } from '../../../src/api/shares/repository';
 import { ShareNotOwnedByThisUserError, SharesUsecase } from '../../../src/api/shares/usecase';
 import { UsersRepository } from '../../../src/api/users/repository';
-import { Photo, PhotoStatus } from '../../../src/models/Photo';
+import { Photo, PhotosItemType, PhotoStatus } from '../../../src/models/Photo';
 import { Share } from '../../../src/models/Share';
 
 const SharesCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
@@ -105,6 +105,7 @@ describe('Shares usecases', () => {
         width: 40,
         status: PhotoStatus.Exists,
         hash: '12345',
+        itemType: PhotosItemType.PHOTO,
         takenAt: new Date(),
         statusChangedAt: new Date(),
       };
@@ -166,6 +167,7 @@ describe('Shares usecases', () => {
         width: 40,
         status: PhotoStatus.Exists,
         hash: '1234',
+        itemType: PhotosItemType.PHOTO,
         takenAt: new Date(),
         statusChangedAt: new Date(),
       };
@@ -207,6 +209,7 @@ describe('Shares usecases', () => {
         hash: '1234',
         status: PhotoStatus.Exists,
         takenAt: new Date(),
+        itemType: PhotosItemType.PHOTO,
         statusChangedAt: new Date(),
       };
 
@@ -251,6 +254,7 @@ describe('Shares usecases', () => {
         userId,
         width: 40,
         hash: '1234',
+        itemType: PhotosItemType.PHOTO,
         status: PhotoStatus.Exists,
         takenAt: new Date(),
         statusChangedAt: new Date(),

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { PhotoStatus } from '../../../models/Photo';
+import { PhotosItemType, PhotoStatus } from '../../../models/Photo';
 
 import { PhotoDocument } from '../models/Photo';
 import { devices } from './devices';
@@ -25,8 +25,10 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     width: 10,
     status: PhotoStatus.Exists,
     hash: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+    duration: 0,
+    itemType: PhotosItemType.PHOTO,
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
-    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaab'),
@@ -44,8 +46,10 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     width: 10,
     status: PhotoStatus.Exists,
     hash: 'aaaaaaaaaaaaaaaaaaaaaaab',
+    duration: 0,
+    itemType: PhotosItemType.PHOTO,
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
-    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
 ];
 
@@ -66,8 +70,10 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     width: 10,
     status: PhotoStatus.Exists,
     hash: 'aaaaaaaaaaaaaaaaaaaaaaac',
+    duration: 0,
+    itemType: PhotosItemType.PHOTO,
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
-    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
   {
     _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaad'),
@@ -85,8 +91,10 @@ const userTwoPhotos: Required<PhotoDocument>[] = [
     width: 10,
     status: PhotoStatus.Exists,
     hash: 'aaaaaaaaaaaaaaaaaaaaaaad',
+    duration: 0,
+    itemType: PhotosItemType.PHOTO,
     takenAt: new Date('2021-11-16 18:32:45.110Z'),
-    statusChangedAt: new Date('2021-11-16 18:32:45.110Z')
+    statusChangedAt: new Date('2021-11-16 18:32:45.110Z'),
   },
 ];
 
