@@ -4,7 +4,7 @@ import { stub } from 'sinon';
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { PhotoNotFound, PhotosLookupResponse, PhotosUsecase } from '../../../src/api/photos/usecase';
 import { UsersRepository } from '../../../src/api/users/repository';
-import { Photo, PhotoStatus } from '../../../src/models/Photo';
+import { Photo, PhotosItemType, PhotoStatus } from '../../../src/models/Photo';
 
 const PhotosCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
 const UsersCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
@@ -39,6 +39,7 @@ const photoThatExists: Photo = {
   type: 'jpg',
   userId: 'user-id',
   width: 500,
+  itemType: PhotosItemType.PHOTO,
   previews: []
 };
 const photoThatDoesNotExist: PhotoNotFound = {

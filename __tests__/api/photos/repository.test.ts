@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 import { PhotosRepository } from '../../../src/api/photos/repository';
 import { MongoDB } from '../../../src/database/MongoDB';
 import { photos } from '../../../src/database/mongo/fixtures/photos';
-import { PhotoStatus } from '../../../src/models/Photo';
+import { PhotosItemType, PhotoStatus } from '../../../src/models/Photo';
 import { getRandomString } from '../../utils';
 
 config();
@@ -105,6 +105,7 @@ describe('Photos repository methods', () => {
       hash: alreadyExistentPhoto.hash,
       status: PhotoStatus.Exists,
       takenAt: new Date(),
+      itemType: PhotosItemType.PHOTO,
       statusChangedAt: new Date()
     });
 

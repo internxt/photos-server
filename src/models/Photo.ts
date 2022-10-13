@@ -20,20 +20,27 @@ export interface Photo {
   height: number
   fileId: FileId
   previewId: FileId
-  previews?: { width: number; height: number; size: number; fileId: FileId, type: PhotoPreviewType }[]
+  previews?: { width: number; height: number; size: number; fileId: FileId; type: PhotoPreviewType }[]
   deviceId: DeviceId
   userId: UserId
   status: PhotoStatus
   hash: string;
   statusChangedAt: Date
   takenAt: Date
+  duration?: number
+  itemType: PhotosItemType
 }
 
 export type NewPhoto = Omit<Photo, 'id' | 'statusChangedAt' | 'status'>;
 
 export enum PhotoPreviewType {
   PNG = 'PNG',
-  JPEG = 'JPEG'
+  JPEG = 'JPEG',
+}
+
+export enum PhotosItemType {
+  PHOTO = 'PHOTO',
+  VIDEO = 'VIDEO',
 }
 
 export const DEFAULT_PHOTO_PREVIEW_TYPE = PhotoPreviewType.JPEG;
