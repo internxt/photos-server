@@ -15,6 +15,12 @@ export class PhotoNotFoundError extends UsecaseError {
   }
 }
 
+export class WrongBucketIdError extends UsecaseError {
+  constructor(bucketId: User['bucketId']) {
+    super('Bucket' + (bucketId  ? ` ${bucketId}` : '') + ' is wrong');
+  }
+}
+
 export class PhotosUsecase {
   private photosRepository: PhotosRepository;
   private usersRepository: UsersRepository;
@@ -114,6 +120,11 @@ export class PhotosUsecase {
     });
 
     if(!existingPhoto) {
+      const user = await this.usersRepository.getByBucket(data.networkBucketId);
+      
+      if (!user) {
+        throw new WrongBucketIdError(data.networkBucketId);
+      }
       
       return this.photosRepository.create(photoToCreate);
     } else {

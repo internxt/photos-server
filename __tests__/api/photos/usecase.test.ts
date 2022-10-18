@@ -2,9 +2,15 @@ import { Collection } from 'mongodb';
 import { stub } from 'sinon';
 
 import { PhotosRepository } from '../../../src/api/photos/repository';
-import { PhotoNotFound, PhotosLookupResponse, PhotosUsecase } from '../../../src/api/photos/usecase';
+import { 
+  PhotoNotFound, 
+  PhotosLookupResponse, 
+  PhotosUsecase, 
+  WrongBucketIdError 
+} from '../../../src/api/photos/usecase';
 import { UsersRepository } from '../../../src/api/users/repository';
 import { Photo, PhotosItemType, PhotoStatus } from '../../../src/models/Photo';
+import { User } from '../../../src/models/User';
 
 const PhotosCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
 const UsersCollectionStubbed = stub(Collection, 'prototype').returns(Collection);
@@ -37,7 +43,7 @@ const photoThatExists: Photo = {
   statusChangedAt: new Date(),
   takenAt: new Date(),
   type: 'jpg',
-  userId: 'user-id',
+  userId: user.id,
   width: 500,
   itemType: PhotosItemType.PHOTO,
   previews: []
@@ -74,7 +80,11 @@ describe('Photos usecases', () => {
       stub(photosRepository, 'getOne').resolves(existingPhoto);
       stub(photosRepository, 'updateById').resolves();
 
-      const received = await usecase.savePhoto({...photoThatExists, hash: 'correct-hash'});
+      const received = await usecase.savePhoto({
+        ...photoThatExists, 
+        hash: 'correct-hash', 
+        networkBucketId: user.bucketId 
+      });
 
       expect(received).toStrictEqual({ ...existingPhoto, hash: 'correct-hash' });
     });
@@ -84,8 +94,9 @@ describe('Photos usecases', () => {
 
       stub(photosRepository, 'getOne').resolves(null);
       stub(photosRepository, 'create').resolves(newPhoto);
+      stub(usersRepository, 'getByBucket').resolves(user);
       
-      const received = await usecase.savePhoto(photoThatExists);
+      const received = await usecase.savePhoto({ ...photoThatExists, networkBucketId: user.bucketId });
 
       expect(received).toStrictEqual(newPhoto);
     });
@@ -116,6 +127,29 @@ describe('Photos usecases', () => {
       );
 
       expect(received).toStrictEqual([{ ...deletedPhoto, exists: true }]);
+    });
+  });
+
+  describe('Photo creation', () => {
+    it('When a photo has the wrong bucket id, is not going to be created', async () => {
+      const wrongBucketId: User['bucketId'] = '';
+      const newPhotoWithBucketId: Photo & { networkBucketId: string }= {
+        ...photoThatExists, 
+        networkBucketId: wrongBucketId
+      };
+
+      stub(photosRepository, 'getOne').resolves(null);
+      stub(usersRepository, 'getByBucket').resolves(
+        newPhotoWithBucketId.networkBucketId === user.bucketId ? user : null
+      );
+
+      try {
+        await usecase.savePhoto(newPhotoWithBucketId);
+
+        expect(false).toBeTruthy();
+      } catch (err) {
+        expect(err).toBeInstanceOf(WrongBucketIdError);
+      }
     });
   });
 });

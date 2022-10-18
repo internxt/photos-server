@@ -44,6 +44,17 @@ export class UsersRepository implements Repository<User> {
         return mongoDocToModel(doc);
       });
   }
+  
+  getByBucket(bucketId: User['bucketId']): Promise<User | null> {
+    return this.collection.findOne({ bucketId })
+      .then((doc: UserDocument | null) => {
+        if (!doc || !doc._id) {
+          return null;
+        }
+
+        return mongoDocToModel(doc);
+      });
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   get(where: Filter<UserDocument>) {
