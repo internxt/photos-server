@@ -101,7 +101,14 @@ export class PhotosController {
 
   async findOrCreatePhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
-    const [checkedPhoto] = await this.photosUsecase.photosWithTheseCharacteristicsExist(user.payload.uuid, [req.body]);
+
+    const body = req.body;
+    body.takenAt = dateToUTC(body.takenAt);
+    const [checkedPhoto] = await this.photosUsecase.photosWithTheseCharacteristicsExist(user.payload.uuid, [{
+      name: body.name,
+      takenAt: body.takenAt,
+      hash: body.hash
+    }]);
 
     if (checkedPhoto.exists) {
       return rep.code(200).send(checkedPhoto);
