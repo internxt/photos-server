@@ -8,9 +8,9 @@ export type DeleteFilesResponse = {
   };
 };
 
-type DeletePhotosById = (ids: Array<PhotoId>) => Promise<DeleteResult>;
-type DeleteFileFromStorage = (id: Array<PhotoId>) => Promise<DeleteFilesResponse>;
-type GetPhotosToDelete = (limit: number) => Promise<Array<PhotoId>>;
+export type DeletePhotosById = (ids: Array<PhotoId>) => Promise<DeleteResult>;
+export type DeleteFileFromStorage = (id: Array<PhotoId>) => Promise<DeleteFilesResponse>;
+export type GetPhotosToDelete = (limit: number) => Promise<Array<PhotoId>>;
 
 export type CommandServices = {
   deletePhotosById: DeletePhotosById;

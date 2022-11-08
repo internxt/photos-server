@@ -1,10 +1,9 @@
-import { CommandServices } from './services';
-import { setUp } from './setup';
+import { PhotoDeleter } from './PhotoDeleter';
 
 function retrivesNeeded(retriveCallsToObtainAll: number, value: any): jest.Mock {
   const mock = jest.fn();
 
-  for(let i = 0; i < retriveCallsToObtainAll; i++) {
+  for (let i = 0; i < retriveCallsToObtainAll; i++) {
     mock.mockResolvedValueOnce(value);
   }
 
@@ -20,7 +19,7 @@ describe('Delete photos', () => {
 
     const id = '12d1e28f-f69b-5251-837a-bf29ed871b97';
     const ids = Array(limit).fill(id);
-    
+
     const getPhotosIdsToDelete = retrivesNeeded(1, ids);
 
     const deletePhotoFromStorage = jest.fn().mockResolvedValue({
@@ -30,19 +29,11 @@ describe('Delete photos', () => {
       },
     });
 
-    const deletePhotosById = jest.fn();    
+    const deletePhotosById = jest.fn();
 
-    const init = () => {
-      return Promise.resolve({
-        getPhotosIdsToDelete,
-        deletePhotoFromStorage,
-        deletePhotosById,
-      } as unknown as CommandServices);
-    };
+    const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    const command = await setUp(init);
-    
-    await command(limit, concurrency);
+    await deleter.run(limit, concurrency);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(2);
     expect(deletePhotoFromStorage).toBeCalledTimes(2);
@@ -68,24 +59,13 @@ describe('Delete photos', () => {
 
     const deletePhotosById = jest.fn();
 
-    const init = () => {
-      return Promise.resolve({
-        getPhotosIdsToDelete,
-        deletePhotoFromStorage,
-        deletePhotosById,
-      } as unknown as CommandServices);
-    };
+    const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    const command = await setUp(init);
-    
-    await command(limit, concurrency);
+    await deleter.run(limit, concurrency);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(2);
     expect(deletePhotoFromStorage).toBeCalledTimes(2);
-    expect(deletePhotoFromStorage.mock.calls).toEqual([
-      [Array(10).fill(id)], 
-      [Array(5).fill(id)]
-    ]);
+    expect(deletePhotoFromStorage.mock.calls).toEqual([[Array(10).fill(id)], [Array(5).fill(id)]]);
     expect(deletePhotosById).toBeCalledTimes(1);
   });
 
@@ -107,17 +87,9 @@ describe('Delete photos', () => {
 
     const deletePhotosById = jest.fn();
 
-    const init = () => {
-      return Promise.resolve({
-        getPhotosIdsToDelete,
-        deletePhotoFromStorage,
-        deletePhotosById,
-      } as unknown as CommandServices);
-    };
+    const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    const command = await setUp(init);
-    
-    await command(limit, concurrency);
+    await deleter.run(limit, concurrency);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(retriveCallsToObtainAll + 1);
     expect(deletePhotoFromStorage).toBeCalledTimes(retriveCallsToObtainAll * limit);
@@ -143,19 +115,11 @@ describe('Delete photos', () => {
 
     const deletePhotosById = jest.fn();
 
-    const init = () => {
-      return Promise.resolve({
-        getPhotosIdsToDelete,
-        deletePhotoFromStorage,
-        deletePhotosById,
-      } as unknown as CommandServices);
-    };
+    const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    const command = await setUp(init);
-    
-    await command(limit, concurrency);
+    await deleter.run(limit, concurrency);
 
-    expect(getPhotosIdsToDelete).toBeCalledTimes(retriveCallsToObtainAll + 1 );
+    expect(getPhotosIdsToDelete).toBeCalledTimes(retriveCallsToObtainAll + 1);
     expect(deletePhotosById).toBeCalledTimes(retriveCallsToObtainAll);
     expect(deletePhotosById).toBeCalledWith([
       Array(14).fill(id),

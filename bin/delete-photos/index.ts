@@ -5,15 +5,14 @@ import { PhotosRepository } from '../../src/api/photos/repository';
 import { PhotoId, PhotoStatus } from '../../src/models/Photo';
 import { MongoDB } from '../../src/database/MongoDB';
 import { CommandServices, DeleteFilesResponse } from './services';
-import { setUp } from './setup';
+import { PhotoDeleter } from './PhotoDeleter';
+import axios, { AxiosRequestConfig } from 'axios';
+import { sign } from 'jsonwebtoken';
+import { request } from '@internxt/lib';
 
 type CommandOptions = {
   secret: string;
-  dbHostname: string;
-  dbPort: string;
-  dbName: string;
-  dbUsername: string;
-  dbPassword: string;
+  dbUri: string;
   concurrency?: string;
   limit?: string;
   endpoint: string;
@@ -26,28 +25,8 @@ const commandsOptions: { flags: string; description: string; required: boolean }
     required: true,
   },
   {
-    flags: '--db-hostname <database_hostname>',
-    description: 'The hostname of the database where deleted files are stored',
-    required: true,
-  },
-  {
-    flags: '--db-name <database_name>',
-    description: 'The name of the database where deleted files are stored',
-    required: true,
-  },
-  {
-    flags: '--db-username <database_username>',
-    description: 'The username authorized to read and delete from the deleted files table',
-    required: true,
-  },
-  {
-    flags: '--db-password <database_password>',
-    description: 'The database username password',
-    required: true,
-  },
-  {
-    flags: '--db-port <database_port>',
-    description: 'The database port',
+    flags: '--db-uri <database_uri>',
+    description: 'The uri of the database where deleted photos are stored',
     required: true,
   },
   {
@@ -83,10 +62,34 @@ const opts: CommandOptions = command.opts() as CommandOptions;
 
 process.on('SIGINT', () => finishProgram());
 
-if (!process.env.DATABASE_URI) {
-  process.exit(1);
+const database = new MongoDB(opts.dbUri);
+
+async function deletePhotoFromStorage(ids: Array<PhotoId>) {
+//   const secret = [
+// ].join('\n');
+//   const token = sign({}, Buffer.from(secret, 'base64').toString('utf8'), {
+//     algorithm: 'RS256',
+//     expiresIn: '5m',
+//   });
+
+  const params: AxiosRequestConfig = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${opts.secret}`,
+    },
+    data: {
+      files: ids,
+    },
+  };
+
+  try {
+    const res = await axios
+      .delete<DeleteFilesResponse>(opts.endpoint, params);
+    return res.data;
+  } catch (err) {
+    throw new Error(request.extractMessageFromError(err));
+  }
 }
-const database = new MongoDB(process.env.DATABASE_URI);
 
 async function services(): Promise<CommandServices> {
   await database.connect();
@@ -99,17 +102,14 @@ async function services(): Promise<CommandServices> {
 
   return {
     getPhotosIdsToDelete: async (limit: number) => {
-      return repository.get({ status: PhotoStatus.Deleted }, limit).then((photo) => photo.map((p) => p.id));
+      return await repository
+        .get({ status: PhotoStatus.Deleted }, 0, limit)
+        .then((photo) => photo.map((p) => p.fileId));
     },
-    deletePhotoFromStorage: (ids: Array<PhotoId>) => {
-      return Promise.resolve({
-        message: {
-          confirmed: ids,
-          notConfirmed: [],
-        },
-      });
+    deletePhotosById: (ids: Array<PhotoId>) => {
+      return photosCollection.deleteMany({ fileId: { $in: ids } });
     },
-    deletePhotosById: (ids: Array<PhotoId>) => photosCollection.deleteMany({ fileId: { $in: ids } }),
+    deletePhotoFromStorage,
   };
 }
 
@@ -120,7 +120,11 @@ async function finishProgram() {
 const limit = parseInt(opts.limit || '20');
 const concurrency = parseInt(opts.concurrency || '5');
 
-setUp(services)
-  .then((fn) => fn(limit, concurrency))
+services()
+  .then(
+    ({ getPhotosIdsToDelete, deletePhotosById, deletePhotoFromStorage }) =>
+      new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete),
+  )
+  .then((deleter) => deleter.run(limit, concurrency))
   .catch(console.error)
   .finally(finishProgram);
