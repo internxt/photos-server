@@ -4,8 +4,7 @@ import { Command } from 'commander';
 import { PhotosRepository } from '../../src/api/photos/repository';
 import { PhotoId, PhotoStatus } from '../../src/models/Photo';
 import { MongoDB } from '../../src/database/MongoDB';
-import { CommandServices, DeleteFilesResponse } from './services';
-import { PhotoDeleter } from './PhotoDeleter';
+import { DeleteFilesResponse, PhotoDeleter } from './PhotoDeleter';
 import axios, { AxiosRequestConfig } from 'axios';
 import { sign } from 'jsonwebtoken';
 import { request } from '@internxt/lib';
@@ -64,34 +63,30 @@ process.on('SIGINT', () => finishProgram());
 
 const database = new MongoDB(opts.dbUri);
 
+const token = sign({}, opts.secret, {
+  algorithm: 'RS256',
+  expiresIn: '5m',
+});
+
 async function deletePhotoFromStorage(ids: Array<PhotoId>) {
-//   const secret = [
-// ].join('\n');
-//   const token = sign({}, Buffer.from(secret, 'base64').toString('utf8'), {
-//     algorithm: 'RS256',
-//     expiresIn: '5m',
-//   });
-
-  const params: AxiosRequestConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${opts.secret}`,
-    },
-    data: {
-      files: ids,
-    },
-  };
-
   try {
-    const res = await axios
-      .delete<DeleteFilesResponse>(opts.endpoint, params);
+    const params: AxiosRequestConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        files: ids,
+      },
+    };
+    const res = await axios.delete<DeleteFilesResponse>(opts.endpoint, params);
     return res.data;
   } catch (err) {
     throw new Error(request.extractMessageFromError(err));
   }
 }
 
-async function services(): Promise<CommandServices> {
+async function initRepository() {
   await database.connect();
 
   const collections = database.getCollections();
@@ -108,8 +103,7 @@ async function services(): Promise<CommandServices> {
     },
     deletePhotosById: (ids: Array<PhotoId>) => {
       return photosCollection.deleteMany({ fileId: { $in: ids } });
-    },
-    deletePhotoFromStorage,
+    }
   };
 }
 
@@ -120,9 +114,9 @@ async function finishProgram() {
 const limit = parseInt(opts.limit || '20');
 const concurrency = parseInt(opts.concurrency || '5');
 
-services()
+initRepository()
   .then(
-    ({ getPhotosIdsToDelete, deletePhotosById, deletePhotoFromStorage }) =>
+    ({ getPhotosIdsToDelete, deletePhotosById }) =>
       new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete),
   )
   .then((deleter) => deleter.run(limit, concurrency))

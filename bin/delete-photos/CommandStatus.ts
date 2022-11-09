@@ -1,5 +1,5 @@
 import { PhotoId } from '../../src/models/Photo';
-import { DeleteFilesResponse } from './services';
+import { DeleteFilesResponse } from './PhotoDeleter';
 
 type Timer = { start: () => void; end: () => number };
 
