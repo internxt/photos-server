@@ -126,6 +126,7 @@ export class PhotosUsecase {
         throw new WrongBucketIdError(data.networkBucketId);
       }
       
+      await this.usersRepository.updateGalleryUsage(user, photoToCreate.size);
       return this.photosRepository.create(photoToCreate);
     } else {
 

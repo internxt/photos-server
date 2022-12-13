@@ -2,7 +2,7 @@ import { Collection, Document, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { UserDocument } from '../../database/mongo/models/User';
-import { User, UserId } from '../../models/User';
+import { GalleryUsage, User, UserId } from '../../models/User';
 
 function toObjectId(id: string) {
   return new ObjectId(id);
@@ -78,6 +78,22 @@ export class UsersRepository implements Repository<User> {
 
   update() {
     return Promise.reject('Not implemented yet');
+  }
+
+  updateGalleryUsage(user: User, sizeIncrement: GalleryUsage) {
+    if (user) {
+      const newGalleryUsage = (user?.galleryUsage || 0) + sizeIncrement;
+      return this.collection.updateOne(
+        { _id: toObjectId(user.id) },
+        {
+          $set: {
+            ...user,
+            galleryUsage: newGalleryUsage,
+            updatedAt: new Date(),
+          },
+        },
+      );
+    }
   }
 
   async deleteById(id: UserId) {
