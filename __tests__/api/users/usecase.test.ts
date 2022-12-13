@@ -37,7 +37,9 @@ describe('Users usecases', () => {
     const expected: User = {
       id: userId,
       bucketId: bucketId,
-      uuid: v4()
+      uuid: v4(),
+      galleryUsage: 0,
+      trashUsage: 0
     };
 
     stub(usersRepository, 'getById').returns(Promise.resolve(expected));
@@ -51,7 +53,9 @@ describe('Users usecases', () => {
     const expected: User = {
       id: userId,
       bucketId: bucketId,
-      uuid: v4()
+      uuid: v4(),
+      galleryUsage: 0,
+      trashUsage: 0
     };
 
     stub(usersRepository, 'getByUuid').returns(Promise.resolve(expected));
@@ -150,7 +154,13 @@ describe('Users usecases', () => {
     const deviceInfo = { mac: deviceMac, name: deviceName };
 
     it('Should init the user properly', async () => {
-      const expected = { bucketId, id: userId, uuid };
+      const expected = {
+        bucketId,
+        id: userId,
+        uuid,
+        galleryUsage: 0,
+        trashUsage: 0
+      };
 
       stub(usecase, 'obtainUserByUuid').resolves(null);
       stub(network, 'createBucket').resolves(bucketId);
@@ -172,7 +182,13 @@ describe('Users usecases', () => {
     });
 
     it('Should return the user if already exists', async () => {
-      const expected = { id: '', bucketId, uuid };
+      const expected = {
+        id: '',
+        bucketId,
+        uuid,
+        galleryUsage: 0,
+        trashUsage: 0
+      };
 
       stub(usecase, 'obtainUserByUuid').resolves(expected);
 
@@ -243,7 +259,13 @@ describe('Users usecases', () => {
 
         stub(usecase, 'obtainUserByUuid').resolves(null);
         stub(network, 'createBucket').resolves(bucketId);
-        stub(usersRepository, 'create').resolves({ bucketId, id: userId, uuid });
+        stub(usersRepository, 'create').resolves({
+          bucketId,
+          id: userId,
+          uuid,
+          galleryUsage: 0,
+          trashUsage: 0
+        });
         stub(devicesRepository, 'create').rejects(new Error(errorMessage));
         
         const rollbackStub = stub(usecase, 'rollbackUserInitialization');

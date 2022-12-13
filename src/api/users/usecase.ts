@@ -47,7 +47,7 @@ export class UsersUsecase {
     try {
       bucketId = await network.createBucket(`Photos-${uuid}`);
 
-      const newUser: Omit<User, 'id'> = { uuid, bucketId };
+      const newUser: Omit<User, 'id'> = { uuid, bucketId, galleryUsage: 0, trashUsage: 0 };
       user = await this.usersRepository.create(newUser);
 
       const alreadyCreatedDevice = await this.devicesRepository.getByUserIdAndMac(user.id, deviceInfo.mac);

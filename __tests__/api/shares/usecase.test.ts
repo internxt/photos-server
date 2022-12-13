@@ -125,7 +125,13 @@ describe('Shares usecases', () => {
       const createShareStub = stub(sharesRepository, 'create').returns(
         Promise.resolve({ ...shareToCreate, id: expectedShareId }),
       );
-      stub(usersRepository, 'getByUuid').returns(Promise.resolve({ id: userId, uuid: 'uuid', bucketId }));
+      stub(usersRepository, 'getByUuid').returns(Promise.resolve({
+        id: userId,
+        uuid: 'uuid',
+        bucketId,
+        galleryUsage: alreadyExistentPhoto.size,
+        trashUsage: 0
+      }));
 
       const received = await sharesUsecase.createShare(alreadyExistentPhoto.userId, shareToCreate);
 
@@ -181,7 +187,13 @@ describe('Shares usecases', () => {
 
       stub(photosRepository, 'getByMultipleIds').returns(Promise.resolve([alreadyExistentPhoto]));
       stub(usersRepository, 'getByUuid').returns(
-        Promise.resolve({ id: userId + 'notthisuser', uuid: 'uuid', bucketId }),
+        Promise.resolve({
+          id: userId + 'notthisuser',
+          uuid: 'uuid',
+          bucketId,
+          galleryUsage: alreadyExistentPhoto.size,
+          trashUsage: 0
+        }),
       );
 
       try {
@@ -225,7 +237,13 @@ describe('Shares usecases', () => {
       const obtainShareByIdStub = stub(sharesRepository, 'getById').returns(Promise.resolve(shareToUpdate));
       const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
       const getUserByUUIDStub = stub(usersRepository, 'getByUuid').returns(
-        Promise.resolve({ bucketId: bucketId, uuid: 'uuid', id: alreadyExistentPhoto.userId }),
+        Promise.resolve({
+          bucketId: bucketId,
+          uuid: 'uuid',
+          id: alreadyExistentPhoto.userId,
+          galleryUsage: alreadyExistentPhoto.size,
+          trashUsage: 0
+        }),
       );
       const updateShareStub = stub(sharesRepository, 'updateById').returns(Promise.resolve(undefined));
 
@@ -272,7 +290,13 @@ describe('Shares usecases', () => {
       const obtainShareByIdStub = stub(sharesRepository, 'getById').returns(Promise.resolve(shareToUpdate));
       const getPhotoByIdStub = stub(photosRepository, 'getById').returns(Promise.resolve(alreadyExistentPhoto));
       const getUserByUUIDStub = stub(usersRepository, 'getByUuid').returns(
-        Promise.resolve({ bucketId: bucketId, uuid: 'uuid', id: alreadyExistentPhoto.userId }),
+        Promise.resolve({
+          bucketId: bucketId,
+          uuid: 'uuid',
+          id: alreadyExistentPhoto.userId,
+          galleryUsage: alreadyExistentPhoto.size,
+          trashUsage: 0
+        }),
       );
       const updateShareStub = stub(sharesRepository, 'updateById').returns(Promise.resolve(undefined));
 

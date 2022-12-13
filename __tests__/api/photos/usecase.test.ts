@@ -27,8 +27,10 @@ beforeEach(() => {
 
 const user = {
   bucketId: 'bucket',
-  id: 'user-id',
-  uuid: 'user-uuid'
+  id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+  uuid: 'user-uuid',
+  galleryUsage: 5,
+  trashUsage: 0
 };
 const photoThatExists: Photo = {
   deviceId: 'device-id',

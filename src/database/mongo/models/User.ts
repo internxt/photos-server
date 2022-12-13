@@ -5,4 +5,6 @@ export interface UserDocument extends Omit<User, 'id'> {
   _id: ObjectId;
   createdAt: Date;
   updatedAt: Date;
+  galleryUsage: number;
+  trashUsage: number;
 }
