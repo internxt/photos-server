@@ -17,7 +17,7 @@ export class PhotoNotFoundError extends UsecaseError {
 
 export class WrongBucketIdError extends UsecaseError {
   constructor(bucketId: User['bucketId']) {
-    super('Bucket' + (bucketId  ? ` ${bucketId}` : '') + ' is wrong');
+    super('Bucket' + (bucketId ? ` ${bucketId}` : '') + ' is wrong');
   }
 }
 
@@ -36,18 +36,18 @@ export class PhotosUsecase {
 
   async get(
     userUuid: string,
-    filter: {name?: string, status?: PhotoStatus, statusChangedAt?: Date, deviceId?: string },
+    filter: { name?: string, status?: PhotoStatus, statusChangedAt?: Date, deviceId?: string },
     skip: number,
     limit: number,
-  ): Promise<{results: Photo[], count: number}> {
+  ): Promise<{ results: Photo[], count: number }> {
     const user = await this.usersRepository.getByUuid(userUuid);
 
     if (!user) {
       throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
     }
-    
-    const results = await this.photosRepository.get({userId: user.id, ...filter}, skip, limit);
-    const count = await this.photosRepository.count({userId: user.id, ...filter});
+
+    const results = await this.photosRepository.get({ userId: user.id, ...filter }, skip, limit);
+    const count = await this.photosRepository.count({ userId: user.id, ...filter });
 
     return { results, count };
   }
@@ -65,11 +65,11 @@ export class PhotosUsecase {
     const foundPhotos: Photo[] = await this.photosRepository.getByMultipleWhere(
       photos.map(p => ({ ...p, userId: user.id }))
     );
- 
+
     return photos.map((photo) => {
       const foundPhotoIndex = foundPhotos.findIndex((foundPhoto) => {
-        return foundPhoto.name === photo.name && 
-          foundPhoto.takenAt.toString() === photo.takenAt.toString() && 
+        return foundPhoto.name === photo.name &&
+          foundPhoto.takenAt.toString() === photo.takenAt.toString() &&
           foundPhoto.hash === photo.hash;
       });
 
@@ -112,25 +112,25 @@ export class PhotosUsecase {
      * of the one that already exists because it means that the photo
      * was already uploaded, but the hash was wrong.
      */
-      
+
     const existingPhoto = await this.photosRepository.getOne({
       userId: data.userId,
       name: data.name,
       takenAt: data.takenAt,
     });
 
-    if(!existingPhoto) {
+    if (!existingPhoto) {
       const user = await this.usersRepository.getByBucket(data.networkBucketId);
-      
+
       if (!user) {
         throw new WrongBucketIdError(data.networkBucketId);
       }
-      
-      await this.usersRepository.updateGalleryUsage(user, photoToCreate.size);
+
+      await this.usersRepository.updateGalleryUsage(user.id, photoToCreate.size);
       return this.photosRepository.create(photoToCreate);
     } else {
 
-      if(existingPhoto.hash === photoToCreate.hash) {
+      if (existingPhoto.hash === photoToCreate.hash) {
         throw new UsecaseError('A photo with this characteristics already exists');
       }
 
@@ -142,7 +142,7 @@ export class PhotosUsecase {
         ...existingPhoto,
         hash: data.hash
       };
-    }    
+    }
   }
 
   async deletePhoto(photoId: string) {
@@ -158,9 +158,16 @@ export class PhotosUsecase {
   }
 
   private async changePhotoStatus(photoId: PhotoId, newStatus: PhotoStatus): Promise<void> {
-    await this.photosRepository.updateById(photoId, { 
-      status: newStatus,
-      statusChangedAt: new Date()
-    });
+    const photo = await this.photosRepository.getById(photoId);
+    if (photo) {
+      if (newStatus === PhotoStatus.Deleted) {
+        await this.usersRepository.updateTrashUsage(photo.userId, -photo.size);
+      }
+
+      await this.photosRepository.updateById(photoId, {
+        status: newStatus,
+        statusChangedAt: new Date()
+      });
+    }
   }
 }

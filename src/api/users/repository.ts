@@ -2,7 +2,7 @@ import { Collection, Document, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { UserDocument } from '../../database/mongo/models/User';
-import { GalleryUsage, User, UserId } from '../../models/User';
+import { GalleryUsage, TrashUsage, User, UserId } from '../../models/User';
 
 function toObjectId(id: string) {
   return new ObjectId(id);
@@ -80,15 +80,35 @@ export class UsersRepository implements Repository<User> {
     return Promise.reject('Not implemented yet');
   }
 
-  updateGalleryUsage(user: User, sizeIncrement: GalleryUsage) {
+  async updateGalleryUsage(userId: UserId, sizeIncrement: GalleryUsage) {
+    const user = await this.getById(userId);
     if (user) {
-      const newGalleryUsage = (user?.galleryUsage || 0) + sizeIncrement;
+      let newGalleryUsage = (user?.galleryUsage || 0) + sizeIncrement;
+      if (newGalleryUsage < 0) newGalleryUsage = 0;
       return this.collection.updateOne(
         { _id: toObjectId(user.id) },
         {
           $set: {
             ...user,
             galleryUsage: newGalleryUsage,
+            updatedAt: new Date(),
+          },
+        },
+      );
+    }
+  }
+
+  async updateTrashUsage(userId: UserId, sizeIncrement: TrashUsage) {
+    const user = await this.getById(userId);
+    if (user) {
+      let newTrashUsage = (user?.trashUsage || 0) + sizeIncrement;
+      if (newTrashUsage < 0) newTrashUsage = 0;
+      return this.collection.updateOne(
+        { _id: toObjectId(user.id) },
+        {
+          $set: {
+            ...user,
+            trashUsage: newTrashUsage,
             updatedAt: new Date(),
           },
         },
