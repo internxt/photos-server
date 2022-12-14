@@ -162,6 +162,9 @@ export class PhotosUsecase {
     if (photo) {
       if (newStatus === PhotoStatus.Deleted) {
         await this.usersRepository.updateTrashUsage(photo.userId, -photo.size);
+      } else if (newStatus === PhotoStatus.Trashed) {
+        await this.usersRepository.updateGalleryUsage(photo.userId, -photo.size);
+        await this.usersRepository.updateTrashUsage(photo.userId, +photo.size);
       }
 
       await this.photosRepository.updateById(photoId, {
