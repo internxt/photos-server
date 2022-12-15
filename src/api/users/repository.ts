@@ -44,7 +44,7 @@ export class UsersRepository implements Repository<User> {
         return mongoDocToModel(doc);
       });
   }
-  
+
   getByBucket(bucketId: User['bucketId']): Promise<User | null> {
     return this.collection.findOne({ bucketId })
       .then((doc: UserDocument | null) => {
@@ -114,6 +114,14 @@ export class UsersRepository implements Repository<User> {
         },
       );
     }
+  }
+
+  async getUsage(userUUID: string) {
+    const user = await this.getByUuid(userUUID);
+    return {
+      galleryUsage: user?.galleryUsage || 0,
+      trashUsage: user?.trashUsage || 0
+    };
   }
 
   async deleteById(id: UserId) {

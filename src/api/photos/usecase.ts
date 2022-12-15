@@ -83,11 +83,8 @@ export class PhotosUsecase {
     });
   }
 
-  async getUsage(userUuid: string): Promise<number> {
-    const user = await this.usersRepository.getByUuid(userUuid);
-    const usage = user ? await this.photosRepository.getUsage(user.id) : 0;
-
-    return usage;
+  getUsage(userUuid: string) {
+    return this.usersRepository.getUsage(userUuid);
   }
 
   async savePhoto(data: NewPhoto): Promise<Photo> {
