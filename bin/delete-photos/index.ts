@@ -132,6 +132,7 @@ async function initRepository() {
 
 async function finishProgram() {
   await database.disconnect();
+  process.exit(0);
 }
 
 const limit = parseInt(opts.limit || '20');
