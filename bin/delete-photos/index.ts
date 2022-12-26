@@ -134,13 +134,12 @@ async function finishProgram() {
 }
 
 const limit = parseInt(opts.limit || '20');
-const concurrency = parseInt(opts.concurrency || '5');
 
 initRepository()
   .then(
     ({ getPhotosIdsToDelete, deletePhotosById }) =>
       new PhotoDeleter(deletePhotosById, deletePhotosFromStorage, getPhotosIdsToDelete),
   )
-  .then((deleter) => deleter.run(limit, concurrency))
+  .then((deleter) => deleter.run(limit))
   .catch(console.error)
   .finally(finishProgram);
