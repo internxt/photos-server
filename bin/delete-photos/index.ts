@@ -24,7 +24,7 @@ const commandsOptions: { flags: string; description: string; required: boolean }
     required: true,
   },
   {
-    flags: '--db-uri <database_uri>',
+    flags: '-d, --db-uri <database_uri>',
     description: 'The uri of the database where deleted photos are stored',
     required: true,
   },
@@ -72,7 +72,7 @@ const token = sign(
   }
 );
 
-async function deletePhotoFromStorage(ids: Array<PhotoId>) {
+async function deletePhotosFromStorage(ids: Array<PhotoId>) {
   try {
     const params: AxiosRequestConfig = {
       headers: {
@@ -101,9 +101,27 @@ async function initRepository() {
 
   return {
     getPhotosIdsToDelete: async (limit: number) => {
-      return await repository
-        .get({ status: PhotoStatus.Deleted }, 0, limit)
-        .then((photo) => photo.map((p) => p.fileId));
+      const fileIds: string[] = [];
+
+      const photos = await repository.get(
+        { status: PhotoStatus.Deleted }, 
+        0, 
+        limit
+      );
+
+      for (const photo of photos) {
+        /* REMOVE PHOTO */
+        fileIds.push(photo.fileId);
+        if (photo.previewId) fileIds.push(photo.previewId);
+        /* REMOVE PREVIEWS */
+        if (photo.previews) {
+          for (const preview of photo.previews) {
+            if (preview.fileId) fileIds.push(preview.fileId);
+          }
+        }
+      }
+    
+      return fileIds;
     },
     deletePhotosById: (ids: Array<PhotoId>) => {
       return photosCollection.deleteMany({ fileId: { $in: ids } });
@@ -121,7 +139,7 @@ const concurrency = parseInt(opts.concurrency || '5');
 initRepository()
   .then(
     ({ getPhotosIdsToDelete, deletePhotosById }) =>
-      new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete),
+      new PhotoDeleter(deletePhotosById, deletePhotosFromStorage, getPhotosIdsToDelete),
   )
   .then((deleter) => deleter.run(limit, concurrency))
   .catch(console.error)
