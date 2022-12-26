@@ -1,10 +1,9 @@
 import { PhotoId } from '../../src/models/Photo';
 import { DeleteFilesResponse } from './PhotoDeleter';
-
-type Timer = { start: () => void; end: () => number };
+import { createTimer } from './utils/timer';
 
 export class CommandStatus {
-  private timer: Timer;
+  private timer = createTimer();
   private interval: NodeJS.Timer | undefined;
 
   public totalFilesRemoved: number;
@@ -12,28 +11,9 @@ export class CommandStatus {
   public failedRequests: number;
 
   constructor() {
-    this.timer = this.createTimer();
-
     this.totalFilesRemoved = 0;
     this.totalRequests = 0;
     this.failedRequests = 0;
-  }
-
-  private createTimer(): Timer {
-    let timeStart: [number, number];
-
-    return {
-      start: () => {
-        timeStart = process.hrtime();
-      },
-      end: () => {
-        const NS_PER_SEC = 1e9;
-        const NS_TO_MS = 1e6;
-        const diff = process.hrtime(timeStart);
-
-        return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS;
-      },
-    };
   }
 
   public init() {
