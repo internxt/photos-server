@@ -61,7 +61,7 @@ const opts: CommandOptions = command.opts() as CommandOptions;
 
 process.on('SIGINT', () => finishProgram());
 
-const database = new MongoDB(opts.dbUri);
+const database = new MongoDB(opts.dbUri, 'photos');
 
 const token = sign(
   {}, 
@@ -84,6 +84,7 @@ async function deletePhotosFromStorage(ids: Array<PhotoId>) {
       },
     };
     const res = await axios.delete<DeleteFilesResponse>(opts.endpoint, params);
+    console.log('Confirmed files deleted', res.data.message.confirmed);
     return res.data;
   } catch (err) {
     throw new Error(request.extractMessageFromError(err));
