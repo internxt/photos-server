@@ -63,10 +63,14 @@ process.on('SIGINT', () => finishProgram());
 
 const database = new MongoDB(opts.dbUri);
 
-const token = sign({}, opts.secret, {
-  algorithm: 'RS256',
-  expiresIn: '5m',
-});
+const token = sign(
+  {}, 
+  Buffer.from(opts.secret, 'base64').toString('utf8'), 
+  {
+    algorithm: 'RS256',
+    expiresIn: '5m',
+  }
+);
 
 async function deletePhotoFromStorage(ids: Array<PhotoId>) {
   try {
