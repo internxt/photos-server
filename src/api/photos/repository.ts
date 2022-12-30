@@ -161,19 +161,19 @@ export class PhotosRepository implements Repository<Photo> {
     await this.collection.deleteMany(where);
   }
 
-  private getCursor({ name, userId, status, statusChangedAt, deviceId }: Partial<Photo>) {
+  private getCursor({ name, userId, status, updatedAt, deviceId }: Partial<Photo & { updatedAt: Date } >) {
     const filter: Filter<PhotoDocument> = {};
 
     name ? (filter.name = name) : null;
     status ? (filter.status = status) : null;
     userId ? (filter.userId = toObjectId(userId)) : null;
-    statusChangedAt
-      ? (filter.statusChangedAt = {
-          $gte: statusChangedAt,
+    updatedAt
+      ? (filter.updatedAt = {
+          $gte: updatedAt,
         })
       : null;
     deviceId ? (filter.deviceId = toObjectId(deviceId)) : null;
 
-    return this.collection.find<PhotoDocument>(filter).sort({ takenAt: 'desc' });
+    return this.collection.find<PhotoDocument>(filter);
   }
 }
