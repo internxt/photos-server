@@ -33,7 +33,11 @@ export class PhotosController {
 
     // TODO: from is the future + cast date to UTC
     if (!dayjs(updatedAt).isValid()) {
-      rep.status(400).send({ message: 'Bad "from" date format' });
+      return rep.status(400).send({ message: 'Bad "from" date format' });
+    }
+
+    if (limit > 200) {
+      return rep.status(400).send({ message: 'Maximum allowed "limit" is 200' });
     }
 
     const results = await this.photosUsecase.get(
