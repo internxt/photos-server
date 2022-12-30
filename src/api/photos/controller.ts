@@ -246,4 +246,12 @@ export class PhotosController {
 
     rep.send({ photos: existenceChecks });
   }
+
+  async getPhotosCounts(req: FastifyRequest, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+
+    const { existent, trashed, deleted, total } = await this.photosUsecase.getPhotosCounts(user.payload.uuid);
+
+    rep.send({ existent, trashed, deleted, total });
+  }
 }

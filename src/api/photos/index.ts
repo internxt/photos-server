@@ -16,6 +16,8 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
         controller.getPhotos.bind(controller)
       );
 
+      server.get('/count', { preValidation: server.authenticate }, controller.getPhotosCounts.bind(controller));
+
       server.post(
         '/exists', 
         { 

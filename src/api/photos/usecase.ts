@@ -159,4 +159,26 @@ export class PhotosUsecase {
       statusChangedAt: new Date()
     });
   }
+
+  async getPhotosCounts(userUuid: string): Promise<{ 
+    trashed: number, 
+    deleted: number, 
+    existent: number, 
+    total: number 
+  }> {
+    const user = await this.usersRepository.getByUuid(userUuid);
+
+    if (!user) {
+      throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
+    }
+
+    const { id: userId } = user;
+
+    const existent = await this.photosRepository.count({ userId, status: PhotoStatus.Exists });
+    const trashed = await this.photosRepository.count({ userId, status: PhotoStatus.Trashed });
+    const deleted = await this.photosRepository.count({ userId, status: PhotoStatus.Deleted });
+    const total = existent + trashed + deleted;
+
+    return { existent, trashed, deleted, total };
+  }
 }
