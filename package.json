@@ -23,6 +23,7 @@
     "fastify": "^3.23.1",
     "fastify-cors": "^6.0.3",
     "fastify-jwt": "^3.2.1",
+    "fastify-metrics": "6.0.3",
     "fastify-plugin": "^3.0.0",
     "mongodb": "^4.1.4"
   },
