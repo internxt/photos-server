@@ -36,20 +36,16 @@ export class PhotosUsecase {
 
   async get(
     userUuid: string,
-    filter: { name?: string, status?: PhotoStatus, statusChangedAt?: Date, deviceId?: string },
+    filter: { name?: string, status?: PhotoStatus, updatedAt?: Date, deviceId?: string },
     skip: number,
     limit: number,
-  ): Promise<{ results: Photo[], count: number }> {
+  ): Promise<Photo[]> {
     const user = await this.usersRepository.getByUuid(userUuid);
 
     if (!user) {
       throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
     }
-
-    const results = await this.photosRepository.get({ userId: user.id, ...filter }, skip, limit);
-    const count = await this.photosRepository.count({ userId: user.id, ...filter });
-
-    return { results, count };
+    return this.photosRepository.get({ userId: user.id, ...filter }, skip, limit);
   }
 
   async photosWithTheseCharacteristicsExist(
@@ -161,5 +157,27 @@ export class PhotosUsecase {
         statusChangedAt: new Date()
       });
     }
+  }
+
+  async getPhotosCounts(userUuid: string): Promise<{
+    trashed: number,
+    deleted: number,
+    existent: number,
+    total: number
+  }> {
+    const user = await this.usersRepository.getByUuid(userUuid);
+
+    if (!user) {
+      throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
+    }
+
+    const { id: userId } = user;
+
+    const existent = await this.photosRepository.count({ userId, status: PhotoStatus.Exists });
+    const trashed = await this.photosRepository.count({ userId, status: PhotoStatus.Trashed });
+    const deleted = await this.photosRepository.count({ userId, status: PhotoStatus.Deleted });
+    const total = existent + trashed + deleted;
+
+    return { existent, trashed, deleted, total };
   }
 }

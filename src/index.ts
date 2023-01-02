@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { config } from 'dotenv';
+import metricsPlugin from 'fastify-metrics';
 
 import decorateWithAuth from './middleware/auth/jwt';
 
@@ -110,6 +111,8 @@ async function start(config: ServerConfig): Promise<StopManager> {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
   });
+
+  fastify.register(metricsPlugin, { endpoint: '/metrics' });
 
   if (!process.env.DATABASE_URI || !process.env.DATABASE_NAME) {
     fastify.log.error('Missing env vars');

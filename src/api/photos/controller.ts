@@ -29,22 +29,22 @@ export class PhotosController {
     rep: FastifyReply,
   ) {
     const user = req.user as AuthorizedUser;
-    const { name, status, statusChangedAt, limit, skip, deviceId, includeDownloadLinks } = req.query;
+    const { name, status, updatedAt, limit, skip, deviceId, includeDownloadLinks } = req.query;
 
     // TODO: from is the future + cast date to UTC
-    if (!dayjs(statusChangedAt).isValid()) {
+    if (!dayjs(updatedAt).isValid()) {
       rep.status(400).send({ message: 'Bad "from" date format' });
     }
 
-    const { results, count } = await this.photosUsecase.get(
+    const results = await this.photosUsecase.get(
       user.payload.uuid,
-      { name, status, statusChangedAt: statusChangedAt ? new Date(statusChangedAt) : undefined, deviceId },
+      { name, status, updatedAt: updatedAt ? new Date(updatedAt) : undefined, deviceId },
       skip,
       limit,
     );
 
     if (!includeDownloadLinks) {
-      rep.send({ results, count });
+      rep.send({ results });
     } else {
       const { user: bridgeUser, pass: bridgePass } = user.payload.networkCredentials;
       const network = new Environment({
@@ -66,7 +66,7 @@ export class PhotosController {
         previewIndex: (result && result.index) || '',
       }));
 
-      rep.send({ results: resultsWithDownloadLinks, count, bucketId: photosUser!.bucketId });
+      rep.send({ results: resultsWithDownloadLinks, bucketId: photosUser!.bucketId });
     }
   }
 
@@ -247,5 +247,13 @@ export class PhotosController {
     );
 
     rep.send({ photos: existenceChecks });
+  }
+
+  async getPhotosCounts(req: FastifyRequest, rep: FastifyReply) {
+    const user = req.user as AuthorizedUser;
+
+    const { existent, trashed, deleted, total } = await this.photosUsecase.getPhotosCounts(user.payload.uuid);
+
+    rep.send({ existent, trashed, deleted, total });
   }
 }

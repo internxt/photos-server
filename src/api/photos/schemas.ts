@@ -35,7 +35,7 @@ export const UpdatePhotoSchema = Type.Object({
 export const GetPhotosQueryParamsSchema = Type.Object({
   name: Type.Optional(Type.String()),
   status: Type.Optional(Type.Enum(PhotoStatus)),
-  statusChangedAt: Type.Optional(Type.String()),
+  updatedAt: Type.Optional(Type.String()),
   deviceId: Type.Optional(Type.String()),
   limit: Type.Number(),
   skip: Type.Number(),
