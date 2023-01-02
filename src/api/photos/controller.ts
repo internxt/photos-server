@@ -153,6 +153,7 @@ export class PhotosController {
 
     try {
       createdPhoto = await this.photosUsecase.savePhoto(body);
+      await this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size);
     } catch (err) {
       if (err instanceof WrongBucketIdError) {
         return rep.status(400).send({ message: err.message });
@@ -217,6 +218,7 @@ export class PhotosController {
     }
 
     await this.photosUsecase.deletePhoto(req.params.id);
+    await this.usersUsecase.updateTrashUsage(photo.userId, -photo.size);
 
     rep.send({ message: 'Deleted' });
   }

@@ -123,7 +123,6 @@ export class PhotosUsecase {
         throw new WrongBucketIdError(data.networkBucketId);
       }
 
-      await this.usersRepository.updateGalleryUsage(user.id, photoToCreate.size);
       return this.photosRepository.create(photoToCreate);
     } else {
 
@@ -157,13 +156,6 @@ export class PhotosUsecase {
   private async changePhotoStatus(photoId: PhotoId, newStatus: PhotoStatus): Promise<void> {
     const photo = await this.photosRepository.getById(photoId);
     if (photo) {
-      if (newStatus === PhotoStatus.Deleted) {
-        await this.usersRepository.updateTrashUsage(photo.userId, -photo.size);
-      } else if (newStatus === PhotoStatus.Trashed) {
-        await this.usersRepository.updateGalleryUsage(photo.userId, -photo.size);
-        await this.usersRepository.updateTrashUsage(photo.userId, +photo.size);
-      }
-
       await this.photosRepository.updateById(photoId, {
         status: newStatus,
         statusChangedAt: new Date()
