@@ -153,14 +153,14 @@ export class PhotosController {
 
     try {
       createdPhoto = await this.photosUsecase.savePhoto(body);
-      await this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size);
     } catch (err) {
       if (err instanceof WrongBucketIdError) {
         return rep.status(400).send({ message: err.message });
       }
       throw err;
     }
-    
+
+    await this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size);
 
     if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
       this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
@@ -230,9 +230,9 @@ export class PhotosController {
     if (photos.length > 50) {
       return rep.status(413).send('Sent photos can not be more than 50');
     }
-    
+
     const photosWithDate: Pick<Photo, 'name' | 'takenAt' | 'hash'>[] = [];
-  
+
     for (const photo of photos) {
       if (!dayjs(photo.takenAt).isValid()) {
         return rep.status(400).send({ message: 'Bad "takenAt" date format for photo with hash ' + photo.hash });
