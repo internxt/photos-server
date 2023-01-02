@@ -218,7 +218,7 @@ export class PhotosController {
     }
 
     await this.photosUsecase.deletePhoto(req.params.id);
-    await this.usersUsecase.updateTrashUsage(photo.userId, -photo.size);
+    await this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size);
 
     rep.send({ message: 'Deleted' });
   }
