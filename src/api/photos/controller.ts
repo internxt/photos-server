@@ -160,11 +160,9 @@ export class PhotosController {
       throw err;
     }
 
-    try {
-      this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size);
-    } catch (err) {
+    this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size).catch(() => {
       // ignore updating usage error
-    }
+    });
 
     if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
       this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
@@ -223,11 +221,9 @@ export class PhotosController {
 
     await this.photosUsecase.deletePhoto(req.params.id);
 
-    try {
-      this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size);
-    } catch (err) {
+    this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch(() => {
       // ignore updating usage error
-    }
+    });
 
     rep.send({ message: 'Deleted' });
   }
