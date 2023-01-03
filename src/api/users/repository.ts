@@ -85,7 +85,6 @@ export class UsersRepository implements Repository<User> {
       { _id: toObjectId(user.id) },
       {
         $set: {
-          ...user,
           galleryUsage: newGalleryUsage,
           updatedAt: new Date(),
         },
@@ -98,7 +97,6 @@ export class UsersRepository implements Repository<User> {
       { _id: toObjectId(user.id) },
       {
         $set: {
-          ...user,
           trashUsage: newTrashUsage,
           updatedAt: new Date(),
         },
