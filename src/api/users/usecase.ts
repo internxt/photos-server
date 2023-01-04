@@ -124,7 +124,7 @@ export class UsersUsecase {
     if (user) {
       let newGalleryUsage = (user.galleryUsage || 0) + sizeIncrement;
       if (newGalleryUsage < 0) newGalleryUsage = 0;
-      return this.usersRepository.updateGalleryUsage(user, sizeIncrement);
+      return this.usersRepository.updateGalleryUsage(user, newGalleryUsage);
     }
   }
 
@@ -133,7 +133,7 @@ export class UsersUsecase {
     if (user) {
       let newTrashUsage = (user.trashUsage || 0) + sizeIncrement;
       if (newTrashUsage < 0) newTrashUsage = 0;
-      return this.usersRepository.updateTrashUsage(user, sizeIncrement);
+      return this.usersRepository.updateTrashUsage(user, newTrashUsage);
     }
   }
 }
