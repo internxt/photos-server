@@ -1,7 +1,7 @@
 import { Environment } from '@internxt/inxt-js';
 
 import { Device } from '../../models/Device';
-import { User, UserId } from '../../models/User';
+import { GalleryUsage, User, UserId } from '../../models/User';
 import { DevicesRepository } from '../devices/repository';
 import { CreateDeviceType } from '../devices/schemas';
 import { UsersRepository } from './repository';
@@ -47,7 +47,7 @@ export class UsersUsecase {
     try {
       bucketId = await network.createBucket(`Photos-${uuid}`);
 
-      const newUser: Omit<User, 'id'> = { uuid, bucketId };
+      const newUser: Omit<User, 'id'> = { uuid, bucketId, galleryUsage: 0, trashUsage: 0 };
       user = await this.usersRepository.create(newUser);
 
       const alreadyCreatedDevice = await this.devicesRepository.getByUserIdAndMac(user.id, deviceInfo.mac);
@@ -117,5 +117,23 @@ export class UsersUsecase {
 
   async removeUser(userId: UserId): Promise<void> {
     return this.usersRepository.deleteById(userId);
+  }
+
+  async updateGalleryUsage(userId: UserId, sizeIncrement: GalleryUsage) {
+    const user = await this.obtainUserById(userId);
+    if (user) {
+      let newGalleryUsage = (user.galleryUsage || 0) + sizeIncrement;
+      if (newGalleryUsage < 0) newGalleryUsage = 0;
+      return this.usersRepository.updateGalleryUsage(user, sizeIncrement);
+    }
+  }
+
+  async updateTrashUsage(userId: UserId, sizeIncrement: GalleryUsage) {
+    const user = await this.obtainUserById(userId);
+    if (user) {
+      let newTrashUsage = (user.trashUsage || 0) + sizeIncrement;
+      if (newTrashUsage < 0) newTrashUsage = 0;
+      return this.usersRepository.updateTrashUsage(user, sizeIncrement);
+    }
   }
 }

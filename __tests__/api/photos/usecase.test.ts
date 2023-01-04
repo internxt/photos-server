@@ -27,8 +27,10 @@ beforeEach(() => {
 
 const user = {
   bucketId: 'bucket',
-  id: 'user-id',
-  uuid: 'user-uuid'
+  id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+  uuid: 'user-uuid',
+  galleryUsage: 5,
+  trashUsage: 0
 };
 const photoThatExists: Photo = {
   deviceId: 'device-id',
@@ -95,6 +97,7 @@ describe('Photos usecases', () => {
       stub(photosRepository, 'getOne').resolves(null);
       stub(photosRepository, 'create').resolves(newPhoto);
       stub(usersRepository, 'getByBucket').resolves(user);
+      stub(usersRepository, 'updateGalleryUsage').resolves();
       
       const received = await usecase.savePhoto({ ...photoThatExists, networkBucketId: user.bucketId });
 

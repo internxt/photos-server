@@ -8,6 +8,8 @@ const userOne: Required<UserDocument> = {
   createdAt: new Date('2021-11-16 18:32:45.110Z'),
   updatedAt: new Date('2021-11-16 18:32:45.110Z'),
   bucketId: '---',
+  galleryUsage: 0,
+  trashUsage: 0,
 };
 
 const userTwo: Required<UserDocument> = {
@@ -15,7 +17,9 @@ const userTwo: Required<UserDocument> = {
   uuid: '2148255a-289e-425b-a29d-6e4b0c2dc2bb',
   createdAt: new Date('2021-11-16 18:32:45.110Z'),
   updatedAt: new Date('2021-11-16 18:32:45.110Z'),
-  bucketId: '---'
+  bucketId: '---',
+  galleryUsage: 0,
+  trashUsage: 0,
 };
 
 export const users: Required<UserDocument>[] = [userOne, userTwo];

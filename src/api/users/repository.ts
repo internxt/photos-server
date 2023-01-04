@@ -2,7 +2,7 @@ import { Collection, Document, Filter, ObjectId } from 'mongodb';
 
 import { Repository } from '../../core/Repository';
 import { UserDocument } from '../../database/mongo/models/User';
-import { User, UserId } from '../../models/User';
+import { GalleryUsage, TrashUsage, User, UserId } from '../../models/User';
 
 function toObjectId(id: string) {
   return new ObjectId(id);
@@ -44,7 +44,7 @@ export class UsersRepository implements Repository<User> {
         return mongoDocToModel(doc);
       });
   }
-  
+
   getByBucket(bucketId: User['bucketId']): Promise<User | null> {
     return this.collection.findOne({ bucketId })
       .then((doc: UserDocument | null) => {
@@ -78,6 +78,38 @@ export class UsersRepository implements Repository<User> {
 
   update() {
     return Promise.reject('Not implemented yet');
+  }
+
+  updateGalleryUsage(user: User, newGalleryUsage: GalleryUsage) {
+    return this.collection.updateOne(
+      { _id: toObjectId(user.id) },
+      {
+        $set: {
+          galleryUsage: newGalleryUsage,
+          updatedAt: new Date(),
+        },
+      },
+    );
+  }
+
+  updateTrashUsage(user: User, newTrashUsage: TrashUsage) {
+    return this.collection.updateOne(
+      { _id: toObjectId(user.id) },
+      {
+        $set: {
+          trashUsage: newTrashUsage,
+          updatedAt: new Date(),
+        },
+      },
+    );
+  }
+
+  async getUsage(userUUID: string) {
+    const user = await this.getByUuid(userUUID);
+    return {
+      galleryUsage: user?.galleryUsage || 0,
+      trashUsage: user?.trashUsage || 0
+    };
   }
 
   async deleteById(id: UserId) {

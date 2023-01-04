@@ -163,7 +163,10 @@ export class PhotosController {
       }
       throw err;
     }
-    
+
+    this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size).catch(() => {
+      // ignore updating usage error
+    });
 
     if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
       this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
@@ -222,6 +225,10 @@ export class PhotosController {
 
     await this.photosUsecase.deletePhoto(req.params.id);
 
+    this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch(() => {
+      // ignore updating usage error
+    });
+
     rep.send({ message: 'Deleted' });
   }
 
@@ -232,9 +239,9 @@ export class PhotosController {
     if (photos.length > 50) {
       return rep.status(413).send('Sent photos can not be more than 50');
     }
-    
+
     const photosWithDate: Pick<Photo, 'name' | 'takenAt' | 'hash'>[] = [];
-  
+
     for (const photo of photos) {
       if (!dayjs(photo.takenAt).isValid()) {
         return rep.status(400).send({ message: 'Bad "takenAt" date format for photo with hash ' + photo.hash });
