@@ -98,9 +98,9 @@ export class PhotosController {
   async getUsage(req: FastifyRequest, rep: FastifyReply) {
     const user = req.user as AuthorizedUser;
 
-    const usage = await this.photosUsecase.getUsage(user.payload.uuid);
+    const { galleryUsage, trashUsage } = await this.photosUsecase.getUsage(user.payload.uuid);
 
-    rep.send({ usage });
+    rep.send({ usage: galleryUsage + trashUsage });
   }
 
   async findOrCreatePhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
