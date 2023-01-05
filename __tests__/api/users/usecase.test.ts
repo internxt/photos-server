@@ -1,5 +1,5 @@
 import { Environment } from '@internxt/inxt-js';
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { stub } from 'sinon';
 import { v4 } from 'uuid';
 
@@ -215,6 +215,56 @@ describe('Users usecases', () => {
         expect(err).toBeInstanceOf(Error);
         expect((err as Error).message).toContain(errorMessage);
       }
+    });
+
+    it('Should call update user gallery usage', async () => {
+      const expectedUser = {
+        id: '1',
+        bucketId,
+        uuid,
+        galleryUsage: 550,
+        trashUsage: 120
+      };
+      const sizeIncrement = 200;
+      const updatedResult = {
+        acknowledged: true,
+        matchedCount: 1,
+        modifiedCount: 1,
+        upsertedCount: 0,
+        upsertedId: new ObjectId(0),
+    };
+
+      stub(usecase, 'obtainUserById').resolves(expectedUser);
+      stub(usersRepository, 'updateGalleryUsage').resolves(updatedResult);
+
+      const updated = await usecase.updateGalleryUsage(userId, sizeIncrement);
+
+      expect(updated).toStrictEqual(updatedResult);
+    });
+
+    it('Should call update user trash usage', async () => {
+      const expectedUser = {
+        id: '1',
+        bucketId,
+        uuid,
+        galleryUsage: 550,
+        trashUsage: 120
+      };
+      const sizeIncrement = 200;
+      const updatedResult = {
+        acknowledged: true,
+        matchedCount: 1,
+        modifiedCount: 1,
+        upsertedCount: 0,
+        upsertedId: new ObjectId(0),
+    };
+
+      stub(usecase, 'obtainUserById').resolves(expectedUser);
+      stub(usersRepository, 'updateTrashUsage').resolves(updatedResult);
+
+      const updated = await usecase.updateTrashUsage(userId, sizeIncrement);
+
+      expect(updated).toStrictEqual(updatedResult);
     });
 
     describe('Should rollback if required when user init fails', () => {

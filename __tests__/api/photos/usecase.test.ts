@@ -155,4 +155,19 @@ describe('Photos usecases', () => {
       }
     });
   });
+
+  describe('Photo usage', () => {
+    it('Should get the user photos usage', async () => {
+      const expectedUsage = {
+        galleryUsage: user.galleryUsage,
+        trashUsage: user.trashUsage,
+      };
+
+      stub(usersRepository, 'getByUuid').resolves(user);
+      stub(usersRepository, 'getUsage').resolves(expectedUsage);
+
+      const updated = await usecase.getUsage(user.uuid);
+      expect(updated).toStrictEqual(expectedUsage);
+    });
+  });
 });
