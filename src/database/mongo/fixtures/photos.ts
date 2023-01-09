@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { PhotosItemType, PhotoStatus } from '../../../models/Photo';
+import { PhotoPreviewType, PhotosItemType, PhotoStatus } from '../../../models/Photo';
 
 import { PhotoDocument } from '../models/Photo';
 import { devices } from './devices';
@@ -18,7 +18,22 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     height: 10,
     name: 'photoOne',
     previewId: 'photoOnePreviewId',
-    previews: [],
+    previews: [
+      {
+        width: 50,
+        height: 50,
+        fileId: 'photoOnePreviewFileId1',
+        size: 100,
+        type: PhotoPreviewType.PNG
+      },
+      {
+        width: 50,
+        height: 50,
+        fileId: 'photoOnePreviewFileId2',
+        size: 55,
+        type: PhotoPreviewType.PNG
+      }
+    ],
     size: 10,
     type: 'jpg',
     userId: userOne._id,
@@ -39,7 +54,13 @@ const userOnePhotos: Required<PhotoDocument>[] = [
     height: 10,
     name: 'photoTwo',
     previewId: 'photoTwoPreviewId',
-    previews: [],
+    previews: [{
+      width: 50,
+      height: 50,
+      fileId: 'photoTwoPreviewFileId',
+      size: 100,
+      type: PhotoPreviewType.PNG
+    }],
     size: 10,
     type: 'jpg',
     userId: userOne._id,

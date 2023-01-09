@@ -98,22 +98,18 @@ export class PhotosRepository implements Repository<Photo> {
     });
   }
 
-
-
-  async getUsage(userId: string): Promise<number> {
-    const result: { _id: null; usage: number } | null = await this.collection
-      .aggregate<{ _id: null; usage: number }>([
-        { $match: { userId: toObjectId(userId) } },
-        {
-          $group: {
-            _id: null,
-            usage: { $sum: '$size' },
-          },
-        },
-      ])
-      .next();
-
-    return result?.usage || 0;
+  async getPhotosUsage(userId: string): Promise<number> {
+    const cursor = this.getCursor({ userId });
+    let totalSize = 0;
+    let photoDocument;
+    while ((photoDocument = await cursor.next())) {
+      totalSize += photoDocument.size;
+      const arrayPreviews = photoDocument.previews || [];
+      for (const preview of arrayPreviews) {
+        totalSize += preview.size;
+      }
+    }
+    return totalSize;
   }
 
   count(filter: Partial<Photo>) {
