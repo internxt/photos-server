@@ -1,6 +1,12 @@
 import { FastifyRouter } from '../router';
 import { PhotosController } from './controller';
-import { CreatePhotoType, CreatePhotoSchema, GetPhotosQueryParamsSchema, CheckPhotosExistenceSchema } from './schemas';
+import { 
+  CreatePhotoType, 
+  CreatePhotoSchema, 
+  GetPhotosQueryParamsSchema, 
+  CheckPhotosExistenceSchema, 
+  GetPhotosSortedQueryParamsSchema 
+} from './schemas';
 
 export const buildRouter = (controller: PhotosController): FastifyRouter => {
   return {
@@ -14,6 +20,17 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
           }
         }, 
         controller.getPhotos.bind(controller)
+      );
+
+      server.get(
+        '/sorted', 
+        { 
+          preValidation: server.authenticate,
+          schema: {
+            querystring: GetPhotosSortedQueryParamsSchema
+          }
+        }, 
+        controller.getPhotosSorted.bind(controller)
       );
 
       server.get('/count', { preValidation: server.authenticate }, controller.getPhotosCounts.bind(controller));
