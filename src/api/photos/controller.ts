@@ -3,7 +3,13 @@ import dayjs from 'dayjs';
 
 import { NewPhoto, Photo, PhotoId } from '../../models/Photo';
 import { PhotosUsecase, WrongBucketIdError } from './usecase';
-import { CheckPhotosExistenceType, CreatePhotoType, GetPhotosQueryParamsType, UpdatePhotoType } from './schemas';
+import { 
+  CheckPhotosExistenceType, 
+  CreatePhotoType, 
+  GetPhotosQueryParamsType, 
+  GetPhotosSortedQueryParamsType, 
+  UpdatePhotoType 
+} from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
 import { UsersUsecase } from '../users/usecase';
@@ -20,6 +26,34 @@ export class PhotosController {
     this.photosUsecase = photosUsecase;
     this.usersUsecase = usersUsecase;
     this.devicesUsecase = devicesUsecase;
+  }
+
+  async getPhotosSorted(
+    req: FastifyRequest<{
+      Querystring: GetPhotosSortedQueryParamsType;
+    }>,
+    rep: FastifyReply,
+  ) {
+    const user = req.user as AuthorizedUser;
+    const { status, updatedAt, limit, skip } = req.query;
+
+    // TODO: from is the future + cast date to UTC
+    if (!dayjs(updatedAt).isValid()) {
+      return rep.status(400).send({ message: 'Bad "updatedAt" date format' });
+    }
+
+    if (limit > 200) {
+      return rep.status(400).send({ message: 'Maximum allowed "limit" is 200' });
+    }
+
+    const results = await this.photosUsecase.getSortedByUpdateAt(
+      user.payload.uuid,
+      { status, updatedAt: new Date(updatedAt) },
+      skip,
+      limit,
+    );
+
+    rep.send({ results });
   }
 
   async getPhotos(
