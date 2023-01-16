@@ -74,6 +74,23 @@ export class PhotosRepository implements Repository<Photo> {
         .then((docs) => docs.map(mongoDocToModel));
     }
 
+  getSorted(
+    filter: Partial<Photo>, 
+    skip = 0, 
+    limit = 1, 
+    sortField: string, 
+    type: 'ASC' | 'DESC'
+  ) {
+    return this.getCursor(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortField]: type === 'ASC' ? 1 : -1 })
+      .toArray()
+      .then((results) => {
+        return results.map(mongoDocToModel);
+      });
+  }
+
   get(filter: Partial<Photo>, skip = 0, limit = 1) {
     return this.getCursor(filter)
       .skip(skip)
