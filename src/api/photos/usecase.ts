@@ -7,7 +7,7 @@ import { UsersRepository } from '../users/repository';
 import { PhotosRepository } from './repository';
 
 export type PhotoNotFound = Pick<Photo, 'name' | 'takenAt' | 'hash'>;
-export type PhotosLookupResponse = ((Photo | PhotoNotFound) & { exists: boolean })[]
+export type PhotosLookupResponse = ((Photo | PhotoNotFound) & { exists: boolean })[];
 
 export class PhotoNotFoundError extends UsecaseError {
   constructor(photoId: PhotoId) {
@@ -36,9 +36,9 @@ export class PhotosUsecase {
 
   async getSortedByUpdateAt(
     uuid: User['uuid'],
-    filter: { status?: PhotoStatus, updatedAt: Date },
+    filter: { status?: PhotoStatus; updatedAt: Date },
     skip?: number,
-    limit?: number
+    limit?: number,
   ): Promise<Photo[]> {
     const user = await this.usersRepository.getByUuid(uuid);
 
@@ -51,7 +51,7 @@ export class PhotosUsecase {
 
   async get(
     userUuid: string,
-    filter: { name?: string, status?: PhotoStatus, updatedAt?: Date, deviceId?: string },
+    filter: { name?: string; status?: PhotoStatus; updatedAt?: Date; deviceId?: string },
     skip: number,
     limit: number,
   ): Promise<Photo[]> {
@@ -60,12 +60,12 @@ export class PhotosUsecase {
     if (!user) {
       throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
     }
-    return this.photosRepository.get({ userId: user.id, ...filter }, skip, limit);
+    return this.photosRepository.getSorted({ userId: user.id, ...filter }, skip, limit, 'takenAt', 'DESC');
   }
 
   async photosWithTheseCharacteristicsExist(
     userUuid: User['uuid'],
-    photos: PhotoNotFound[]
+    photos: PhotoNotFound[],
   ): Promise<PhotosLookupResponse> {
     const user = await this.usersRepository.getByUuid(userUuid);
 
@@ -74,14 +74,16 @@ export class PhotosUsecase {
     }
 
     const foundPhotos: Photo[] = await this.photosRepository.getByMultipleWhere(
-      photos.map(p => ({ ...p, userId: user.id }))
+      photos.map((p) => ({ ...p, userId: user.id })),
     );
 
     return photos.map((photo) => {
       const foundPhotoIndex = foundPhotos.findIndex((foundPhoto) => {
-        return foundPhoto.name === photo.name &&
+        return (
+          foundPhoto.name === photo.name &&
           foundPhoto.takenAt.toString() === photo.takenAt.toString() &&
-          foundPhoto.hash === photo.hash;
+          foundPhoto.hash === photo.hash
+        );
       });
 
       const photoFound = foundPhotoIndex !== -1;
@@ -103,18 +105,18 @@ export class PhotosUsecase {
     const photoToCreate: Omit<Photo, 'id'> = {
       ...data,
       status: PhotoStatus.Exists,
-      statusChangedAt: now
+      statusChangedAt: now,
     };
 
     /**
      * PATCH PHOTO HASH
-     * 
+     *
      * In Drive-mobile the photo hash was malformed, since the
      * hash was created using a malformed value, now that is fixed
      * we need to patch the hash of those photos that match
      * in name and date with the photo that wants to be saved so we
      * avoid duplicated photos.
-     * 
+     *
      * If the incoming photo matches in name and date with an already
      * existing photo, we don't create the photo, we just update the hash
      * of the one that already exists because it means that the photo
@@ -136,18 +138,17 @@ export class PhotosUsecase {
 
       return this.photosRepository.create(photoToCreate);
     } else {
-
       if (existingPhoto.hash === photoToCreate.hash) {
         throw new UsecaseError('A photo with this characteristics already exists');
       }
 
       await this.photosRepository.updateById(existingPhoto.id, {
-        hash: data.hash
+        hash: data.hash,
       });
 
       return {
         ...existingPhoto,
-        hash: data.hash
+        hash: data.hash,
       };
     }
   }
@@ -169,16 +170,16 @@ export class PhotosUsecase {
     if (photo) {
       await this.photosRepository.updateById(photoId, {
         status: newStatus,
-        statusChangedAt: new Date()
+        statusChangedAt: new Date(),
       });
     }
   }
 
   async getPhotosCounts(userUuid: string): Promise<{
-    trashed: number,
-    deleted: number,
-    existent: number,
-    total: number
+    trashed: number;
+    deleted: number;
+    existent: number;
+    total: number;
   }> {
     const user = await this.usersRepository.getByUuid(userUuid);
 
