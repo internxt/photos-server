@@ -34,11 +34,13 @@ export class PhotosUsecase {
     return this.photosRepository.getById(id);
   }
 
-  async getSortedByUpdateAt(
+  async getSorted(
     uuid: User['uuid'],
-    filter: { status?: PhotoStatus, updatedAt: Date },
+    filter: { status?: PhotoStatus, updatedAt?: Date },
+    sortField = 'updatedAt',
+    sortType: 'ASC' | 'DESC' = 'DESC',
     skip?: number,
-    limit?: number
+    limit?: number,
   ): Promise<Photo[]> {
     const user = await this.usersRepository.getByUuid(uuid);
 
@@ -46,8 +48,9 @@ export class PhotosUsecase {
       throw new UsecaseError(`User ${uuid} not found`);
     }
 
-    return this.photosRepository.getSorted({ userId: user.id, ...filter }, skip, limit, 'updatedAt', 'ASC');
+    return this.photosRepository.getSorted({ userId: user.id, ...filter }, skip, limit, sortField, sortType);
   }
+
 
   async get(
     userUuid: string,

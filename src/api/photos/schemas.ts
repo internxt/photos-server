@@ -45,6 +45,8 @@ export const GetPhotosQueryParamsSchema = Type.Object({
 export const GetPhotosSortedQueryParamsSchema = Type.Object({
   status: Type.Optional(Type.Enum(PhotoStatus)),
   updatedAt: Type.String(),
+  sortBy: Type.String(),
+  sortType: Type.String(),
   limit: Type.Number(),
   skip: Type.Number()
 });
