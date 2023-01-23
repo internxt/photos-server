@@ -35,7 +35,7 @@ export class PhotosController {
     rep: FastifyReply,
   ) {
     const user = req.user as AuthorizedUser;
-    const { status, updatedAt, limit, skip, sortBy, sortType } = req.query;
+    const { status, updatedAt, limit, skip, sortBy, sortType, includeDownloadLinks } = req.query;
 
     // TODO: from is the future + cast date to UTC
     if (!dayjs(updatedAt).isValid()) {
@@ -55,7 +55,34 @@ export class PhotosController {
       limit,
     );
 
-    rep.send({ results });
+    if (!includeDownloadLinks) {
+      rep.send({ results });
+    } else {
+      const { user: bridgeUser, pass: bridgePass } = user.payload.networkCredentials;
+      const network = new Environment({
+        bridgeUrl: process.env.NETWORK_URL,
+        bridgePass,
+        bridgeUser,
+      });
+
+      const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+      
+      if(!photosUser) throw new NotFoundError({ resource: 'Photos User' });
+      
+      const response = await network.getDownloadLinks(
+        photosUser.bucketId,
+        results.map((photo) => photo.previewId),
+      );
+
+
+      const resultsWithDownloadLinks = response.map((result, i) => ({
+        ...results[i],
+        previewLink: (result && result.link) || '',
+        previewIndex: (result && result.index) || '',
+      }));
+
+      rep.send({ results: resultsWithDownloadLinks, bucketId: photosUser.bucketId });
+    }
   }
 
   async getPhotos(
@@ -94,8 +121,11 @@ export class PhotosController {
       });
 
       const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+      
+      if(!photosUser) throw new NotFoundError({ resource: 'Photos User' });
+
       const response = await network.getDownloadLinks(
-        photosUser!.bucketId,
+        photosUser.bucketId,
         results.map((photo) => photo.previewId),
       );
 
@@ -106,7 +136,7 @@ export class PhotosController {
         previewIndex: (result && result.index) || '',
       }));
 
-      rep.send({ results: resultsWithDownloadLinks, bucketId: photosUser!.bucketId });
+      rep.send({ results: resultsWithDownloadLinks, bucketId: photosUser.bucketId });
     }
   }
 
