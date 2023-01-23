@@ -35,7 +35,7 @@ export class PhotosController {
     rep: FastifyReply,
   ) {
     const user = req.user as AuthorizedUser;
-    const { status, updatedAt, limit, skip } = req.query;
+    const { status, updatedAt, limit, skip, sortBy, sortType } = req.query;
 
     // TODO: from is the future + cast date to UTC
     if (!dayjs(updatedAt).isValid()) {
@@ -46,9 +46,11 @@ export class PhotosController {
       return rep.status(400).send({ message: 'Maximum allowed "limit" is 200' });
     }
 
-    const results = await this.photosUsecase.getSortedByUpdateAt(
+    const results = await this.photosUsecase.getSorted(
       user.payload.uuid,
-      { status, updatedAt: new Date(updatedAt) },
+      { status, updatedAt: updatedAt ? new Date(updatedAt) : undefined },
+      sortBy,
+      sortType as ('ASC' | 'DESC'),
       skip,
       limit,
     );
