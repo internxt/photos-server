@@ -60,7 +60,7 @@ export class PhotosUsecase {
     if (!user) {
       throw new UsecaseError(`User with uuid ${userUuid} does not exist`);
     }
-    return this.photosRepository.get({ userId: user.id, ...filter }, skip, limit);
+    return this.photosRepository.getSorted({ userId: user.id, ...filter }, skip, limit, 'takenAt', 'DESC');
   }
 
   async photosWithTheseCharacteristicsExist(
