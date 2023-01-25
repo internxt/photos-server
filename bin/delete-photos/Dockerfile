@@ -6,7 +6,7 @@ WORKDIR /
 # Add useful packages
 RUN apk add git curl
 
-COPY ../ .
+COPY ../../. ./
 
 # Install deps
 RUN yarn && yarn build && yarn --production && yarn cache clean
