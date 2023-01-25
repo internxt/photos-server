@@ -15,7 +15,6 @@ function retrivesNeeded(retriveCallsToObtainAll: number, value: any): jest.Mock 
 describe('Delete photos', () => {
   it('deletes 20 photos in chuks of 2', async () => {
     const limit = 20;
-    const concurrency = 10;
 
     const id = '12d1e28f-f69b-5251-837a-bf29ed871b97';
     const ids = Array(limit).fill(id);
@@ -33,7 +32,7 @@ describe('Delete photos', () => {
 
     const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    await deleter.run(limit, concurrency);
+    await deleter.run(limit);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(2);
     expect(deletePhotoFromStorage).toBeCalledTimes(2);
@@ -61,7 +60,7 @@ describe('Delete photos', () => {
 
     const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    await deleter.run(limit, concurrency);
+    await deleter.run(limit);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(2);
     expect(deletePhotoFromStorage).toBeCalledTimes(2);
@@ -71,7 +70,6 @@ describe('Delete photos', () => {
 
   it('retrieves all photos when ther are more than the retrive limit', async () => {
     const limit = 5;
-    const concurrency = 1;
     const retriveCallsToObtainAll = 4;
     const id = '12d1e28f-f69b-5251-837a-bf29ed871b97';
     const ids = Array(limit).fill(id);
@@ -89,7 +87,7 @@ describe('Delete photos', () => {
 
     const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    await deleter.run(limit, concurrency);
+    await deleter.run(limit);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(retriveCallsToObtainAll + 1);
     expect(deletePhotoFromStorage).toBeCalledTimes(retriveCallsToObtainAll * limit);
@@ -98,7 +96,6 @@ describe('Delete photos', () => {
 
   it('deletes only the files that have beed correctly deleted from the network', async () => {
     const limit = 20;
-    const concurrency = 5;
     const retriveCallsToObtainAll = 2;
     const id = '12d1e28f-f69b-5251-837a-bf29ed871b97';
     const ids = Array(limit).fill(id);
@@ -117,7 +114,7 @@ describe('Delete photos', () => {
 
     const deleter = new PhotoDeleter(deletePhotosById, deletePhotoFromStorage, getPhotosIdsToDelete);
 
-    await deleter.run(limit, concurrency);
+    await deleter.run(limit);
 
     expect(getPhotosIdsToDelete).toBeCalledTimes(retriveCallsToObtainAll + 1);
     expect(deletePhotosById).toBeCalledTimes(retriveCallsToObtainAll);
