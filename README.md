@@ -22,3 +22,8 @@ This project generates fixtures in order to run tests against the database. So h
 
 ### Build
 ```yarn run build```
+
+### For Dockerfile to work, we must copy the project inside bin/delete-photos
+```mkdir bin/delete-photos/photos-server-copy```
+```cp ./* bin/delete-photos/photos-server-copy```
+```rsync -av --progress /path-to/photos-server /path-to/photos-server/bin/delete-photos/photos-server-copy --exclude /path-to/photos-server/bin```

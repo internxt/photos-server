@@ -6,7 +6,11 @@ WORKDIR /
 # Add useful packages
 RUN apk add git curl
 
-COPY ../../. ./
+RUN ls ../../
+# COPY ../../../photos-server /
+COPY /photos-server-copy /photos-server
+
+WORKDIR /photos-server
 
 # Install deps
 RUN yarn && yarn build && yarn --production && yarn cache clean
