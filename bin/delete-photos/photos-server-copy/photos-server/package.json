@@ -1,0 +1,57 @@
+{
+  "name": "photos-server",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/internxt/photos-server.git",
+  "author": "Internxt",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "husky install",
+    "dev": "nodemon index.ts",
+    "db:init": "ts-node ./src/database/mongo/scripts/init.ts",
+    "lint": "eslint ./src",
+    "test": "yarn db:init && yarn jest --detectOpenHandles",
+    "coverage": "jest --coverage",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@internxt/inxt-js": "=1.6.0",
+    "@internxt/lib": "^1.1.6",
+    "@sinclair/typebox": "^0.20.5",
+    "commander": "^9.4.1",
+    "dayjs": "^1.10.7",
+    "dotenv": "^10.0.0",
+    "fastify": "^3.23.1",
+    "fastify-cors": "^6.0.3",
+    "fastify-jwt": "^3.2.1",
+    "fastify-plugin": "^3.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.1.4"
+  },
+  "devDependencies": {
+    "@internxt/eslint-config-internxt": "^1.0.3",
+    "@internxt/prettier-config": "^1.0.1",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.11.6",
+    "@types/node-mongodb-fixtures": "^3.2.2",
+    "@types/sinon": "^10.0.6",
+    "@types/uuid": "^8.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "axios": "^0.24.0",
+    "eslint": "^8.2.0",
+    "husky": "^7.0.4",
+    "jest": "^27.3.1",
+    "node-mongodb-fixtures": "^3.2.9",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.0",
+    "sinon": "^12.0.1",
+    "ts-jest": "^27.0.7",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4",
+    "uuid": "^8.3.2"
+  },
+  "engines": {
+    "node": ">=14.18"
+  }
+}
