@@ -10,6 +10,7 @@ env:
   DB_PASS: ${{ secrets.DELETE_FILES_CRON_DB_PASS }}
   SECRET: ${{ secrets.DELETE_FILES_CRON_SECRET }}
   ENDPOINT: ${{ secrets.DELETE_FILES_CRON_ENDPOINT }}
+  GITHUB_SHA: ${{ github.sha }}
 
 jobs:
   build:
