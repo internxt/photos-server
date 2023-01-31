@@ -8,7 +8,7 @@ RUN apk add git curl
 
 RUN ls ../../
 # COPY ../../../photos-server /
-COPY /photos-server-copy/photos-server /photos-server
+COPY ./photos-server-copy/photos-server /photos-server
 
 WORKDIR /photos-server
 
