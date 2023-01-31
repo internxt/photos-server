@@ -56,7 +56,6 @@ jobs:
       - name: Generate k8s cronjob file
         run: |
           envsubst < k8scrondelete.tmpl.yaml > k8scrondelete.yaml
-          echo $(cat k8scrondelete.yaml)
       - name: Deploy CronJob
         uses: steebchen/kubectl@v2.0.0
         with:
