@@ -1,7 +1,7 @@
 name: build & deploy delete images cron
 on:
   push:
-    branches: ["master"]
+    branches: ["deletes-files-cron"]
 
 env:
   DB_HOST: ${{ secrets.DELETE_FILES_CRON_DB_HOST }}
