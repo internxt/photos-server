@@ -14,21 +14,21 @@ spec:
             image: internxt/photos-delete-files:$GITHUB_SHA
             env:
             - name: DB_HOST
-              value: $DELETE_FILES_CRON_DB_HOST
+              value: $DB_HOST
             - name: DB_USER
-              value: $DELETE_FILES_CRON_DB_USER
+              value: $DB_USER
             - name: DB_NAME
-              value: $DELETE_FILES_CRON_DB_NAME
+              value: $DB_NAME
             - name: DB_PASS
-              value: $DELETE_FILES_CRON_DB_PASS
+              value: $DB_PASS
             - name: SECRET
-              value: $DELETE_FILES_CRON_SECRET
+              value: $SECRET
             - name: ENDPOINT
-              value: $DELETE_FILES_CRON_ENDPOINT
+              value: $ENDPOINT
             - name: LIMIT
               value: $LIMIT
             - name: CONCURRENCY
-              value: $DELETE_FILES_CRON_CONCURRENCY
+              value: $CONCURRENCY
             command:
             - sh
             - -c

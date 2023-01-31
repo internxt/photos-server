@@ -12,7 +12,7 @@ env:
   ENDPOINT: ${{ secrets.DELETE_FILES_CRON_ENDPOINT }}
   GITHUB_SHA: ${{ github.sha }}
   LIMIT: "10"
-  DELETE_FILES_CRON_CONCURRENCY: ${{ secrets.DELETE_FILES_CRON_CONCURRENCY }}
+  CONCURRENCY: ${{ secrets.DELETE_FILES_CRON_CONCURRENCY }}
 
 jobs:
   build:
