@@ -32,7 +32,6 @@ spec:
             command:
             - sh
             - -c
-            # - node build/bin/delete-files/index.js --db-hostname $DB_HOST --db-name $DB_NAME --db-username $DB_USER --db-password $DB_PASS --secret $SECRET --endpoint $ENDPOINT --limit $LIMIT
             - node bin/delete-photos/index.ts -d $DB_HOST -c $CONCURRENCY -l $LIMIT -e $ENDPOINT -s $SECRET
           restartPolicy: OnFailure
           imagePullSecrets:
