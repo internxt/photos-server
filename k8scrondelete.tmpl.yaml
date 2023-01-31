@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: cron-delete-file
-            image: internxt/$DOCKER_IMAGE:$GITHUB_SHA
+            image: internxt/photos-delete-files:$GITHUB_SHA
             env:
             - name: DB_HOST
               value: $DELETE_FILES_CRON_DB_HOST
