@@ -10,7 +10,6 @@ env:
   DB_PASS: ${{ secrets.DELETE_FILES_CRON_DB_PASS }}
   SECRET: ${{ secrets.DELETE_FILES_CRON_SECRET }}
   ENDPOINT: ${{ secrets.DELETE_FILES_CRON_ENDPOINT }}
-  DOCKER_IMAGE: photos-delete-files
 
 jobs:
   build:
@@ -37,7 +36,7 @@ jobs:
           context: ./
           file: ./bin/delete-photos/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{DOCKER_IMAGE}}:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/photos-delete-files:${{ github.sha }}
   
   generation:
     runs-on: ubuntu-latest
