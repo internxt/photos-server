@@ -43,8 +43,9 @@ jobs:
     steps:
       - name: Generate k8s cronjob file
         run: |
+          echo "$(ls -la)"
+          echo "$(ls -la /)"
           filedirectory=$(find / -name k8scrondelete.tmpl.yaml 2>/dev/null)
-
           envsubst < "$filedirectory" > k8scrondelete.yaml
 
   deploy:
