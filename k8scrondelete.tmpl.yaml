@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: cron-delete-file
-            image: internxt/$DOCKER_IMAGE:2
+            image: internxt/$DOCKER_IMAGE:latest
             env:
             - name: DB_HOST
               value: $DELETE_FILES_CRON_DB_HOST
