@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Generate k8s cronjob file
         run: |
-          envsubst < photos-server/k8scrondelete.tmpl.yaml > photos-server/k8scrondelete.yaml
+          envsubst < $GITHUB_WORKSPACE/photos-server/k8scrondelete.tmpl.yaml > $GITHUB_WORKSPACE/photos-server/k8scrondelete.yaml
 
   deploy:
     needs: [build, generation]
