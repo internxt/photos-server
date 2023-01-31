@@ -37,15 +37,6 @@ jobs:
           context: bin/delete-photos/
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/photos-delete-files:${{ github.sha }}
-  
-  generation:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Out Repo
-        uses: actions/checkout@v2
-      - name: Generate k8s cronjob file
-        run: |
-          envsubst < k8scrondelete.tmpl.yaml > k8scrondelete.yaml
 
   deploy:
     needs: [build, generation]
