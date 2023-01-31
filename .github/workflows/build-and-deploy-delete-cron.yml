@@ -45,11 +45,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Generate k8s cronjob file
         run: |
-          echo "$(ls -la ../../)"
-          echo "$(ls -la ../)"
-          echo "$(ls -la )"
-          echo "$(pwd)"
-          # filedirectory=$(find / -name k8scrondelete.tmpl.yaml 2>/dev/null)
+          filedirectory=$(find / -name k8scrondelete.tmpl.yaml 2>/dev/null)
           envsubst < "$filedirectory" > k8scrondelete.yaml
 
   deploy:
