@@ -33,8 +33,8 @@ jobs:
       - name: Build and push to DockerHub
         uses: docker/build-push-action@v2
         with:
-          context: ./
-          file: ./bin/delete-photos/Dockerfile
+          context: ./bin/delete-photos/
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/photos-delete-files:${{ github.sha }}
   
