@@ -9,6 +9,7 @@ RUN apk add git curl
 RUN ls ../../
 # COPY ../../../photos-server /
 COPY ./photos-server-copy/photos-server /photos-server
+COPY /photos-server/.npmrc /photos-server
 RUN ls ./
 RUN ls ./photos-server -la
 WORKDIR /photos-server
