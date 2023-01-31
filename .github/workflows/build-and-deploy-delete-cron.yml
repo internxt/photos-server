@@ -13,7 +13,6 @@ env:
 
 jobs:
   build:
-    needs: [generation]
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repo
