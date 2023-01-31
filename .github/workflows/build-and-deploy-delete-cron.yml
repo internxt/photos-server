@@ -37,14 +37,14 @@ jobs:
           context: ./
           file: ./bin/delete-photos/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKER_IMAGE:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{DOCKER_IMAGE}}:${{ github.sha }}
   
   generation:
     runs-on: ubuntu-latest
     steps:
       - name: Generate k8s cronjob file
         run: |
-          envsubst < /bin/delete-photos/k8scrondelete.tmpl.yaml > /bin/delete-photos/k8scrondelete.yaml
+          envsubst < bin/delete-photos/k8scrondelete.tmpl.yaml > bin/delete-photos/k8scrondelete.yaml
 
   deploy:
     needs: build
