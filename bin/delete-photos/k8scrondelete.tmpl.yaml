@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cron-delete-file
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cron-delete-file
+            image: internxt/$DOCKER_IMAGE:2
+            env:
+            - name: DB_HOST
+              value: $DELETE_FILES_CRON_DB_HOST
+            - name: DB_USER
+              value: $DELETE_FILES_CRON_DB_USER
+            - name: DB_NAME
+              value: $DELETE_FILES_CRON_DB_NAME
+            - name: DB_PASS
+              value: $DELETE_FILES_CRON_DB_PASS
+            - name: SECRET
+              value: $DELETE_FILES_CRON_SECRET
+            - name: ENDPOINT
+              value: $DELETE_FILES_CRON_ENDPOINT
+            - name: LIMIT
+              value: "10"
+            - name: CONCURRENCY
+              value: $DELETE_FILES_CRON_CONCURRENCY
+            command:
+            - sh
+            - -c
+            # - node build/bin/delete-files/index.js --db-hostname $DB_HOST --db-name $DB_NAME --db-username $DB_USER --db-password $DB_PASS --secret $SECRET --endpoint $ENDPOINT --limit $LIMIT
+            - node bin/delete-photos/index.ts -d $DB_HOST -c $CONCURRENCY -l $LIMIT -e $ENDPOINT -s $SECRET
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: regcred
