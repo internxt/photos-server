@@ -39,7 +39,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/photos-delete-files:${{ github.sha }}
 
   deploy:
-    needs: [build, generation]
+    needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: production
