@@ -41,9 +41,10 @@ jobs:
   
   generation:
     runs-on: ubuntu-latest
-    - name: Generate k8s cronjob file
-      run: |
-        envsubst < bin/delete-photos/k8scrondelete.tmpl.yaml > bin/delete-photos/k8scrondelete.yaml
+    steps:
+      - name: Generate k8s cronjob file
+      - run: |
+          envsubst < bin/delete-photos/k8scrondelete.tmpl.yaml > bin/delete-photos/k8scrondelete.yaml
 
   deploy:
     needs: build
