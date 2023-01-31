@@ -32,7 +32,7 @@ spec:
             command:
             - sh
             - -c
-            - node bin/delete-photos/index.ts -d $DB_HOST -c $CONCURRENCY -l 10 -e $ENDPOINT -s $SECRET
+            - node bin/delete-photos/index.ts -d $DB_HOST -l 10 -e $ENDPOINT -s $SECRET
           restartPolicy: OnFailure
           imagePullSecrets:
           - name: regcred
