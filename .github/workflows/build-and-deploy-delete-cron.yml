@@ -13,6 +13,7 @@ env:
 
 jobs:
   build:
+    needs: [generation]
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repo
@@ -42,7 +43,7 @@ jobs:
     steps:
       - name: Generate k8s cronjob file
         run: |
-          envsubst < $GITHUB_WORKSPACE/photos-server/k8scrondelete.tmpl.yaml > $GITHUB_WORKSPACE/photos-server/k8scrondelete.yaml
+          envsubst < /photos-server/k8scrondelete.tmpl.yaml > /photos-server/k8scrondelete.yaml
 
   deploy:
     needs: [build, generation]
