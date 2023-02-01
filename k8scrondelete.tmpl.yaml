@@ -12,27 +12,10 @@ spec:
           containers:
           - name: cron-delete-file
             image: internxt/photos-delete-files:$GITHUB_SHA
-            # env:
-            # - name: DB_HOST
-            #   value: $DB_HOST
-            # - name: DB_USER
-            #   value: $DB_USER
-            # - name: DB_NAME
-            #   value: $DB_NAME
-            # - name: DB_PASS
-            #   value: $DB_PASS
-            # - name: SECRET
-            #   value: $SECRET
-            # - name: ENDPOINT
-            #   value: $ENDPOINT
-            # - name: LIMIT
-            #   value: $LIMIT
-            # - name: CONCURRENCY
-            #   value: $CONCURRENCY
             command:
             - sh
             - -c
-            - node bin/delete-photos/index.ts -d $DB_HOST -l 10 -e $ENDPOINT -s $SECRET
+            - node bin/delete-photos/index.ts -d $DB_HOST -l $LIMIT -e $ENDPOINT -s $SECRET
           restartPolicy: OnFailure
           imagePullSecrets:
           - name: regcred
