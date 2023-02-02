@@ -8,18 +8,13 @@ RUN apk add git curl
 
 RUN ls ../../
 # COPY ../../../photos-server /
-COPY ./photos-server-copy/ /
-COPY ./ /bin/delete-photos/
-RUN rm -rfv /bin/delete-photos/photos-server-copy
-
-WORKDIR /
-RUN yarn && yarn build && yarn --production && yarn cache clean
-
-WORKDIR /bin/delete-photos/
+COPY ./photos-server-copy/photos-server /photos-server
+RUN ls ./
+RUN ls ./photos-server -la
+WORKDIR /photos-server
 
 # Install deps
 RUN yarn && yarn build && yarn --production && yarn cache clean
-RUN npm install axios
 
 # Run command
 CMD node /dist/bin/delete-photos/index.js
