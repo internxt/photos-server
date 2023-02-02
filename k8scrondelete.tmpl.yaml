@@ -15,7 +15,7 @@ spec:
             command:
             - sh
             - -c
-            - node bin/delete-photos/index.ts -l $LIMIT -e $ENDPOINT -s $SECRET -d $DB_HOST
+            - node bin/delete-photos/index.ts -l "$LIMIT" -e "$ENDPOINT" -s "$SECRET" -d "$DB_HOST"
           restartPolicy: OnFailure
           imagePullSecrets:
           - name: regcred
