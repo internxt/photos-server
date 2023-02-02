@@ -9,7 +9,7 @@ RUN apk add git curl
 RUN ls ../../
 # COPY ../../../photos-server /
 COPY ./photos-server-copy/ /
-COPY ./ /bin/delete-photos/
+COPY ./ /
 RUN rm -rfv /bin/delete-photos/photos-server-copy
 
 WORKDIR /
