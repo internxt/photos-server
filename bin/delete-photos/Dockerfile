@@ -9,9 +9,9 @@ RUN apk add git curl
 RUN ls ../../
 # COPY ../../../photos-server /
 COPY ./photos-server-copy/ /
-COPY ./ /
+COPY ./ /bin/delete-photos/
 RUN rm -rfv /bin/delete-photos/photos-server-copy
-
+RUN cp .npmrc /bin/delete-photos/photos-server-copy/photos-server/
 WORKDIR /
 RUN yarn && yarn build && yarn --production && yarn cache clean
 
