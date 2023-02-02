@@ -11,7 +11,9 @@ RUN ls ../../
 COPY ./photos-server-copy/ /
 COPY ./ /bin/delete-photos/
 RUN rm -rfv /bin/delete-photos/photos-server-copy
+
 WORKDIR /
+RUN cp /bin/delete-photos/.npmrc /
 RUN yarn && yarn build && yarn --production && yarn cache clean
 
 WORKDIR /bin/delete-photos/
