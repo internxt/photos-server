@@ -20,12 +20,12 @@ jobs:
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v2
-      - run: echo "registry=https://registry.yarnpkg.com/" > /bin/delete-photos/.npmrc
-      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> /bin/delete-photos/.npmrc
+      - run: echo "registry=https://registry.yarnpkg.com/" > ./bin/delete-photos/.npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> ./bin/delete-photos/.npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
-      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> /bin/delete-photos/.npmrc
-      - run: echo "always-auth=true" >> /bin/delete-photos/.npmrc
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> ./bin/delete-photos/.npmrc
+      - run: echo "always-auth=true" >> ./bin/delete-photos/.npmrc
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
