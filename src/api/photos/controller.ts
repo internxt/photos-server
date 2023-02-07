@@ -291,11 +291,35 @@ export class PhotosController {
 
     await this.photosUsecase.deletePhoto(req.params.id);
 
-    this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch(() => {
-      // ignore updating usage error
+    this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch((err) => {
+      req.log.error(err);
     });
 
     rep.send({ message: 'Deleted' });
+  }
+
+  async trashPhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
+    const photoId = req.params.id;
+    const user = req.user as AuthorizedUser;
+    const photo = await this.photosUsecase.getById(photoId);
+
+    if (!photo) {
+      throw new NotFoundError({ resource: 'Photo' });
+    }
+
+    const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+
+    if (!photosUser) {
+      return rep.status(400).send();
+    }
+
+    if (photo.userId !== photosUser.id) {
+      return rep.status(403).send({ message: 'Forbidden' });
+    }
+
+    await this.photosUsecase.trashPhoto(req.params.id);
+
+    rep.send({ message: 'Trashed' });
   }
 
   async photosExist(req: FastifyRequest<{ Body: CheckPhotosExistenceType }>, rep: FastifyReply) {
