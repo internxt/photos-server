@@ -3,12 +3,12 @@ import dayjs from 'dayjs';
 
 import { NewPhoto, Photo, PhotoId } from '../../models/Photo';
 import { PhotosUsecase, WrongBucketIdError } from './usecase';
-import { 
-  CheckPhotosExistenceType, 
-  CreatePhotoType, 
-  GetPhotosQueryParamsType, 
-  GetPhotosSortedQueryParamsType, 
-  UpdatePhotoType 
+import {
+  CheckPhotosExistenceType,
+  CreatePhotoType,
+  GetPhotosQueryParamsType,
+  GetPhotosSortedQueryParamsType,
+  UpdatePhotoType,
 } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
 import { AuthorizedUser } from '../../middleware/auth/jwt';
@@ -50,7 +50,7 @@ export class PhotosController {
       user.payload.uuid,
       { status, updatedAt: updatedAt ? new Date(updatedAt) : undefined },
       sortBy,
-      sortType as ('ASC' | 'DESC'),
+      sortType as 'ASC' | 'DESC',
       skip,
       limit,
     );
@@ -66,14 +66,13 @@ export class PhotosController {
       });
 
       const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
-      
-      if(!photosUser) throw new NotFoundError({ resource: 'Photos User' });
-      
+
+      if (!photosUser) throw new NotFoundError({ resource: 'Photos User' });
+
       const response = await network.getDownloadLinks(
         photosUser.bucketId,
         results.map((photo) => photo.previewId),
       );
-
 
       const resultsWithDownloadLinks = response.map((result, i) => ({
         ...results[i],
@@ -121,14 +120,13 @@ export class PhotosController {
       });
 
       const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
-      
-      if(!photosUser) throw new NotFoundError({ resource: 'Photos User' });
+
+      if (!photosUser) throw new NotFoundError({ resource: 'Photos User' });
 
       const response = await network.getDownloadLinks(
         photosUser.bucketId,
         results.map((photo) => photo.previewId),
       );
-
 
       const resultsWithDownloadLinks = response.map((result, i) => ({
         ...results[i],
@@ -174,11 +172,13 @@ export class PhotosController {
 
     const body = req.body;
     body.takenAt = dateToUTC(body.takenAt);
-    const [checkedPhoto] = await this.photosUsecase.photosWithTheseCharacteristicsExist(user.payload.uuid, [{
-      name: body.name,
-      takenAt: body.takenAt,
-      hash: body.hash
-    }]);
+    const [checkedPhoto] = await this.photosUsecase.photosWithTheseCharacteristicsExist(user.payload.uuid, [
+      {
+        name: body.name,
+        takenAt: body.takenAt,
+        hash: body.hash,
+      },
+    ]);
 
     if (checkedPhoto.exists) {
       return rep.code(200).send(checkedPhoto);
@@ -291,11 +291,35 @@ export class PhotosController {
 
     await this.photosUsecase.deletePhoto(req.params.id);
 
-    this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch(() => {
-      // ignore updating usage error
+    this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch((err) => {
+      req.log.error(err);
     });
 
     rep.send({ message: 'Deleted' });
+  }
+
+  async trashPhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
+    const photoId = req.params.id;
+    const user = req.user as AuthorizedUser;
+    const photo = await this.photosUsecase.getById(photoId);
+
+    if (!photo) {
+      throw new NotFoundError({ resource: 'Photo' });
+    }
+
+    const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+
+    if (!photosUser) {
+      return rep.status(400).send();
+    }
+
+    if (photo.userId !== photosUser.id) {
+      return rep.status(403).send({ message: 'Forbidden' });
+    }
+
+    await this.photosUsecase.trashPhoto(req.params.id);
+
+    rep.send({ message: 'Trashed' });
   }
 
   async photosExist(req: FastifyRequest<{ Body: CheckPhotosExistenceType }>, rep: FastifyReply) {
@@ -318,7 +342,7 @@ export class PhotosController {
 
     const existenceChecks = await this.photosUsecase.photosWithTheseCharacteristicsExist(
       user.payload.uuid,
-      photosWithDate
+      photosWithDate,
     );
 
     rep.send({ photos: existenceChecks });
