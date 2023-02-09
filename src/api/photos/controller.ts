@@ -18,6 +18,7 @@ import { UsersUsecase } from '../users/usecase';
 import { dateToUTC } from '../../lib/utils';
 import { DevicesUsecase } from '../devices/usecase';
 import { Environment } from '@internxt/inxt-js';
+import { ForbiddenError } from '../errors/http/Forbidden';
 
 export class PhotosController {
   private photosUsecase: PhotosUsecase;
@@ -290,7 +291,7 @@ export class PhotosController {
     for (const photo of photos) {
       if (!photo) throw new NotFoundError({ resource: 'Photo' });
       if (photo.userId !== photosUser.id) {
-        return rep.status(403).send({ message: 'Forbidden' });
+         throw new ForbiddenError();
       }
     }
 
@@ -350,7 +351,7 @@ export class PhotosController {
     for (const photo of photos) {
       if (!photo) throw new NotFoundError({ resource: 'Photo' });
       if (photo.userId !== photosUser.id) {
-        return rep.status(403).send({ message: 'Forbidden' });
+        throw new ForbiddenError();
       }
     }
 
