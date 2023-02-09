@@ -5,7 +5,9 @@ import {
   CreatePhotoSchema, 
   GetPhotosQueryParamsSchema, 
   CheckPhotosExistenceSchema, 
-  GetPhotosSortedQueryParamsSchema 
+  GetPhotosSortedQueryParamsSchema, 
+  DeletePhotosSchema,
+  TrashPhotosSchema
 } from './schemas';
 
 export const buildRouter = (controller: PhotosController): FastifyRouter => {
@@ -67,7 +69,15 @@ export const buildRouter = (controller: PhotosController): FastifyRouter => {
         controller.findOrCreatePhoto.bind(controller),
       );
       server.patch('/:id', { preValidation: server.authenticate }, controller.updatePhotoById.bind(controller));
+      server.delete('/photos', { preValidation: server.authenticate, schema: {
+        body: DeletePhotosSchema
+      } }, controller.deletePhotosById.bind(controller));
+      // Should be deprecated, use DELETE /photos instead for bulk update
       server.delete('/:id', { preValidation: server.authenticate }, controller.deletePhotoById.bind(controller));
+      server.post('/photos/trash', { preValidation: server.authenticate, schema: {
+        body: TrashPhotosSchema
+      } }, controller.trashPhotosById.bind(controller));
+      // Should be deprecated, use POST /photos/trash instead for bulk update
       server.post('/:id/trash', { preValidation: server.authenticate }, controller.trashPhotoById.bind(controller));
       done();
     },
