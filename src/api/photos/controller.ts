@@ -6,8 +6,10 @@ import { PhotosUsecase, WrongBucketIdError } from './usecase';
 import { 
   CheckPhotosExistenceType, 
   CreatePhotoType, 
+  DeletePhotosType, 
   GetPhotosQueryParamsType, 
   GetPhotosSortedQueryParamsType, 
+  TrashPhotosType, 
   UpdatePhotoType 
 } from './schemas';
 import { NotFoundError } from '../errors/http/NotFound';
@@ -16,6 +18,7 @@ import { UsersUsecase } from '../users/usecase';
 import { dateToUTC } from '../../lib/utils';
 import { DevicesUsecase } from '../devices/usecase';
 import { Environment } from '@internxt/inxt-js';
+import { ForbiddenError } from '../errors/http/Forbidden';
 
 export class PhotosController {
   private photosUsecase: PhotosUsecase;
@@ -270,6 +273,38 @@ export class PhotosController {
     rep.send({ message: 'Updated photo' });
   }
 
+  async deletePhotosById(req: FastifyRequest<{ Body: DeletePhotosType }>, rep: FastifyReply) {
+    if (req.body.photos.length > 200) {
+      return rep.status(400).send({ message: 'You can only delete max 200 items at the same time' });
+    }
+    const user = req.user as AuthorizedUser;
+    const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+    if (!photosUser) {
+      return rep.status(400).send();
+    }
+    const photos = await this.photosUsecase.getByMultipleIds(
+      (req.body.photos as { id: string }[]).map((photo) => photo.id),
+      0,
+      200,
+    );
+
+    for (const photo of photos) {
+      if (!photo) throw new NotFoundError({ resource: 'Photo' });
+      if (photo.userId !== photosUser.id) {
+         throw new ForbiddenError();
+      }
+    }
+
+    for (const photo of photos) {
+      await this.photosUsecase.deletePhoto(photo.id);
+      this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch((err) => {
+        req.log.error(err);
+      });
+    }
+
+    rep.send({ message: 'Deleted' });
+  }
+
   async deletePhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {
     const photoId = req.params.id;
     const user = req.user as AuthorizedUser;
@@ -296,6 +331,35 @@ export class PhotosController {
     });
 
     rep.send({ message: 'Deleted' });
+  }
+
+  async trashPhotosById(req: FastifyRequest<{ Body: TrashPhotosType }>, rep: FastifyReply) {
+    if (req.body.photos.length > 200) {
+      return rep.status(400).send({ message: 'You can only trash max 200 items at the same time' });
+    }
+    const user = req.user as AuthorizedUser;
+    const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
+    if (!photosUser) {
+      return rep.status(400).send();
+    }
+    const photos = await this.photosUsecase.getByMultipleIds(
+      (req.body.photos as { id: string }[]).map((photo) => photo.id),
+      0,
+      200,
+    );
+
+    for (const photo of photos) {
+      if (!photo) throw new NotFoundError({ resource: 'Photo' });
+      if (photo.userId !== photosUser.id) {
+        throw new ForbiddenError();
+      }
+    }
+
+    for (const photo of photos) {
+      await this.photosUsecase.trashPhoto(photo.id);
+    }
+
+    rep.send({ message: 'Trashed' });
   }
 
   async trashPhotoById(req: FastifyRequest<{ Params: { id: PhotoId } }>, rep: FastifyReply) {

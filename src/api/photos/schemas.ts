@@ -62,8 +62,26 @@ export const CheckPhotosExistenceSchema = Type.Object({
   photos: Type.Array(PhotoExistsSchema),
 });
 
+export const TrashPhotosSchema = Type.Object({
+  photos: Type.Array(
+    Type.Object({
+      id: Type.String(),
+    }),
+  ),
+});
+
+export const DeletePhotosSchema = Type.Object({
+  photos: Type.Array(
+    Type.Object({
+      id: Type.String(),
+    }),
+  ),
+});
+
 export type CreatePhotoType = Static<typeof CreatePhotoSchema>;
 export type UpdatePhotoType = Static<typeof UpdatePhotoSchema>;
 export type GetPhotosQueryParamsType = Static<typeof GetPhotosQueryParamsSchema>;
 export type GetPhotosSortedQueryParamsType = Static<typeof GetPhotosSortedQueryParamsSchema>;
 export type CheckPhotosExistenceType = Static<typeof CheckPhotosExistenceSchema>;
+export type TrashPhotosType = Static<typeof TrashPhotosSchema>;
+export type DeletePhotosType = Static<typeof DeletePhotosSchema>;

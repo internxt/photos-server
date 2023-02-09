@@ -52,6 +52,9 @@ export class PhotosUsecase {
   }
 
 
+  async getByMultipleIds(ids: string[], skip: number, limit: number) {
+    return this.photosRepository.getByMultipleIds(ids, skip, limit);
+  }
   async get(
     userUuid: string,
     filter: { name?: string, status?: PhotoStatus, updatedAt?: Date, deviceId?: string },
