@@ -274,7 +274,7 @@ export class PhotosController {
 
   async deletePhotosById(req: FastifyRequest<{ Body: DeletePhotosType }>, rep: FastifyReply) {
     if (req.body.photos.length > 200) {
-      return rep.status(400).send({ message: 'You can only trash max 200 items at the same time' });
+      return rep.status(400).send({ message: 'You can only delete max 200 items at the same time' });
     }
     const user = req.user as AuthorizedUser;
     const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
