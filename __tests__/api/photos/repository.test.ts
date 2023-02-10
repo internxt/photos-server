@@ -119,6 +119,13 @@ describe('Photos repository methods', () => {
     expect(repository.update()).rejects.toEqual('Not implemented yet');
   });
 
+  it('getPhotosUsage', async () => {
+    const alreadyExistentPhoto = { ...photos[0] };
+    const totalSize = await repository.getPhotosUsage(alreadyExistentPhoto.userId.toString());
+
+    expect(totalSize).toEqual(275);
+  });
+
   it('deleteById()', async () => {
     const alreadyExistentPhoto = { ...photos[0] };
 
