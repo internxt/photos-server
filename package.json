@@ -30,6 +30,7 @@
   "devDependencies": {
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "^1.0.1",
+    "@types/fastify-cors": "^2.1.0",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",
     "@types/node-mongodb-fixtures": "^3.2.2",
