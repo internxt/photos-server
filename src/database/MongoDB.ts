@@ -17,11 +17,13 @@ export class MongoDB implements Database {
   private uri: string;
   private db: Db | null;
   private client: MongoClient;
+  private dbName?: string;
 
-  constructor(uri: string) {
+  constructor(uri: string, dbName?: string) {
     this.uri = uri;
     this.db = null;
     this.client = new MongoClient(this.uri);
+    this.dbName = dbName;
   }
 
   get URI() {
@@ -31,7 +33,7 @@ export class MongoDB implements Database {
   async connect(): Promise<MongoDB> {
     await this.client.connect();
 
-    this.db = this.client.db(process.env.DATABASE_NAME);
+    this.db = this.client.db(this.dbName || process.env.DATABASE_NAME);
 
     return this;
   }

@@ -28,6 +28,47 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/photos-server:${{ github.sha }}
+  build-cron-delete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+      - run: |
+          mkdir bin/delete-photos/photos-server-copy/
+          mkdir bin/delete-photos/photos-server-copy/photos-server
+          mkdir bin/delete-photos/photos-server-copy/photos-server/bin
+          mkdir bin/delete-photos/photos-server-copy/photos-server/delete-photos
+          cp -r ./.husky ./bin/delete-photos/photos-server-copy/photos-server
+          cp -r ./__tests__ ./bin/delete-photos/photos-server-copy/photos-server
+          cp ./bin/delete-photos/CommandStatus.ts  ./bin/delete-photos/photos-server-copy/photos-server/bin/delete-photos
+          cp ./bin/delete-photos/delete-photos.test.ts  ./bin/delete-photos/photos-server-copy/photos-server/bin/delete-photos
+          cp ./bin/delete-photos/Dockerfile  ./bin/delete-photos/photos-server-copy/photos-server/bin/delete-photos
+          cp ./bin/delete-photos/index.ts  ./bin/delete-photos/photos-server-copy/photos-server/bin/delete-photos
+          cp ./bin/delete-photos/PhotoDeleter.ts  ./bin/delete-photos/photos-server-copy/photos-server/bin/delete-photos
+          cp -r ./bin/delete-photos/utils ./bin/delete-photos/photos-server-copy/photos-server/bin/delete-photos
+          cp -r ./infrastructure ./bin/delete-photos/photos-server-copy/photos-server
+          cp -r ./src ./bin/delete-photos/photos-server-copy/photos-server
+          cp ./* ./bin/delete-photos/photos-server-copy/photos-server
+          cp .npmrc ./bin/delete-photos
+      - run: echo "registry=https://registry.yarnpkg.com/" > ./bin/delete-photos/.npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> ./bin/delete-photos/.npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> ./bin/delete-photos/.npmrc
+      - run: echo "always-auth=true" >> ./bin/delete-photos/.npmrc
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push to DockerHub
+        uses: docker/build-push-action@v2
+        with:
+          context: bin/delete-photos/
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/photos-delete-files:${{ github.sha }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
