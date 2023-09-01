@@ -297,9 +297,7 @@ export class PhotosController {
 
     for (const photo of photos) {
       await this.photosUsecase.deletePhoto(photo.id);
-      this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size).catch((err) => {
-        req.log.error(err);
-      });
+      await this.usersUsecase.updateGalleryUsage(photo.userId, -photo.size);
     }
 
     rep.send({ message: 'Deleted' });
