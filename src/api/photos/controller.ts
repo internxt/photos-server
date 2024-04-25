@@ -191,61 +191,7 @@ export class PhotosController {
   }
 
   async postPhoto(req: FastifyRequest<{ Body: CreatePhotoType }>, rep: FastifyReply) {
-    const user = req.user as AuthorizedUser;
-    const body: NewPhoto = req.body;
-
-    if (body.width <= 0 || body.height <= 0 || body.size <= 0) {
-      return rep.code(400).send({ message: 'Invalid params' });
-    }
-
-    body.takenAt = dateToUTC(body.takenAt);
-    const takenAt = dayjs(body.takenAt);
-    const createdInTheFuture = takenAt.isAfter(new Date());
-
-    if (!takenAt.isValid() || createdInTheFuture) {
-      return rep.code(400).send({ message: 'Invalid params' });
-    }
-
-    const photosUser = await this.usersUsecase.obtainUserByUuid(user.payload.uuid);
-
-    if (!photosUser) {
-      return rep.status(400).send();
-    }
-
-    if (body.userId !== photosUser.id) {
-      return rep.status(403).send({ message: 'Forbidden' });
-    }
-
-    const device = await this.devicesUsecase.getDeviceById(body.deviceId);
-
-    if (!device) {
-      return rep.status(400).send({ message: 'Device not found' });
-    }
-
-    let createdPhoto: Photo;
-
-    try {
-      createdPhoto = await this.photosUsecase.savePhoto(body);
-    } catch (err) {
-      if (err instanceof WrongBucketIdError) {
-        return rep.status(400).send({ message: err.message });
-      }
-      throw err;
-    }
-
-    this.usersUsecase.updateGalleryUsage(createdPhoto.userId, createdPhoto.size).catch(() => {
-      // ignore updating usage error
-    });
-
-    if (createdPhoto.takenAt.getTime() > device.newestDate.getTime()) {
-      this.devicesUsecase.updateNewestDate(createdPhoto.deviceId, createdPhoto.takenAt);
-    }
-
-    if (!device.oldestDate || createdPhoto.takenAt.getTime() < device.oldestDate.getTime()) {
-      this.devicesUsecase.updateOldestDate(createdPhoto.deviceId, createdPhoto.takenAt);
-    }
-
-    rep.code(201).send(createdPhoto);
+    return rep.status(404).send({ message: 'Not found' });
   }
 
   async updatePhotoById(req: FastifyRequest<{ Params: { id: PhotoId }; Body: UpdatePhotoType }>, rep: FastifyReply) {
