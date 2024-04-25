@@ -42,19 +42,7 @@ export class UsersController {
     }>, 
     rep: FastifyReply
   ) {
-
-    const user = req.user as AuthorizedUser;
-    const deviceInfo: Pick<Device, 'mac' | 'name'> = req.body;
-
-    const network = new Environment({
-      bridgeUrl: process.env.NETWORK_URL,
-      bridgePass: req.headers['internxt-network-pass'].toString(),
-      bridgeUser: req.headers['internxt-network-user'].toString()
-    });
-
-    const createdOrAlreadyExistentUser = await this.usecase.initUser(user.payload.uuid, network, deviceInfo);
-
-    rep.code(201).send(createdOrAlreadyExistentUser);
+    return rep.code(404).send({ message: 'Not found' });
   }
 
   async deleteUserById(req: FastifyRequest<{ Params: { id: UserId }}>, rep: FastifyReply) {
