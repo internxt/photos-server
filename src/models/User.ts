@@ -9,4 +9,5 @@ export interface User {
   bucketId: BucketId;
   galleryUsage: GalleryUsage;
   trashUsage: TrashUsage;
+  migrated?: boolean
 }
