@@ -7,4 +7,5 @@ export interface UserDocument extends Omit<User, 'id'> {
   updatedAt: Date;
   galleryUsage: number;
   trashUsage: number;
+  migrated?: boolean;
 }
