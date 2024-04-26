@@ -12,12 +12,15 @@
     "lint": "eslint ./src",
     "test": "yarn db:init && yarn jest --detectOpenHandles",
     "coverage": "jest --coverage",
-    "build": "tsc"
+    "build": "tsc",
+    "migrate": "ts-node ./src/migrate-to-drive/index.ts"
   },
   "dependencies": {
     "@internxt/inxt-js": "=1.6.0",
     "@internxt/lib": "^1.1.6",
     "@sinclair/typebox": "^0.20.5",
+    "bcryptjs": "2.4.3",
+    "crypto-js": "4.2.0",
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "fastify": "^3.23.1",
@@ -25,15 +28,19 @@
     "fastify-jwt": "^3.2.1",
     "fastify-metrics": "6.0.3",
     "fastify-plugin": "^3.0.0",
-    "mongodb": "^4.1.4"
+    "mongodb": "^4.1.4",
+    "pg": "^8.11.4"
   },
   "devDependencies": {
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "^1.0.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/crypto-js": "^4.2.2",
     "@types/fastify-cors": "^2.1.0",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",
     "@types/node-mongodb-fixtures": "^3.2.2",
+    "@types/pg": "^8.11.4",
     "@types/sinon": "^10.0.6",
     "@types/uuid": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
